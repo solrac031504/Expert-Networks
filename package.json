@@ -10,7 +10,10 @@
     "start-client": "cd client && npm run start"
   },
   "keywords": [],
-  "author": "",
+  "author": "Carlos Gonzalez",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "mongodb": "^6.7.0"
+  }
 }
