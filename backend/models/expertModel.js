@@ -23,17 +23,22 @@ const expertSchema = new Schema({
     type: Number,
     required: true
   },
+  hindex: {
+    type: Number,
+    required: true
+  },
   age: {
     type: Number,
-    required: false
+    required: false,
+    default: -1
   },
   years_in_field: {
     type: Number,
     required: true
   },
-  living: {
-    type: Boolean,
-    required: false
+  email: {
+    type: String,
+    required: true
   }
 }, { timestamps: true })
 

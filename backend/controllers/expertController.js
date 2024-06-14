@@ -33,9 +33,10 @@ const createExpert = async (req, res) => {
     institution,
     region,
     citations,
+    hindex,
     age,
     years_in_field,
-    living
+    email
   } = req.body
 
   // add to the database
@@ -46,9 +47,10 @@ const createExpert = async (req, res) => {
         institution,
         region,
         citations,
+        hindex,
         age,
         years_in_field,
-        living
+        email
     })
     res.status(200).json(expert)
   } catch (error) {
