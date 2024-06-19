@@ -1,0 +1,15 @@
+/* Navbar.css */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0c0cfa;
+    padding: 10px;
+    height: 100px;
+  }
+  
+  .navbar-title {
+    color: white;
+    font-size: 30px;
+  }
+  
