@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #0c0cfa;
+    background-color: #4848f5;
     padding: 10px;
     height: 100px;
   }
@@ -13,3 +13,6 @@
     font-size: 30px;
   }
   
+  body {
+    background-color: #c6c6c6; /* Change this value to your desired background color for the page */
+  }
