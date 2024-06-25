@@ -94,6 +94,26 @@ const updateExpert = async (req, res) => {
   res.status(200).json(expert)
 }
 
+// get unique fields
+const getUniqueFields = async (req, res) => {
+  try {
+    const fields = await Expert.distinct('field_of_study');
+    res.status(200).json(fields);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// get unique institutions
+const getUniqueInstitutions = async (req, res) => {
+  try {
+    const institutions = await Expert.distinct('institution');
+    res.status(200).json(institutions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // get unique regions
 const getUniqueRegions = async (req, res) => {
 
