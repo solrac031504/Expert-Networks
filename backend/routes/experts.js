@@ -1,27 +1,43 @@
-const express = require('express')
+const express = require('express');
 const {
-  getExperts, 
-  getExpert, 
-  createExpert, 
-  deleteExpert, 
-  updateExpert
-} = require('../controllers/expertController')
+  getExperts,
+  getExpert,
+  createExpert,
+  deleteExpert,
+  updateExpert,
+  getUniqueFields,
+  getUniqueInstitutions,
+  getUniqueRegions,
+  searchExperts
+} = require('../controllers/expertController');
 
-const router = express.Router()
+const router = express.Router();
 
-// GET all experts
-router.get('/', getExperts)
+// GET unique fields
+router.get('/fields', getUniqueFields);
+
+// GET unique institutions
+router.get('/institutions', getUniqueInstitutions);
+
+// GET unique regions
+router.get('/regions', getUniqueRegions);
+
+// GET search experts
+router.get('/search', searchExperts);
+
+// DELETE an expert
+router.delete('/:id', deleteExpert);
+
+// UPDATE an expert
+router.patch('/:id', updateExpert);
 
 // GET a single expert
-router.get('/:id', getExpert)
+router.get('/:id', getExpert);
+
+// GET all experts
+router.get('/', getExperts);
 
 // POST a new expert
-router.post('/', createExpert)
+router.post('/', createExpert);
 
-// DELETE a expert
-router.delete('/:id', deleteExpert)
-
-// UPDATE a expert
-router.patch('/:id', updateExpert)
-
-module.exports = router
+module.exports = router;

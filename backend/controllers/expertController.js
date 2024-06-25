@@ -98,10 +98,62 @@ const updateExpert = async (req, res) => {
   res.status(200).json(expert)
 }
 
+// get unique fields
+const getUniqueFields = async (req, res) => {
+  try {
+    const fields = await Expert.distinct('field_of_study');
+    res.status(200).json(fields);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// get unique institutions
+const getUniqueInstitutions = async (req, res) => {
+  try {
+    const institutions = await Expert.distinct('institution');
+    res.status(200).json(institutions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// get unique regions
+const getUniqueRegions = async (req, res) => {
+
+  try {
+    const regions = await Expert.distinct('region');
+    res.status(200).json(regions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// search experts with query parameters
+const searchExperts = async (req, res) => {
+  const { field_of_study, institution, region } = req.query;
+
+  let query = {};
+  if (field_of_study && field_of_study !== 'All') query.field_of_study = field_of_study;
+  if (institution && institution !== 'All') query.institution = institution;
+  if (region && region !== 'All') query.region = region;
+
+  try {
+    const results = await Expert.find(query);
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getExperts,
   getExpert,
   createExpert,
   deleteExpert,
-  updateExpert
-}
+  updateExpert,
+  getUniqueFields,
+  getUniqueInstitutions,
+  getUniqueRegions,
+  searchExperts,
+};
