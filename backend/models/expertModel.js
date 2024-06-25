@@ -3,6 +3,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const expertSchema = new Schema({
+  // Used for searching the profiles for more information
+  expert_id: {
+    type: String,
+    required: true,
+    default: 'N/A'
+  },
   name: {
     type: String,
     required: true,
@@ -29,6 +35,11 @@ const expertSchema = new Schema({
     default: 0
   },
   hindex: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  i10_index: {
     type: Number,
     required: true,
     default: 0

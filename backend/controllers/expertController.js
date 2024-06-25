@@ -28,12 +28,14 @@ const getExpert = async (req, res) => {
 // create a new expert
 const createExpert = async (req, res) => {
   const {
+    expert_id,
     name,
     field_of_study,
     institution,
     region,
     citations,
     hindex,
+    i10index,
     age,
     years_in_field,
     email
@@ -42,12 +44,14 @@ const createExpert = async (req, res) => {
   // add to the database
   try {
     const expert = await Expert.create({
+        expert_id,
         name,
         field_of_study,
         institution,
         region,
         citations,
         hindex,
+        i10index,
         age,
         years_in_field,
         email
