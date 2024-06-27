@@ -40,4 +40,13 @@ router.get('/', getExperts);
 // POST a new expert
 router.post('/', createExpert);
 
-module.exports = router;
+// DELETE a expert
+router.delete('/:id', deleteExpert)
+
+// UPDATE a expert
+router.patch('/:id', updateExpert)
+
+//GET experts from API
+router.get('/fetch', fetchExperts)
+
+module.exports = router

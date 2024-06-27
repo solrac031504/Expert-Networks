@@ -1,6 +1,13 @@
-const Expert = require('../models/expertModel')
-const mongoose = require('mongoose')
+const Expert = require('../models/expertModel');
+const mongoose = require('mongoose');
 
+const axios = require('axios'); //Import axios for http requests
+const { query } = require('express');
+
+require('dotenv').config(); //Import dotenv for environment variables
+
+//Commented out due to issue with fetchExperts
+/*
 // get all experts
 const getExperts = async (req, res) => {
   const experts = await Expert.find({}).sort({createdAt: -1})
@@ -24,6 +31,7 @@ const getExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
+*/
 
 // create a new expert
 const createExpert = async (req, res) => {
@@ -87,7 +95,7 @@ const updateExpert = async (req, res) => {
     return res.status(400).json({error: 'No such expert'})
   }
 
-  const expert = await Expert.findOneAndUpdate({_id: id}, {
+  const expert = await Expert.findOneAndUpdate({author_id: author_id}, {
     ...req.body
   })
 
@@ -147,8 +155,10 @@ const searchExperts = async (req, res) => {
 };
 
 module.exports = {
+  /*
   getExperts,
   getExpert,
+  */
   createExpert,
   deleteExpert,
   updateExpert,
