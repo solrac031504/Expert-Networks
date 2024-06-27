@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './Navbar.css'; // Adjust the path if necessary
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './home.css'; // Adjust the path if necessary
 
 const Home = () => {
   const [dropdownOptions, setDropdownOptions] = useState({
@@ -17,12 +17,13 @@ const Home = () => {
   useEffect(() => {
     // Fetch unique fields
     console.log('Fetching unique fields...');
-    axios.get('http://localhost:4000/api/experts/fields')
-      .then(response => {
-        console.log('Received unique fields:', response.data);
+    fetch('http://localhost:4000/api/experts/fields')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique fields:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
-          fields: response.data,
+          fields: data,
         }));
       })
       .catch(error => {
@@ -31,12 +32,13 @@ const Home = () => {
 
     // Fetch unique institutions
     console.log('Fetching unique institutions...');
-    axios.get('http://localhost:4000/api/experts/institutions')
-      .then(response => {
-        console.log('Received unique institutions:', response.data);
+    fetch('http://localhost:4000/api/experts/institutions')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique institutions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
-          institutions: response.data,
+          institutions: data,
         }));
       })
       .catch(error => {
@@ -45,12 +47,13 @@ const Home = () => {
 
     // Fetch unique regions
     console.log('Fetching unique regions...');
-    axios.get('http://localhost:4000/api/experts/regions')
-      .then(response => {
-        console.log('Received unique regions:', response.data);
+    fetch('http://localhost:4000/api/experts/regions')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique regions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
-          regions: response.data,
+          regions: data,
         }));
       })
       .catch(error => {
@@ -73,32 +76,32 @@ const Home = () => {
   };
 
   return (
-    <div className="container">
-      <nav className="navbar">
-        <div className="navbar-title">
-          For the People, Find the People
-        </div>
+    <div>
+      <nav className="navbar custom-navbar">
+        <div className="navbar-title">For the People, Find the People</div>
       </nav>
-      <div className="dropdown-container">
-        <select name="field" value={selectedOptions.field} onChange={handleSelectChange}>
-          <option value="">Select Field</option>
-          {dropdownOptions.fields.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-        <select name="institution" value={selectedOptions.institution} onChange={handleSelectChange}>
-          <option value="">Select Institution</option>
-          {dropdownOptions.institutions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-        <select name="region" value={selectedOptions.region} onChange={handleSelectChange}>
-          <option value="">Select Region</option>
-          {dropdownOptions.regions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-        <button onClick={handleSearch}>Search</button>
+      <div className="container">
+        <div className="dropdown-container d-flex align-items-center mt-4">
+          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleSelectChange}>
+            <option value="">Field</option>
+            {dropdownOptions.fields.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
+          <select className="form-control mr-2" name="institution" value={selectedOptions.institution} onChange={handleSelectChange}>
+            <option value="">Current Institution</option>
+            {dropdownOptions.institutions.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
+          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleSelectChange}>
+            <option value="">Region</option>
+            {dropdownOptions.regions.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
+          <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+        </div>
       </div>
     </div>
   );
