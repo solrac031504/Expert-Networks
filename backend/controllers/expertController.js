@@ -304,8 +304,8 @@ const exportExpertsToCSV = async (req, res) => {
 
 
 module.exports = {
-  getExperts,
-  getExpert,
+ /* getExperts,
+  getExpert,*/
   createExpert,
   deleteExpert,
   updateExpert,
