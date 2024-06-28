@@ -36,6 +36,9 @@ router.delete('/:id', deleteExpert);
 
 // UPDATE an expert
 router.patch('/:id', updateExpert);
+
+//GET experts from API
+router.get('/fetch', fetchExperts);
 /*
 // GET a single expert
 router.get('/:id', getExpert);
@@ -51,11 +54,5 @@ router.delete('/:id', deleteExpert)
 
 // UPDATE a expert
 router.patch('/:id', updateExpert)
-
-//GET experts from API
-router.get('/fetch', fetchExperts)
-
-//GET experts from API
-router.get('/fetch', fetchExperts)
 
 module.exports = router

@@ -156,6 +156,7 @@ const searchExperts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 //Fetch for experts
 const fetchExperts = async (req, res) => {
 
@@ -313,5 +314,6 @@ module.exports = {
   getUniqueInstitutions,
   getUniqueRegions,
   searchExperts,
+  fetchExperts,
   exportExpertsToCSV
 };
