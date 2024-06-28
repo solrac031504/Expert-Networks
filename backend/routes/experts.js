@@ -11,10 +11,13 @@ const {
   getUniqueInstitutions,
   getUniqueRegions,
   searchExperts, 
-  fetchExperts
+  fetchExperts,
+  exportExpertsToCSV
 } = require('../controllers/expertController');
 
 const router = express.Router();
+
+router.get('/export/csv', exportExpertsToCSV);
 
 // GET unique fields
 router.get('/fields', getUniqueFields);
