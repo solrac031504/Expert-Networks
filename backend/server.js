@@ -1,5 +1,7 @@
 // backend/server.js
 require('dotenv').config({ path: '../.env' });
+const fs = require('fs');
+const path = require('path');
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -35,3 +37,9 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => {
     console.log(err);
   });
+
+// Create exports directory 
+const exportDir = path.join(__dirname, 'exports');
+if (!fs.existsSync(exportDir)) {
+  fs.mkdirSync(exportDir);
+}
