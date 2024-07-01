@@ -13,6 +13,7 @@ const Home = () => {
     institution: '',
     region: '',
   });
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     // Fetch unique fields
@@ -70,9 +71,16 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    // Implement search functionality based on selectedOptions
     console.log('Selected options:', selectedOptions);
-    // You can use the selected options to make a search request or filter the data
+    fetch(`http://localhost:4000/api/experts/search?field=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Search results:', data);
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
   };
 
   return (
@@ -102,6 +110,35 @@ const Home = () => {
           </select>
           <button className="btn btn-primary" onClick={handleSearch}>Search</button>
         </div>
+
+        {searchResults.length > 0 && (
+          <div className="mt-4">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Field of Study</th>
+                  <th>Institution</th>
+                  <th>Region</th>
+                  <th>Citations</th>
+                  <th>Hindex</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((result, index) => (
+                  <tr key={index}>
+                    <td>{result.name}</td>
+                    <td>{result.field_of_study}</td>
+                    <td>{result.institution}</td>
+                    <td>{result.region}</td>
+                    <td>{result.citations}</td>
+                    <td>{result.hindex}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
