@@ -4,9 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const express = require('express');
-// const mongoose = require('mongoose');
 const cors = require('cors'); // Import cors package
-// const expertRoutes = require('./routes/experts');
+const expertRoutes = require('./routes/experts');
 
 // for DB
 const sequelize = require ('./database');
@@ -26,29 +25,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// routes
-// app.use('/api/experts', expertRoutes);
+// Routes for experts
+app.use('/api/experts', expertRoutes);
+
+// Routes for institutions
+// app.use('/api/institutions', institutionRoutes);
 
 // connect to db (Mongo, previous DB)
-/*
-console.log('MONGO_URI:', process.env.MONGO_URI); // Debugging line
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('connected to database');
-    // listen to port
-    app.listen(process.env.PORT, () => {
-      console.log('listening for requests on port', process.env.PORT);
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-  }); */
-
 
 const syncDatabase = async() => {
   try {
-    await sequelize.sync({ force: true});
+    // force false prevents dropping tables upon starting server
+    await sequelize.sync({ force: false}); 
     console.log('DB synced successfully');
+    
+    // listen to port
+    app.listen(process.env.PORT, () => {
+      console.log('listening for requests on port', process.env.PORT);
+    })
   }
   catch(error) {
     console.error('Error syncing database:', error);

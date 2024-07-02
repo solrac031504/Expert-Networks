@@ -1,6 +1,6 @@
+// import DB models
 const Expert = require('../models/Expert');
-const Institution = require ('../model/Institution');
-const mongoose = require('mongoose');
+
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 const fs = require('fs');
@@ -10,14 +10,14 @@ const { query } = require('express');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-//Commented out due to issue with fetchExperts
 // get all experts
 const getExperts = async (req, res) => {
-  const experts = await Expert.find({}).sort({createdAt: -1})
+  const experts = await Expert.findAll();
 
-  res.status(200).json(experts)
+  res.status(200).json(experts);
 }
 
+/*
 // get a single expert
 const getExpert = async (req, res) => {
   const { id } = req.params
@@ -107,7 +107,9 @@ const updateExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
+  */
 
+/*
 // get unique fields
 const getUniqueFields = async (req, res) => {
   try {
@@ -301,18 +303,18 @@ const exportExpertsToCSV = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+*/
 
 module.exports = {
- /* getExperts,
-  getExpert,*/
-  createExpert,
-  deleteExpert,
-  updateExpert,
-  getUniqueFields,
-  getUniqueInstitutions,
-  getUniqueRegions,
-  searchExperts,
-  fetchExperts,
-  exportExpertsToCSV
+  getExperts
+  // getExpert,
+  // createExpert,
+  // deleteExpert,
+  // updateExpert
+  // getUniqueFields,
+  // getUniqueInstitutions,
+  // getUniqueRegions,
+  // searchExperts,
+  // fetchExperts,
+  // exportExpertsToCSV
 };
