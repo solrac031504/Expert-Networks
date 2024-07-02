@@ -6,6 +6,7 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors'); // Import cors package
 const expertRoutes = require('./routes/experts');
+const institutionRoutes = require('./routes/institutions');
 
 // for DB
 const sequelize = require ('./database');
@@ -29,10 +30,9 @@ app.use((req, res, next) => {
 app.use('/api/experts', expertRoutes);
 
 // Routes for institutions
-// app.use('/api/institutions', institutionRoutes);
+app.use('/api/institutions', institutionRoutes);
 
-// connect to db (Mongo, previous DB)
-
+// Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
     // force false prevents dropping tables upon starting server

@@ -1,8 +1,8 @@
 const express = require('express');
 const {
-  getExperts
+  getExperts,
   // getExpert,
-  // createExpert,
+  createExpert,
   // deleteExpert,
   // updateExpert,
   // getUniqueFields,
@@ -46,7 +46,7 @@ const router = express.Router();
 router.get('/', getExperts);
 
 // POST a new expert
-// router.post('/', createExpert);
+router.post('/', createExpert);
 
 // DELETE an expert
 // router.delete('/:id', deleteExpert)

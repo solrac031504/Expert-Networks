@@ -34,44 +34,23 @@ const getExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
+*/
 
 // create a new expert
 const createExpert = async (req, res) => {
-  const {
-    expert_id,
-    name,
-    field_of_study,
-    institution,
-    region,
-    citations,
-    hindex,
-    i10index,
-    age,
-    years_in_field,
-    email
-  } = req.body
-
   // add to the database
   try {
-    const expert = await Expert.create({
-        expert_id,
-        name,
-        field_of_study,
-        institution,
-        region,
-        citations,
-        hindex,
-        i10index,
-        age,
-        years_in_field,
-        email
-    })
+    const expert = req.body;
+    await Expert.create(expert);
     res.status(200).json(expert)
-  } catch (error) {
+  } 
+  catch (error) {
     res.status(400).json({ error: error.message })
   }
 }
 
+
+/*
 // delete an expert
 const deleteExpert = async (req, res) => {
   const { id } = req.params
@@ -88,7 +67,9 @@ const deleteExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
+*/
 
+/*
 // update an expert
 const updateExpert = async (req, res) => {
   const { id } = req.params
@@ -107,7 +88,7 @@ const updateExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
-  */
+*/
 
 /*
 // get unique fields
@@ -306,9 +287,9 @@ const exportExpertsToCSV = async (req, res) => {
 */
 
 module.exports = {
-  getExperts
+  getExperts,
   // getExpert,
-  // createExpert,
+  createExpert
   // deleteExpert,
   // updateExpert
   // getUniqueFields,
