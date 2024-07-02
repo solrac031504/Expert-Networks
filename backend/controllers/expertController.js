@@ -17,24 +17,18 @@ const getExperts = async (req, res) => {
   res.status(200).json(experts);
 }
 
-/*
 // get a single expert
 const getExpert = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({error: 'No such expert'})
-  }
+  const expert = await Expert.findByPk(id)
 
-  const expert = await Expert.findById(id)
-
-  if (!expert) {
+  if (expert == null) {
     return res.status(404).json({error: 'No such expert'})
   }
 
   res.status(200).json(expert)
 }
-*/
 
 // create a new expert
 const createExpert = async (req, res) => {
@@ -49,46 +43,66 @@ const createExpert = async (req, res) => {
   }
 }
 
-
-/*
 // delete an expert
 const deleteExpert = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({error: 'No such expert'})
-  }
+  const expert = await Expert.destroy({
+    where: {
+      expert_id: id
+    }
+  });
 
-  const expert = await Expert.findOneAndDelete({_id: id})
-
-  if(!expert) {
+  if(expert == null) {
     return res.status(400).json({error: 'No such expert'})
   }
 
   res.status(200).json(expert)
 }
-*/
 
-/*
 // update an expert
 const updateExpert = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({error: 'No such expert'})
-  }
+  const {
+    expert_id,
+    name,
+    institution_id,
+    citations,
+    hindex,
+    i_ten_index,
+    impact_factor,
+    age,
+    years_in_field,
+    email
+  } = req.body;
 
-  const expert = await Expert.findOneAndUpdate({author_id: author_id}, {
-    ...req.body
-  })
+  const expert = await Expert.update(
+    {
+      expert_id: expert_id,
+      name: name,
+      institution_id: institution_id,
+      citations: citations,
+      hindex: hindex,
+      i_ten_index: i_ten_index,
+      impact_factor: impact_factor,
+      age: age,
+      years_in_field: years_in_field,
+      email: email
+    },
+    {
+      where: {
+        expert_id: id
+      }
+    }
+  );
 
-  if (!expert) {
+  if (expert == null) {
     return res.status(400).json({error: 'No such expert'})
   }
 
   res.status(200).json(expert)
 }
-*/
 
 /*
 // get unique fields
@@ -288,10 +302,10 @@ const exportExpertsToCSV = async (req, res) => {
 
 module.exports = {
   getExperts,
-  // getExpert,
-  createExpert
-  // deleteExpert,
-  // updateExpert
+  getExpert,
+  createExpert,
+  deleteExpert,
+  updateExpert
   // getUniqueFields,
   // getUniqueInstitutions,
   // getUniqueRegions,

@@ -1,22 +1,16 @@
 const express = require('express');
 const {
   getInstitutions,
-  // getExpert,
+  getInstitution,
   createInstitution,
-  // deleteExpert,
-  // updateExpert,
-  // getUniqueFields,
-  // getUniqueInstitutions,
-  // getUniqueRegions,
-  // searchExperts, 
-  // fetchExperts,
-  // exportExpertsToCSV
+  deleteInstitution,
+  updateInstitution
 } = require('../controllers/institutionControllers');
 
 const router = express.Router();
 
 // GET a single institution
-// router.get('/:id', getInstitution);
+router.get('/:id', getInstitution);
 
 // GET all institutions
 router.get('/', getInstitutions);
@@ -25,9 +19,9 @@ router.get('/', getInstitutions);
 router.post('/', createInstitution);
 
 // DELETE an institution
-// router.delete('/:id', deleteExpert)
+router.delete('/:id', deleteInstitution);
 
 // UPDATE an institution
-// router.patch('/:id', updateExpert)
+router.patch('/:id', updateInstitution);
 
 module.exports = router

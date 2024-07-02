@@ -1,10 +1,10 @@
 const express = require('express');
 const {
   getExperts,
-  // getExpert,
+  getExpert,
   createExpert,
-  // deleteExpert,
-  // updateExpert,
+  deleteExpert,
+  updateExpert
   // getUniqueFields,
   // getUniqueInstitutions,
   // getUniqueRegions,
@@ -40,7 +40,7 @@ const router = express.Router();
 // router.get('/fetch', fetchExperts);
 
 // GET a single expert
-// router.get('/:id', getExpert);
+router.get('/:id', getExpert);
 
 // GET all experts
 router.get('/', getExperts);
@@ -49,9 +49,9 @@ router.get('/', getExperts);
 router.post('/', createExpert);
 
 // DELETE an expert
-// router.delete('/:id', deleteExpert)
+router.delete('/:id', deleteExpert)
 
 // UPDATE a expert
-// router.patch('/:id', updateExpert)
+router.patch('/:id', updateExpert)
 
 module.exports = router

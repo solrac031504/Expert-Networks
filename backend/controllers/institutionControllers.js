@@ -9,33 +9,27 @@ const { query } = require('express');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-// get all experts
+// get all Institutions
 const getInstitutions = async (req, res) => {
   const institutions = await Institution.findAll();
 
   res.status(200).json(institutions);
 }
 
-/*
-// get a single expert
-const getExpert = async (req, res) => {
+// get a single Institution
+const getInstitution = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({error: 'No such expert'})
+  const institution = await Institution.findByPk(id)
+
+  if (institution == null) {
+    return res.status(404).json({error: 'No such institution'})
   }
 
-  const expert = await Expert.findById(id)
-
-  if (!expert) {
-    return res.status(404).json({error: 'No such expert'})
-  }
-
-  res.status(200).json(expert)
+  res.status(200).json(institution);
 }
-*/
 
-// create a new expert
+// create a new Institution
 const createInstitution = async (req, res) => {
   // add to the database
   try {
@@ -48,47 +42,57 @@ const createInstitution = async (req, res) => {
   }
 }
 
-/*
-// delete an expert
-const deleteExpert = async (req, res) => {
+// delete an Institution
+const deleteInstitution = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({error: 'No such expert'})
+  const institution = await Institution.destroy({
+    where: {
+      institution_id: id
+    }
+  });
+
+  if(institution == null) {
+    return res.status(400).json({error: 'No such institution'})
   }
 
-  const expert = await Expert.findOneAndDelete({_id: id})
-
-  if(!expert) {
-    return res.status(400).json({error: 'No such expert'})
-  }
-
-  res.status(200).json(expert)
+  res.status(200).json(institution)
 }
-*/
 
-/*
-// update an expert
-const updateExpert = async (req, res) => {
+// update an Institution
+const updateInstitution = async (req, res) => {
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({error: 'No such expert'})
+  const {
+    institution_id,
+    name,
+    country
+  } = req.body;
+
+  const institution = await Institution.update(
+    {
+      institution_id: institution_id,
+      name: name,
+      country: country
+    },
+    {
+      where: {
+        institution_id: id
+      }
+    }
+  );
+
+  if (institution == null) {
+    return res.status(400).json({error: 'No such institution'})
   }
 
-  const expert = await Expert.findOneAndUpdate({author_id: author_id}, {
-    ...req.body
-  })
-
-  if (!expert) {
-    return res.status(400).json({error: 'No such expert'})
-  }
-
-  res.status(200).json(expert)
+  res.status(200).json(institution)
 }
-*/
 
 module.exports = {
   getInstitutions,
-  createInstitution
+  getInstitution,
+  createInstitution,
+  deleteInstitution,
+  updateInstitution,
 };
