@@ -1,4 +1,5 @@
-const Expert = require('../models/expertModel');
+const Expert = require('../models/Expert');
+const Institution = require ('../model/Institution');
 const mongoose = require('mongoose');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
@@ -10,7 +11,6 @@ const { query } = require('express');
 require('dotenv').config(); //Import dotenv for environment variables
 
 //Commented out due to issue with fetchExperts
-/*
 // get all experts
 const getExperts = async (req, res) => {
   const experts = await Expert.find({}).sort({createdAt: -1})
@@ -34,7 +34,6 @@ const getExpert = async (req, res) => {
 
   res.status(200).json(expert)
 }
-*/
 
 // create a new expert
 const createExpert = async (req, res) => {

@@ -4,9 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 const express = require('express');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const cors = require('cors'); // Import cors package
-const expertRoutes = require('./routes/experts');
+// const expertRoutes = require('./routes/experts');
+
+// for DB
+const sequelize = require ('./database');
+const Expert = require('./models/Expert');
+const Institution = require('./models/Institution');
 
 // express app
 const app = express();
@@ -22,9 +27,10 @@ app.use((req, res, next) => {
 });
 
 // routes
-app.use('/api/experts', expertRoutes);
+// app.use('/api/experts', expertRoutes);
 
-// connect to db
+// connect to db (Mongo, previous DB)
+/*
 console.log('MONGO_URI:', process.env.MONGO_URI); // Debugging line
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
@@ -36,7 +42,20 @@ mongoose.connect(process.env.MONGO_URI)
   })
   .catch((err) => {
     console.log(err);
-  });
+  }); */
+
+
+const syncDatabase = async() => {
+  try {
+    await sequelize.sync({ force: true});
+    console.log('DB synced successfully');
+  }
+  catch(error) {
+    console.error('Error syncing database:', error);
+  }
+}
+
+syncDatabase();
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
