@@ -30,12 +30,6 @@ const router = express.Router();
 // GET search experts
 // router.get('/search', searchExperts);
 
-// DELETE an expert
-// router.delete('/:id', deleteExpert);
-
-// UPDATE an expert
-// router.patch('/:id', updateExpert);
-
 //GET experts from API
 // router.get('/fetch', fetchExperts);
 

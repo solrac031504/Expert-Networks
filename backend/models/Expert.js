@@ -12,6 +12,11 @@ const Expert = sequelize.define('Expert', {
     allowNull: false,
     defaultValue: 'N/A'
   },
+  field_of_study: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'N/A'
+  },
   institution_id: {
     type: DataTypes.STRING,
     references: {

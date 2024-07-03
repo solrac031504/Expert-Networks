@@ -67,6 +67,7 @@ const updateExpert = async (req, res) => {
   const {
     expert_id,
     name,
+    field_of_study,
     institution_id,
     citations,
     hindex,
@@ -81,6 +82,7 @@ const updateExpert = async (req, res) => {
     {
       expert_id: expert_id,
       name: name,
+      field_of_study: field_of_study,
       institution_id: institution_id,
       citations: citations,
       hindex: hindex,
@@ -105,37 +107,6 @@ const updateExpert = async (req, res) => {
 }
 
 /*
-// get unique fields
-const getUniqueFields = async (req, res) => {
-  try {
-    const fields = await Expert.distinct('field_of_study');
-    res.status(200).json(fields);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// get unique institutions
-const getUniqueInstitutions = async (req, res) => {
-  try {
-    const institutions = await Expert.distinct('institution');
-    res.status(200).json(institutions);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// get unique regions
-const getUniqueRegions = async (req, res) => {
-
-  try {
-    const regions = await Expert.distinct('region');
-    res.status(200).json(regions);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
 // search experts with query parameters
 const searchExperts = async (req, res) => {
   const { field_of_study, institution, region } = req.query;

@@ -5,8 +5,14 @@ const path = require('path');
 
 const express = require('express');
 const cors = require('cors'); // Import cors package
+
+// Routes
 const expertRoutes = require('./routes/experts');
 const institutionRoutes = require('./routes/institutions');
+const dropdownMenuRoutes = require('./routes/dropdown_menus');
+// const searchRoutes = require('./routes/searches');
+// const downloadRoutes = require('./routes/downloads');
+// const dataScrapingRoutes = require('./routes/searches');
 
 // for DB
 const sequelize = require ('./database');
@@ -32,11 +38,23 @@ app.use('/api/experts', expertRoutes);
 // Routes for institutions
 app.use('/api/institutions', institutionRoutes);
 
+// Routes for the dropdown menus
+app.use('/api/dropdown', dropdownMenuRoutes);
+
+// Routes for the search and table
+// app.use('/api/search', searchRoutes);
+
+// Routes for download fucntions
+// app.use('/api/download', downloadRoutes);
+
+// Routes for data scraping
+// app.use('/api/data', dataScrapingRoutes);
+
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
     // force false prevents dropping tables upon starting server
-    await sequelize.sync({ force: false}); 
+    await sequelize.sync({ force: false, alter: true }); 
     console.log('DB synced successfully');
     
     // listen to port
