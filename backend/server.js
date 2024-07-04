@@ -10,7 +10,7 @@ const cors = require('cors'); // Import cors package
 const expertRoutes = require('./routes/experts');
 const institutionRoutes = require('./routes/institutions');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
-// const searchRoutes = require('./routes/searches');
+const searchRoutes = require('./routes/searches');
 // const downloadRoutes = require('./routes/downloads');
 // const dataScrapingRoutes = require('./routes/searches');
 
@@ -42,7 +42,7 @@ app.use('/api/institutions', institutionRoutes);
 app.use('/api/dropdown', dropdownMenuRoutes);
 
 // Routes for the search and table
-// app.use('/api/search', searchRoutes);
+app.use('/api/search', searchRoutes);
 
 // Routes for download fucntions
 // app.use('/api/download', downloadRoutes);
@@ -53,8 +53,9 @@ app.use('/api/dropdown', dropdownMenuRoutes);
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
-    // force false prevents dropping tables upon starting server
-    await sequelize.sync({ force: false, alter: true }); 
+    // "force" deletes a table if it already exists
+    // "alter" alters the table every time
+    await sequelize.sync({ force: false, alter: false }); 
     console.log('DB synced successfully');
     
     // listen to port

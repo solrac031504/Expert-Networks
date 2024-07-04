@@ -18,7 +18,7 @@ const Home = () => {
   useEffect(() => {
     // Fetch unique fields
     console.log('Fetching unique fields...');
-    fetch('http://localhost:4000/api/experts/fields')
+    fetch('http://localhost:4000/api/dropdown/fields')
       .then(response => response.json())
       .then(data => {
         console.log('Received unique fields:', data);
@@ -33,7 +33,7 @@ const Home = () => {
 
     // Fetch unique institutions
     console.log('Fetching unique institutions...');
-    fetch('http://localhost:4000/api/experts/institutions')
+    fetch('http://localhost:4000/api/dropdown/institutions')
       .then(response => response.json())
       .then(data => {
         console.log('Received unique institutions:', data);
@@ -48,7 +48,7 @@ const Home = () => {
 
     // Fetch unique regions
     console.log('Fetching unique regions...');
-    fetch('http://localhost:4000/api/experts/regions')
+    fetch('http://localhost:4000/api/dropdown/regions')
       .then(response => response.json())
       .then(data => {
         console.log('Received unique regions:', data);
