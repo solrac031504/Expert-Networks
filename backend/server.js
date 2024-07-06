@@ -8,6 +8,7 @@ const cors = require('cors'); // Import cors package
 
 // Routes
 const expertRoutes = require('./routes/experts');
+const testExpertRoutes = require('./routes/testExperts');
 const institutionRoutes = require('./routes/institutions');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
@@ -18,6 +19,7 @@ const searchRoutes = require('./routes/searches');
 const sequelize = require ('./database');
 const Expert = require('./models/Expert');
 const Institution = require('./models/Institution');
+const TestExpert = require('./models/TestExpert');
 
 // express app
 const app = express();
@@ -34,6 +36,9 @@ app.use((req, res, next) => {
 
 // Routes for experts
 app.use('/api/experts', expertRoutes);
+
+// Routes for the test experts
+app.use('/api/testexperts', testExpertRoutes);
 
 // Routes for institutions
 app.use('/api/institutions', institutionRoutes);
@@ -55,7 +60,7 @@ const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: false }); 
+    await sequelize.sync({ force: false, alter: true }); 
     console.log('DB synced successfully');
     
     // listen to port
