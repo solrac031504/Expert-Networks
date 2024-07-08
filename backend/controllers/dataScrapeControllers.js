@@ -1,12 +1,16 @@
 // import DB models
-const Expert = require('../models/Expert');
-const Institution = require('..models/Institution');
+//const Expert = require('../models/Expert');
+//const Institution = require('..models/Institution');
+
+//Test
+const TestExpert = require('../models/TestExpert');
 
 const path = require('path');
 const fs = require('fs');
 
 const axios = require('axios'); //Import axios for http requests
 const { query } = require('express');
+const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
@@ -51,47 +55,36 @@ const fetchExperts = async (req, res) => {
     //Print data for debugging
     console.log(profiles);
 
-    //Delete all experts in the database
-    await Expert.deleteMany({});
-
     //Create or update experts in the database
     for (let i = 0; i < profiles.length; i++) {
       const expert = profiles[i];
 
-      //Check if expert already exists in the database using author ID
-      const existingExpert = await Expert.findOne({author_id: expert.author_id});
+      // Check if expert already exists in the database using author ID
+      let existingExpert = await TestExpert.findOne({
+        where: { expert_id: expert.author_id }
+      });
 
-      if (existingExpert) {
-        existingExpert = await Expert.findOneAndUpdate({author_id: expert.author_id}, {
+      // If expert does not exist, create a new expert
+      if (!existingExpert) {
+        existingExpert = await TestExpert.create({
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
           institution: expert.affiliations,
-          citations: expert.cited_by,
-          hindex: 0,
-          i10_index: 0,
+          citations: expert.cited_by
         });
-      }
-
+        console.log('Expert added: ' + expert.name);
+      } 
       else {
-        //Create a new expert
-        const newExpert = new Expert({
-          expert_id: expert.author_id,
-          name: expert.name,
-          field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by,
-          hindex: 0,
-          i10_index: 0
-        });
+        // Update existing expert with current information
+        existingExpert.name = expert.name;
+        existingExpert.field_of_study = query;
+        existingExpert.institution = expert.affiliations;
+        existingExpert.citations = expert.cited_by;
 
-        //Save the expert to the database
-        await newExpert.save();
+        await existingExpert.save();
+        console.log('Expert updated: ' + expert.name);
       }
-      
-      
-      //Print status of which expert was added
-      console.log('Expert added: ' + expert.name);
     }
 
     //Return message to the user

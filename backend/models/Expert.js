@@ -23,7 +23,7 @@ const Expert = sequelize.define('Expert', {
       model: Institution,
       key: 'institution_id',
     },
-    allowNull: false
+    allowNull: false,
   },
   citations: {
     type: DataTypes.INTEGER,

@@ -13,7 +13,7 @@ const institutionRoutes = require('./routes/institutions');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
 // const downloadRoutes = require('./routes/downloads');
-// const dataScrapingRoutes = require('./routes/searches');
+const dataScrapingRoutes = require('./routes/datascrapes');
 
 // for DB
 const sequelize = require ('./database');
@@ -53,14 +53,14 @@ app.use('/api/search', searchRoutes);
 // app.use('/api/download', downloadRoutes);
 
 // Routes for data scraping
-// app.use('/api/data', dataScrapingRoutes);
+app.use('/api/data', dataScrapingRoutes);
 
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: true }); 
+    await sequelize.sync({ force: false, alter: false }); 
     console.log('DB synced successfully');
     
     // listen to port
