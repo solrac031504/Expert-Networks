@@ -1,6 +1,7 @@
 // import DB models
-const Expert = require('../models/Expert');
-const Institution = require('..models/Institution');
+// const Expert = require('../models/Expert');
+// const Institution = require('..models/Institution');
+const TestExpert = require('../models/TestExpert');
 
 const path = require('path');
 const fs = require('fs');
@@ -52,43 +53,65 @@ const fetchExperts = async (req, res) => {
     console.log(profiles);
 
     //Delete all experts in the database
-    await Expert.deleteMany({});
+    // await Expert.deleteMany({});
 
     //Create or update experts in the database
     for (let i = 0; i < profiles.length; i++) {
       const expert = profiles[i];
 
       //Check if expert already exists in the database using author ID
-      const existingExpert = await Expert.findOne({author_id: expert.author_id});
+      // const existingExpert = await Expert.findOne({author_id: expert.author_id});
 
-      if (existingExpert) {
-        existingExpert = await Expert.findOneAndUpdate({author_id: expert.author_id}, {
+      // if (existingExpert) {
+      //   existingExpert = await Expert.findOneAndUpdate({author_id: expert.author_id}, {
+      //     expert_id: expert.author_id,
+      //     name: expert.name,
+      //     field_of_study: query,
+      //     institution: expert.affiliations,
+      //     citations: expert.cited_by,
+      //     hindex: 0,
+      //     i10_index: 0,
+      //   });
+      // }
+
+      // else {
+      //   //Create a new expert
+      //   const newExpert = new Expert({
+      //     expert_id: expert.author_id,
+      //     name: expert.name,
+      //     field_of_study: query,
+      //     institution: expert.affiliations,
+      //     citations: expert.cited_by,
+      //     hindex: 0,
+      //     i10_index: 0
+      //   });
+
+      //   //Save the expert to the database
+      //   await newExpert.save();
+      // }
+
+      // Check if expert exists and update if they do
+      const newExpert = await TestExpert.findByPk(expert.author_id);
+
+      await newExpert.update(
+        {
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
           institution: expert.affiliations,
-          citations: expert.cited_by,
-          hindex: 0,
-          i10_index: 0,
-        });
-      }
-
-      else {
-        //Create a new expert
-        const newExpert = new Expert({
-          expert_id: expert.author_id,
-          name: expert.name,
-          field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by,
-          hindex: 0,
-          i10_index: 0
-        });
-
-        //Save the expert to the database
-        await newExpert.save();
-      }
+          citations: expert.cited_by
+        }
+      );
       
+      if (newExpert == null) {
+        await TestExpert.create({
+          expert_id: expert.author_id,
+          name: expert.name,
+          field_of_study: query,
+          institution: expert.affiliations,
+          citations: expert.cited_by
+        });
+      }
       
       //Print status of which expert was added
       console.log('Expert added: ' + expert.name);

@@ -1,5 +1,6 @@
 // import DB models
 const Expert = require('../models/Expert');
+const Institution = require('../models/Institution');
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
@@ -12,7 +13,18 @@ require('dotenv').config(); //Import dotenv for environment variables
 
 const exportExpertsToCSV = async (req, res) => {
   try {
-    const experts = await Expert.find({}).sort({ createdAt: -1 });
+    // rewrite
+    // const experts = await Expert.find({}).sort({ createdAt: -1 });
+    const experts = await Expert.findAll({
+      include: [{
+          model: Institution,
+          attributes: [], // No need to include Institution attributes as they are already selected above
+          required: false, // This makes it a LEFT JOIN
+        }],
+        order: [
+          ['createdAt', 'DESC']
+        ]
+  });
 
     const csvWriter = createCsvWriter({
       path: path.join(__dirname, '../exports/experts.csv'),
@@ -33,6 +45,7 @@ const exportExpertsToCSV = async (req, res) => {
       ]
     });
 
+    // rewrite
     // Ensure the records are properly formatted
     const records = experts.map(expert => ({
       expert_id: expert.expert_id,
