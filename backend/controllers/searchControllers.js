@@ -3,7 +3,6 @@ const Expert = require('../models/Expert');
 const Institution = require('../models/Institution');
 
 const { Sequelize, Op, QueryTypes } = require('sequelize');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 const fs = require('fs');
 
@@ -36,17 +35,6 @@ const searchExperts = async (req, res) => {
   };
 
   try {
-    /*
-    const results = await sequelize.query(
-        'SELECT Experts.name, Experts.field_of_study, Institutions.name, Institutions.country, Experts.citations, Experts.hindex, Experts.i_ten_index, Experts.impact_factor, Experts.age, Experts.years_in_field, Experts.email FROM Experts LEFT JOIN Institutions ON Experts.institution_id=Institutions.institution_id WHERE Experts.field_of_study IN (:field_of_study) AND Institutions.name IN (:institution) AND Institutions.country IN (:region)', {
-            replacements: {
-                field_of_study: query.field_of_study,
-                institution: query.institution,
-                region: query.region
-            },
-            type: QueryTypes.SELECT
-        }); */
-
     const results = await Expert.findAll({
         attributes: [
             ['name', 'Name'],

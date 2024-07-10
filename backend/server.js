@@ -13,7 +13,7 @@ const institutionRoutes = require('./routes/institutions');
 const institutionImportRoutes = require('./routes/institutionsImport');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
-// const downloadRoutes = require('./routes/downloads');
+const downloadRoutes = require('./routes/downloads');
 const dataScrapingRoutes = require('./routes/datascrapes.js');
 
 // for DB
@@ -54,7 +54,7 @@ app.use('/api/dropdown', dropdownMenuRoutes);
 app.use('/api/search', searchRoutes);
 
 // Routes for download fucntions
-// app.use('/api/download', downloadRoutes);
+app.use('/api/download', downloadRoutes);
 
 // Routes for data scraping
 app.use('/api/data', dataScrapingRoutes);
