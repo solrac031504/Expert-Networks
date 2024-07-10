@@ -2,41 +2,68 @@
 const Expert = require('../models/Expert');
 const Institution = require('../models/Institution');
 
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 const fs = require('fs');
 
 const axios = require('axios'); //Import axios for http requests
 const { query } = require('express');
+const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
 const exportExpertsToCSV = async (req, res) => {
+  let query = {};
+  if (field_of_study && field_of_study !== 'All') query.field_of_study = {
+    [Op.in]: field_of_study.split(',')
+  };
+
+  if (institution && institution !== 'All') query['$Institution.name$'] = {
+    [Op.in]: institution.split(',')
+  };
+
+  if (region && region !== 'All') query['$Institution.country$'] = {
+    [Op.in]: region.split(',')
+  };
+
   try {
     // rewrite
     // const experts = await Expert.find({}).sort({ createdAt: -1 });
     const experts = await Expert.findAll({
-      include: [{
-          model: Institution,
-          attributes: [], // No need to include Institution attributes as they are already selected above
-          required: false, // This makes it a LEFT JOIN
-        }],
-        order: [
-          ['createdAt', 'DESC']
-        ]
+      attributes: [
+        'name',
+        'field_of_study',
+        Sequelize.col('Institution.name'),
+        Sequelize.col('Institution.country'),
+        'citations',
+        'hindex',
+        'i_ten_index',
+        'impact_factor',
+        'age',
+        'years_in_field',
+        'email'
+    ],
+    include: [{
+        model: Institution,
+        attributes: [], // No need to include Institution attributes as they are already selected above
+        required: false, // This makes it a LEFT JOIN
+      }],
+    where: query,
+    logging: console.log
   });
 
     const csvWriter = createCsvWriter({
       path: path.join(__dirname, '../exports/experts.csv'),
       header: [
-        { id: 'expert_id', title: 'Expert ID' },
         { id: 'name', title: 'Name' },
         { id: 'field_of_study', title: 'Field of Study' },
         { id: 'institution', title: 'Institution' },
-        { id: 'region', title: 'Region' },
-        { id: 'citations', title: 'Citations' },
+        { id: 'region', title: 'Country' },
+        { id: 'citations', title: 'Times Cited' },
         { id: 'hindex', title: 'H-index' },
-        { id: 'il0_index', title: 'i10-index' },
+        { id: 'i_ten_index', title: 'I10-index' },
+        { id: 'impact_factor', title: 'Impact Factor'},
         { id: 'age', title: 'Age' },
         { id: 'years_in_field', title: 'Years in Field' },
         { id: 'email', title: 'Email' },
