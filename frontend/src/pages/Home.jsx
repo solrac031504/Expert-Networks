@@ -120,8 +120,13 @@ const Home = () => {
                   <th>Field of Study</th>
                   <th>Institution</th>
                   <th>Region</th>
-                  <th>Citations</th>
-                  <th>Hindex</th>
+                  <th>Times Cited</th>
+                  <th>H-index</th>
+                  <th>I10-index</th>
+                  <th>Impact Factor</th>
+                  <th>Age</th>
+                  <th>Years In Field</th>
+                  <th>Email</th>
                 </tr>
               </thead>
               <tbody>
@@ -133,6 +138,11 @@ const Home = () => {
                     <td>{result.region}</td>
                     <td>{result.citations}</td>
                     <td>{result.hindex}</td>
+                    <td>{result.i_ten_index}</td>
+                    <td>{result.impact_factor}</td>
+                    <td>{result.age}</td>
+                    <td>{result.years_in_field}</td>
+                    <td>{result.email}</td>
                   </tr>
                 ))}
               </tbody>
