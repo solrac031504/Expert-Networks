@@ -51,7 +51,6 @@ const exportExpertsToCSV = async (req, res) => {
         required: false, // This makes it a LEFT JOIN
       }],
     where: query,
-    logging: console.log
   });
 
     console.log(experts);

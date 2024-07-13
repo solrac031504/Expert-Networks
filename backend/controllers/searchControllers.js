@@ -37,17 +37,17 @@ const searchExperts = async (req, res) => {
   try {
     const results = await Expert.findAll({
         attributes: [
-            ['name', 'Name'],
-            ['field_of_study', 'Field of Study'],
-            [Sequelize.col('Institution.name'), 'Current Institution'],
-            [Sequelize.col('Institution.country'), 'Country'],
-            ['citations', 'Times Cited'],
-            ['hindex', 'H-Index'],
-            ['i_ten_index', 'I10-Index'],
-            ['impact_factor', 'Impact Factor'],
-            ['age', 'Age'],
-            ['years_in_field', 'Years in Field'],
-            ['email', 'Email']
+            'name',
+            'field_of_study',
+            [Sequelize.col('Institution.name'), 'institution'],
+            [Sequelize.col('Institution.country'), 'region'],
+            'citations',
+            'hindex',
+            'i_ten_index',
+            'impact_factor',
+            'age',
+            'years_in_field',
+            'email'
         ],
         include: [{
             model: Institution,
@@ -55,7 +55,6 @@ const searchExperts = async (req, res) => {
             required: false, // This makes it a LEFT JOIN
           }],
         where: query,
-        logging: console.log
     });
 
     res.status(200).json(results);

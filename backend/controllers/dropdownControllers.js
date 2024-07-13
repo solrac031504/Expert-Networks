@@ -7,7 +7,7 @@ require('dotenv').config(); // Import dotenv for environment variables
 // get unique fields of study
 const getUniqueFields = async (req, res) => {
   try {
-    const fields = await sequelize.query('SELECT DISTINCT field_of_study FROM `Experts`', {
+    const fields = await sequelize.query('SELECT DISTINCT field_of_study FROM `Experts` ORDER BY field_of_study ASC', {
       type: QueryTypes.SELECT
     });
 
@@ -21,7 +21,7 @@ const getUniqueFields = async (req, res) => {
 // get unique institutions
 const getUniqueInstitutions = async (req, res) => {
   try {
-    const institutions = await sequelize.query('SELECT DISTINCT name FROM `Institutions`', {
+    const institutions = await sequelize.query('SELECT DISTINCT name FROM `Institutions` ORDER BY name ASC', {
       type: QueryTypes.SELECT
     });
 
@@ -35,7 +35,7 @@ const getUniqueInstitutions = async (req, res) => {
 // get unique regions
 const getUniqueRegions = async (req, res) => {
   try {
-    const regions = await sequelize.query('SELECT DISTINCT country FROM `Institutions`', {
+    const regions = await sequelize.query('SELECT DISTINCT country FROM `Institutions` ORDER BY country ASC', {
       type: QueryTypes.SELECT
     });
 
