@@ -92,16 +92,6 @@ const fetchExperts = async (req, res) => {
 
       // Check if expert exists and update if they do
       const newExpert = await TestExpert.findByPk(expert.author_id);
-
-      await newExpert.update(
-        {
-          expert_id: expert.author_id,
-          name: expert.name,
-          field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by
-        }
-      );
       
       if (newExpert == null) {
         await TestExpert.create({
@@ -111,6 +101,17 @@ const fetchExperts = async (req, res) => {
           institution: expert.affiliations,
           citations: expert.cited_by
         });
+      }
+      else {
+        await newExpert.update(
+          {
+            expert_id: expert.author_id,
+            name: expert.name,
+            field_of_study: query,
+            institution: expert.affiliations,
+            citations: expert.cited_by
+          }
+        );
       }
       
       //Print status of which expert was added
