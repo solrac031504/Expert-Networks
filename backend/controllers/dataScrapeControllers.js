@@ -17,12 +17,15 @@ require('dotenv').config(); //Import dotenv for environment variables
 //Fetch for experts
 const fetchExperts = async (req, res) => {
 
+  //Topic to search for
+  const topic = 'National Security';
+
   //Use SerpAPI to fetch experts
   try {
     const API_KEY = process.env.SERPAPI_KEY;
     const initialURL = process.env.GOOGLE_SCHOLAR_PROFILES;
     const profilesNeeded = 50;
-    const query = 'Machine Learning';
+    const query = topic;
 
     let profiles = [];
     let pageToken = null;
@@ -34,7 +37,7 @@ const fetchExperts = async (req, res) => {
       const params = {
         engine: "google_scholar_profiles",
         api_key: API_KEY,
-        mauthors: 'Machine Learning',
+        mauthors: query,
         ...(pageToken && {after_author: pageToken})
       };
 
@@ -60,9 +63,52 @@ const fetchExperts = async (req, res) => {
       const expert = profiles[i];
 
       // Check if expert already exists in the database using author ID
-      let existingExpert = await TestExpert.findOne({
-        where: { expert_id: expert.author_id }
-      });
+      let existingExpert = await TestExpert.findByPk(expert.author_id);
+
+      // Fetch institution data from OpenAlex by author name
+      const openAlexUrl = `https://api.openalex.org/authors?search=${encodeURIComponent(expert.name)}`;
+
+      let institutionData;
+      try {
+        const openAlexResponse = await axios.get(openAlexUrl);
+
+        const authorData = openAlexResponse.data.results.find(author => author.display_name === expert.name);
+
+        //Get institution data from OpenAlex
+        if (authorData && authorData.affiliations && authorData.affiliations.length > 0) {
+          institutionData = authorData.affiliations[0].institution.display_name;
+        } 
+        else {
+          institutionData = 'Unknown';
+        }
+
+        //Get h-index from OpenAlex
+        if (authorData && authorData.summary_stats && authorData.summary_stats.h_index) {
+          expert.hindex = authorData.summary_stats.h_index;
+        }
+        else {
+            expert.hindex = 0;
+        }
+
+        //Get i10-index from OpenAlex
+        if (authorData && authorData.summary_stats && authorData.summary_stats.i10_index) {
+          expert.i_ten_index = authorData.summary_stats.i10_index;
+        }
+        else {
+            expert.i_ten_index = 0;
+        }
+
+        //Get impact factor (2yr_mean_citedness) from OpenAlex
+        if (authorData && authorData.summary_stats && authorData.summary_stats['2yr_mean_citedness']) {
+          expert.impact_factor = authorData.summary_stats['2yr_mean_citedness'];
+        }
+        else {
+            expert.impact_factor = 0;
+        }
+      } 
+      catch (error) {
+        institutionData = 'Unknown';
+      }
 
       // If expert does not exist, create a new expert
       if (!existingExpert) {
@@ -70,20 +116,24 @@ const fetchExperts = async (req, res) => {
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by
+          institution: institutionData,
+          citations: expert.cited_by,
+          hindex: expert.hindex,
+          i_ten_index: expert.i_ten_index,
+          impact_factor: expert.impact_factor,
         });
-        console.log('Expert added: ' + expert.name);
       } 
       else {
         // Update existing expert with current information
         existingExpert.name = expert.name;
         existingExpert.field_of_study = query;
-        existingExpert.institution = expert.affiliations;
+        existingExpert.institution = institutionData;
         existingExpert.citations = expert.cited_by;
+        existingExpert.hindex = expert.hindex;
+        existingExpert.i_ten_index = expert.i_ten_index;
+        existingExpert.impact_factor = expert.impact_factor;
 
         await existingExpert.save();
-        console.log('Expert updated: ' + expert.name);
       }
     }
 
