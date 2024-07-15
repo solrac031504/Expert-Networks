@@ -21,7 +21,7 @@ const getUniqueFields = async (req, res) => {
 // get unique institutions
 const getUniqueInstitutions = async (req, res) => {
   try {
-    const institutions = await sequelize.query('SELECT DISTINCT name FROM `Institutions` ORDER BY name ASC', {
+    const institutions = await sequelize.query('SELECT DISTINCT name FROM `Institutions` ORDER BY name ASC LIMIT 25', {
       type: QueryTypes.SELECT
     });
 
