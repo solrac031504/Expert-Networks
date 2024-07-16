@@ -19,13 +19,18 @@ require('dotenv').config(); //Import dotenv for environment variables
 const fetchExperts = async (req, res) => {
 
   //Topic to search for
-  const topic = 'Machine Learning';
+  // Semantics
+  // Artificial Intelligence
+  // Machine Learning
+  // National Security
+  // Cybersecurity
+  const topic = 'Cybersecurity';
 
   //Use SerpAPI to fetch experts
   try {
-    const API_KEY = process.env.SERPAPI_KEY;
+    const API_KEY = process.env.SERPAPI_KEYK;
     const initialURL = process.env.GOOGLE_SCHOLAR_PROFILES;
-    const profilesNeeded = 10;
+    const profilesNeeded = 100;
     const query = topic;
 
     let profiles = [];
@@ -80,7 +85,7 @@ const fetchExperts = async (req, res) => {
           institutionData = authorData.affiliations[0].institution.ror;
         } 
         else {
-          institutionData = null;
+          institutionData = "000000";
         }
 
         //Get h-index from OpenAlex
@@ -99,20 +104,21 @@ const fetchExperts = async (req, res) => {
         }
       } 
       catch (error) {
-        institutionData = 'Unknown';
+        institutionData = '000000';
       }
 
       // If expert does not exist, create a new expert
-      if (!existingExpert && institutionData !== null) {
+      if (!existingExpert) {
         existingExpert = await Expert.create({
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
-          institution: institutionData,
-          citations: expert.cited_by,
+          institution_id: institutionData,
+          citations: (expert.cited_by === null) ? 0 : expert.cited_by,
           hindex: expert.hindex,
           i_ten_index: expert.i_ten_index,
           impact_factor: expert.impact_factor,
+          email: expert.email
         });
       } 
       else {
@@ -131,11 +137,12 @@ const fetchExperts = async (req, res) => {
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
-          institution: institutionData,
+          institution_id: institutionData,
           citations: expert.cited_by,
           hindex: expert.hindex,
           i_ten_index: expert.i_ten_index,
           impact_factor: expert.impact_factor,
+          email: expert.email
         });
       }
     }
