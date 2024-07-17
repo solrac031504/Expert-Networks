@@ -42,7 +42,7 @@ const TestExpert = sequelize.define('TestExpert', {
     defaultValue: 0
   },
   impact_factor: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
     defaultValue: 0
   },

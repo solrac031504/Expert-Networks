@@ -3,7 +3,6 @@ const Expert = require('../models/Expert');
 const Institution = require('../models/Institution');
 
 const { Sequelize, Op, QueryTypes } = require('sequelize');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 const fs = require('fs');
 
@@ -36,30 +35,19 @@ const searchExperts = async (req, res) => {
   };
 
   try {
-    /*
-    const results = await sequelize.query(
-        'SELECT Experts.name, Experts.field_of_study, Institutions.name, Institutions.country, Experts.citations, Experts.hindex, Experts.i_ten_index, Experts.impact_factor, Experts.age, Experts.years_in_field, Experts.email FROM Experts LEFT JOIN Institutions ON Experts.institution_id=Institutions.institution_id WHERE Experts.field_of_study IN (:field_of_study) AND Institutions.name IN (:institution) AND Institutions.country IN (:region)', {
-            replacements: {
-                field_of_study: query.field_of_study,
-                institution: query.institution,
-                region: query.region
-            },
-            type: QueryTypes.SELECT
-        }); */
-
     const results = await Expert.findAll({
         attributes: [
-            ['name', 'Name'],
-            ['field_of_study', 'Field of Study'],
-            [Sequelize.col('Institution.name'), 'Current Institution'],
-            [Sequelize.col('Institution.country'), 'Country'],
-            ['citations', 'Times Cited'],
-            ['hindex', 'H-Index'],
-            ['i_ten_index', 'I10-Index'],
-            ['impact_factor', 'Impact Factor'],
-            ['age', 'Age'],
-            ['years_in_field', 'Years in Field'],
-            ['email', 'Email']
+            'name',
+            'field_of_study',
+            [Sequelize.col('Institution.name'), 'institution'],
+            [Sequelize.col('Institution.country'), 'region'],
+            'citations',
+            'hindex',
+            'i_ten_index',
+            'impact_factor',
+            'age',
+            'years_in_field',
+            'email'
         ],
         include: [{
             model: Institution,
@@ -67,7 +55,6 @@ const searchExperts = async (req, res) => {
             required: false, // This makes it a LEFT JOIN
           }],
         where: query,
-        logging: console.log
     });
 
     res.status(200).json(results);

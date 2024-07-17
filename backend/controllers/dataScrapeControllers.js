@@ -1,5 +1,5 @@
 // import DB models
-//const Expert = require('../models/Expert');
+const Expert = require('../models/Expert');
 //const Institution = require('..models/Institution');
 
 //Test
@@ -18,13 +18,18 @@ require('dotenv').config(); //Import dotenv for environment variables
 const fetchExperts = async (req, res) => {
 
   //Topic to search for
-  const topic = 'National Security';
+  // Semantics
+  // Artificial Intelligence
+  // Machine Learning
+  // National Security
+  // Cybersecurity
+  const topic = 'Cybersecurity';
 
   //Use SerpAPI to fetch experts
   try {
-    const API_KEY = process.env.SERPAPI_KEY;
+    const API_KEY = process.env.SERPAPI_KEYK;
     const initialURL = process.env.GOOGLE_SCHOLAR_PROFILES;
-    const profilesNeeded = 50;
+    const profilesNeeded = 100;
     const query = topic;
 
     let profiles = [];
@@ -63,7 +68,7 @@ const fetchExperts = async (req, res) => {
       const expert = profiles[i];
 
       // Check if expert already exists in the database using author ID
-      let existingExpert = await TestExpert.findByPk(expert.author_id);
+      let existingExpert = await Expert.findByPk(expert.author_id);
 
       // Fetch institution data from OpenAlex by author name
       const openAlexUrl = `https://api.openalex.org/authors?search=${encodeURIComponent(expert.name)}`;
@@ -76,64 +81,68 @@ const fetchExperts = async (req, res) => {
 
         //Get institution data from OpenAlex
         if (authorData && authorData.affiliations && authorData.affiliations.length > 0) {
-          institutionData = authorData.affiliations[0].institution.display_name;
+          institutionData = authorData.affiliations[0].institution.ror;
         } 
         else {
-          institutionData = 'Unknown';
+          institutionData = "000000";
         }
 
         //Get h-index from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats.h_index) {
           expert.hindex = authorData.summary_stats.h_index;
         }
-        else {
-            expert.hindex = 0;
-        }
 
         //Get i10-index from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats.i10_index) {
           expert.i_ten_index = authorData.summary_stats.i10_index;
-        }
-        else {
-            expert.i_ten_index = 0;
         }
 
         //Get impact factor (2yr_mean_citedness) from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats['2yr_mean_citedness']) {
           expert.impact_factor = authorData.summary_stats['2yr_mean_citedness'];
         }
-        else {
-            expert.impact_factor = 0;
-        }
       } 
       catch (error) {
-        institutionData = 'Unknown';
+        institutionData = '000000';
       }
 
       // If expert does not exist, create a new expert
       if (!existingExpert) {
-        existingExpert = await TestExpert.create({
+        existingExpert = await Expert.create({
           expert_id: expert.author_id,
           name: expert.name,
           field_of_study: query,
-          institution: institutionData,
-          citations: expert.cited_by,
+          institution_id: institutionData,
+          citations: (expert.cited_by === null) ? 0 : expert.cited_by,
           hindex: expert.hindex,
           i_ten_index: expert.i_ten_index,
           impact_factor: expert.impact_factor,
+          email: expert.email
         });
       } 
       else {
         // Update existing expert with current information
-        existingExpert.name = expert.name;
-        existingExpert.field_of_study = query;
-        existingExpert.institution = institutionData;
-        existingExpert.citations = expert.cited_by;
-        existingExpert.hindex = expert.hindex;
-        existingExpert.i_ten_index = expert.i_ten_index;
-        existingExpert.impact_factor = expert.impact_factor;
+        // existingExpert.name = expert.name;
+        // existingExpert.field_of_study = query;
+        // existingExpert.institution = institutionData;
+        // existingExpert.citations = expert.cited_by;
+        // existingExpert.hindex = expert.hindex;
+        // existingExpert.i_ten_index = expert.i_ten_index;
+        // existingExpert.impact_factor = expert.impact_factor;
 
-        await existingExpert.save();
+        // await existingExpert.save();
+
+        await existingExpert.update({
+          expert_id: expert.author_id,
+          name: expert.name,
+          field_of_study: query,
+          institution_id: institutionData,
+          citations: expert.cited_by,
+          hindex: expert.hindex,
+          i_ten_index: expert.i_ten_index,
+          impact_factor: expert.impact_factor,
+          email: expert.email
+        });
       }
     }
 

@@ -10,10 +10,11 @@ const cors = require('cors'); // Import cors package
 const expertRoutes = require('./routes/experts');
 const testExpertRoutes = require('./routes/testExperts');
 const institutionRoutes = require('./routes/institutions');
+const institutionImportRoutes = require('./routes/institutionsImport');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
-// const downloadRoutes = require('./routes/downloads');
-const dataScrapingRoutes = require('./routes/datascrapes');
+const downloadRoutes = require('./routes/downloads');
+const dataScrapingRoutes = require('./routes/datascrapes.js');
 
 // for DB
 const sequelize = require ('./database');
@@ -43,6 +44,9 @@ app.use('/api/testexperts', testExpertRoutes);
 // Routes for institutions
 app.use('/api/institutions', institutionRoutes);
 
+// Routes for importing institution information
+app.use('/api/import', institutionImportRoutes);
+
 // Routes for the dropdown menus
 app.use('/api/dropdown', dropdownMenuRoutes);
 
@@ -50,7 +54,7 @@ app.use('/api/dropdown', dropdownMenuRoutes);
 app.use('/api/search', searchRoutes);
 
 // Routes for download fucntions
-// app.use('/api/download', downloadRoutes);
+app.use('/api/download', downloadRoutes);
 
 // Routes for data scraping
 app.use('/api/data', dataScrapingRoutes);

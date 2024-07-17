@@ -4,6 +4,8 @@ const Institution = require('../models/Institution');
 const path = require('path');
 const fs = require('fs');
 
+
+
 const axios = require('axios'); //Import axios for http requests
 const { query } = require('express');
 
@@ -94,5 +96,5 @@ module.exports = {
   getInstitution,
   createInstitution,
   deleteInstitution,
-  updateInstitution,
+  updateInstitution
 };
