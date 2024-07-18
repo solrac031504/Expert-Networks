@@ -1,5 +1,6 @@
 // import DB models
 const Expert = require('../models/Expert');
+//const Institution = require('../models/Institution');
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
@@ -123,7 +124,8 @@ const searchExperts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
+*/
+/*
 //Fetch for experts
 const fetchExperts = async (req, res) => {
 
@@ -166,59 +168,56 @@ const fetchExperts = async (req, res) => {
     console.log(profiles);
 
     //Delete all experts in the database
-    await Expert.deleteMany({});
+    
 
-    //Create or update experts in the database
-    for (let i = 0; i < profiles.length; i++) {
-      const expert = profiles[i];
+    // Create or update experts in the database
+    for (const profile of profiles) {
+      // Ensure the institution exists in the Institutions table
+      // let institution = await Institution.findOne({
+      //   where: { name: profile.affiliations }
+      // });
 
-      //Check if expert already exists in the database using author ID
-      const existingExpert = await Expert.findOne({author_id: expert.author_id});
+      // if (!institution) {
+      //   institution = await Institution.create({
+      //     name: profile.affiliations
+      //   });
+      // }
 
-      if (existingExpert) {
-        existingExpert = await Expert.findOneAndUpdate({author_id: expert.author_id}, {
-          expert_id: expert.author_id,
-          name: expert.name,
+      const [expert, created] = await Expert.findOrCreate({
+        where: { expert_id: profile.author_id },
+        defaults: {
+          expert_id: profile.author_id,
+          name: profile.name,
           field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by,
+          citations: profile.cited_by,
           hindex: 0,
-          i10_index: 0,
+          i_ten_index: 0,
+          email: profile.email
+        }
+      });
+
+      if (!created) {
+        await expert.update({
+          name: profile.name,
+          field_of_study: query,
+          citations: profile.cited_by,
+          hindex: 0,
+          i_ten_index: 0,
+          email: profile.email
         });
       }
 
-      else {
-        //Create a new expert
-        const newExpert = new Expert({
-          expert_id: expert.author_id,
-          name: expert.name,
-          field_of_study: query,
-          institution: expert.affiliations,
-          citations: expert.cited_by,
-          hindex: 0,
-          i10_index: 0
-        });
-
-        //Save the expert to the database
-        await newExpert.save();
-      }
-      
-      
-      //Print status of which expert was added
-      console.log('Expert added: ' + expert.name);
+      console.log('Expert added or updated: ' + profile.name);
     }
 
-    //Return message to the user
     res.status(200).json({ message: 'Experts added to database' });
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching experts from API' });
   }
-}
-
-
-
+};
+*/
+/*
 const exportExpertsToCSV = async (req, res) => {
   try {
     const experts = await Expert.find({}).sort({ createdAt: -1 });
@@ -281,6 +280,6 @@ module.exports = {
   // getUniqueInstitutions,
   // getUniqueRegions,
   // searchExperts,
-  // fetchExperts,
+  //  fetchExperts
   // exportExpertsToCSV
 };

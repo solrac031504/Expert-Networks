@@ -9,7 +9,7 @@ const {
   // getUniqueInstitutions,
   // getUniqueRegions,
   // searchExperts, 
-  // fetchExperts,
+  //  fetchExperts
   // exportExpertsToCSV
 } = require('../controllers/expertController');
 
@@ -31,7 +31,7 @@ const router = express.Router();
 // router.get('/search', searchExperts);
 
 //GET experts from API
-// router.get('/fetch', fetchExperts);
+//router.get('/fetch', fetchExperts);
 
 // GET a single expert
 router.get('/:id', getExpert);
