@@ -1,72 +1,75 @@
 
 // import DB models
 const Expert = require('../models/Expert');
-//const Institution = require('..models/Institution');
+// const Institution = require('..models/Institution');
 
-//Test
+// Test
 const TestExpert = require('../models/TestExpert');
 
 const path = require('path');
 const fs = require('fs');
 
-const axios = require('axios'); //Import axios for http requests
+const axios = require('axios'); // Import axios for HTTP requests
 const { query } = require('express');
 const sequelize = require('../database');
 
-require('dotenv').config(); //Import dotenv for environment variables
+require('dotenv').config(); // Import dotenv for environment variables
 
-//Fetch for experts
+// Fetch for experts
 const fetchExperts = async (req, res) => {
+  // Topics to search for
+  const topics = [
+    'Semantics',
+    'Artificial Intelligence',
+    'Machine Learning',
+    'National Security',
+    'Cybersecurity'
+  ];
 
-  //Topic to search for
-  // Semantics
-  // Artificial Intelligence
-  // Machine Learning
-  // National Security
-  // Cybersecurity
-  const topic = 'Cybersecurity';
+  const API_KEY = process.env.SERPAPI_KEY;
+  const initialURL = process.env.GOOGLE_SCHOLAR_PROFILES;
+  const profilesNeeded = 100;
 
-  //Use SerpAPI to fetch experts
+  let allProfiles = [];
+
   try {
-    const API_KEY = process.env.SERPAPI_KEYK;
-    const initialURL = process.env.GOOGLE_SCHOLAR_PROFILES;
-    const profilesNeeded = 100;
-    const query = topic;
+    for (const topic of topics) {
+      let profiles = [];
+      let pageToken = null;
 
-    let profiles = [];
-    let pageToken = null;
+      // While loop to fetch all profiles
+      while (profiles.length < profilesNeeded) {
+        // Fetch data from the API
+        const params = {
+          engine: "google_scholar_profiles",
+          api_key: API_KEY,
+          mauthors: topic,
+          ...(pageToken && { after_author: pageToken })
+        };
 
-    //while loop to fetch all profiles
-    while (profiles.length < profilesNeeded) {
+        const { data } = await axios.get(initialURL, { params });
 
-      //Fetch data from the API
-      const params = {
-        engine: "google_scholar_profiles",
-        api_key: API_KEY,
-        mauthors: query,
-        ...(pageToken && {after_author: pageToken})
-      };
+        // Append data to profiles array
+        profiles = profiles.concat(data.profiles);
 
-      const { data } = await axios.get(initialURL, {params});
-
-      //Append data to profiles array
-      profiles = profiles.concat(data.profiles);
-
-      //Check if there is a next page
-      if (data.pagination && data.pagination.next_page_token) {
-        pageToken = data.pagination.next_page_token;
+        // Check if there is a next page
+        if (data.pagination && data.pagination.next_page_token) {
+          pageToken = data.pagination.next_page_token;
+        } else {
+          break;
+        }
       }
-      else {
-        break;
-      }
+
+      // Append fetched profiles to allProfiles
+      allProfiles = allProfiles.concat(profiles);
     }
 
-    //Print data for debugging
-    console.log(profiles);
+    // Print data for debugging
+    console.log(allProfiles);
 
-    //Create or update experts in the database
-    for (let i = 0; i < profiles.length; i++) {
-      const expert = profiles[i];
+    // Create or update experts in the database
+    for (const profile of allProfiles) {
+      const expert = profile;
 
       // Check if expert already exists in the database using author ID
       let existingExpert = await Expert.findByPk(expert.author_id);
@@ -80,30 +83,28 @@ const fetchExperts = async (req, res) => {
 
         const authorData = openAlexResponse.data.results.find(author => author.display_name === expert.name);
 
-        //Get institution data from OpenAlex
+        // Get institution data from OpenAlex
         if (authorData && authorData.affiliations && authorData.affiliations.length > 0) {
           institutionData = authorData.affiliations[0].institution.ror;
-        } 
-        else {
+        } else {
           institutionData = "000000";
         }
 
-        //Get h-index from OpenAlex
+        // Get h-index from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats.h_index) {
           expert.hindex = authorData.summary_stats.h_index;
         }
 
-        //Get i10-index from OpenAlex
+        // Get i10-index from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats.i10_index) {
           expert.i_ten_index = authorData.summary_stats.i10_index;
         }
 
-        //Get impact factor (2yr_mean_citedness) from OpenAlex
+        // Get impact factor (2yr_mean_citedness) from OpenAlex
         if (authorData && authorData.summary_stats && authorData.summary_stats['2yr_mean_citedness']) {
           expert.impact_factor = authorData.summary_stats['2yr_mean_citedness'];
         }
-      } 
-      catch (error) {
+      } catch (error) {
         institutionData = '000000';
       }
 
@@ -112,7 +113,7 @@ const fetchExperts = async (req, res) => {
         existingExpert = await Expert.create({
           expert_id: expert.author_id,
           name: expert.name,
-          field_of_study: query,
+          field_of_study: expert.query,
           institution_id: institutionData,
           citations: (expert.cited_by === null) ? 0 : expert.cited_by,
           hindex: expert.hindex,
@@ -120,25 +121,13 @@ const fetchExperts = async (req, res) => {
           impact_factor: expert.impact_factor,
           email: expert.email
         });
-      } 
-      else {
-        // Update existing expert with current information
-        // existingExpert.name = expert.name;
-        // existingExpert.field_of_study = query;
-        // existingExpert.institution = institutionData;
-        // existingExpert.citations = expert.cited_by;
-        // existingExpert.hindex = expert.hindex;
-        // existingExpert.i_ten_index = expert.i_ten_index;
-        // existingExpert.impact_factor = expert.impact_factor;
-
-        // await existingExpert.save();
-
+      } else {
         await existingExpert.update({
           expert_id: expert.author_id,
           name: expert.name,
-          field_of_study: query,
+          field_of_study: expert.query,
           institution_id: institutionData,
-          citations: expert.cited_by,
+          citations: (expert.cited_by === null) ? 0 : expert.cited_by,
           hindex: expert.hindex,
           i_ten_index: expert.i_ten_index,
           impact_factor: expert.impact_factor,
@@ -147,14 +136,13 @@ const fetchExperts = async (req, res) => {
       }
     }
 
-    //Return message to the user
+    // Return message to the user
     res.status(200).json({ message: 'Experts added to database' });
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching experts from API' });
   }
-}
+};
 
 module.exports = {
   fetchExperts
