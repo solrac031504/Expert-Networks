@@ -83,6 +83,10 @@ const Home = () => {
       });
   };
 
+  const handleDownloadCSV = () => {
+    window.open('http://localhost:4000/api/download/export/csv', '_blank');
+  };
+
   return (
     <div>
       <nav className="navbar custom-navbar">
@@ -113,6 +117,7 @@ const Home = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-4">
+            <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <table className="table table-bordered">
               <thead>
                 <tr>
