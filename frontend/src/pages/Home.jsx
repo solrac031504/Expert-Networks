@@ -72,7 +72,7 @@ const Home = () => {
 
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
-    fetch(`http://localhost:4000/api/search?field=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
+    fetch(`http://localhost:4000/api/search?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
       .then(response => response.json())
       .then(data => {
         console.log('Search results:', data);

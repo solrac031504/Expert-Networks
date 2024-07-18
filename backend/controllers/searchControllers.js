@@ -15,7 +15,7 @@ require('dotenv').config(); //Import dotenv for environment variables
 // search experts with query parameters
 const searchExperts = async (req, res) => {
   const { field_of_study, institution, region } = req.query;
-
+  
   // Applied to the WHERE clause of the SQL Query
   // If the var is not null AND it is not All, then the request is comma
   // delimited and added to the WHERE clause
