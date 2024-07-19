@@ -1,6 +1,7 @@
 const express = require('express');
 const {
-  exportExpertsToCSV
+  exportExpertsToCSV,
+  exportExpertsToPDF
 } = require('../controllers/downloadControllers');
 
 const router = express.Router();
@@ -8,4 +9,7 @@ const router = express.Router();
 // Convert table to CSV
 router.get('/export/csv', exportExpertsToCSV);
 
-module.exports = router
+// Convert table to PDF
+router.get('/export/pdf', exportExpertsToPDF);
+
+module.exports = router;
