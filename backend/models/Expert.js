@@ -24,6 +24,7 @@ const Expert = sequelize.define('Expert', {
       key: 'institution_id',
     },
     allowNull: false,
+    defaultValue: 'N/A'
   },
   citations: {
     type: DataTypes.INTEGER,
