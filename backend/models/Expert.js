@@ -24,24 +24,20 @@ const Expert = sequelize.define('Expert', {
       key: 'institution_id',
     },
     allowNull: false,
-<<<<<<< HEAD
     defaultValue: '000000'
-=======
-    defaultValue: 'N/A'
->>>>>>> 94cb9d296ed8a35ec87240d5a6d952be8e6e08b1
   },
   citations: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.MEDIUMINT.UNSIGNED,
     allowNull: false,
     defaultValue: 0
   },
   hindex: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     allowNull: false,
     defaultValue: 0,
   },
   i_ten_index: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     allowNull: false,
     defaultValue: 0
   },
@@ -51,12 +47,12 @@ const Expert = sequelize.define('Expert', {
     defaultValue: 0
   },
   age: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.TINYINT.UNSIGNED,
     allowNull: false,
     defaultValue: 0
   },
   years_in_field: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.TINYINT.UNSIGNED,
     allowNull: false,
     defaultValue: 0
   },
