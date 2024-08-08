@@ -64,7 +64,7 @@ const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: true }); 
+    await sequelize.sync({ force: false, alter: false }); 
     console.log('DB synced successfully');
     
     // listen to port

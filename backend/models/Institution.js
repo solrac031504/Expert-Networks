@@ -11,6 +11,21 @@ const Institution = sequelize.define('Institution', {
     allowNull: false,
     defaultValue: 'N/A'
   },
+  acronym: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'N/A'
+  },
+  alias: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    defaultValue: 'N/A'
+  },
+  label: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    defaultValue: 'N/A'
+  },
   country: {
     type: DataTypes.STRING,
     allowNull: false,

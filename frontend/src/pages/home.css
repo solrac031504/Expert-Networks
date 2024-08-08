@@ -12,7 +12,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #4848f5; /* Original blue color */
+  background-color: #062454; /* Original blue color #4848f5 */
   padding: 10px;
   height: 100px;
   border-radius: 0; /* Remove border radius to make it span full width */
@@ -41,7 +41,7 @@ select {
 button {
   padding: 5px 10px;
   font-size: 16px;
-  background-color: #4848f5; /* Original blue color */
+  background-color: #062454; /* Original blue color #4848f5 */
   color: white;
   border: none;
   border-radius: 4px;
