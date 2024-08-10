@@ -111,17 +111,17 @@ const Home = () => {
             <table className="table table-bordered">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Field of Study</th>
-                  <th>Institution</th>
-                  <th>Region</th>
-                  <th>Times Cited</th>
-                  <th>H-index</th>
-                  <th>I10-index</th>
-                  <th>Impact Factor</th>
-                  <th>Age</th>
-                  <th>Years In Field</th>
-                  <th>Email</th>
+                  <th title="Full name of the expert">Name</th>
+                  <th title="The current field of the expert">Field of Study</th>
+                  <th title="Current institutional affiliation of the expert">Institution</th>
+                  <th title="The region in which the expert's institutional affiliation is located">Region</th>
+                  <th title="How many times the expert has been cited">Times Cited</th>
+                  <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
+                  <th title="The number of publications an expert has with at least 10 citations">I10-index</th>
+                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor</th>
+                  <th title="The age of the expert">Age</th>
+                  <th title="How many years the expert has been in their field">Years In Field</th>
+                  <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
               </thead>
               <tbody>
