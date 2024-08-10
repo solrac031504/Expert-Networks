@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './home.css'; // Adjust the path if necessary
@@ -6,7 +5,6 @@ import './home.css'; // Adjust the path if necessary
 const Home = () => {
   const [dropdownOptions, setDropdownOptions] = useState({
     fields: [],
-    institutions: [],
     regions: [],
   });
   const [selectedOptions, setSelectedOptions] = useState({
@@ -32,21 +30,6 @@ const Home = () => {
         console.error('Error fetching fields:', error);
       });
 
-    // Fetch unique institutions
-    console.log('Fetching unique institutions...');
-    fetch('http://localhost:4000/api/dropdown/institutions')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Received unique institutions:', data);
-        setDropdownOptions(prevState => ({
-          ...prevState,
-          institutions: data,
-        }));
-      })
-      .catch(error => {
-        console.error('Error fetching institutions:', error);
-      });
-
     // Fetch unique regions
     console.log('Fetching unique regions...');
     fetch('http://localhost:4000/api/dropdown/regions')
@@ -63,7 +46,7 @@ const Home = () => {
       });
   }, []);
 
-  const handleSelectChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSelectedOptions(prevState => ({
       ...prevState,
@@ -86,7 +69,7 @@ const Home = () => {
   };
 
   const handleDownloadCSV = () => {
-    window.open('http://localhost:4000/api/download/export/csv', '_blank');
+    window.open(`http://localhost:4000/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
   };
 
   return (
@@ -96,19 +79,24 @@ const Home = () => {
       </nav>
       <div className="container">
         <div className="dropdown-container d-flex align-items-center mt-4">
-          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleSelectChange}>
+          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleInputChange}>
             <option value="">Field</option>
             {dropdownOptions.fields.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
-          <select className="form-control mr-2" name="institution" value={selectedOptions.institution} onChange={handleSelectChange}>
-            <option value="">Current Institution</option>
-            {dropdownOptions.institutions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
-          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleSelectChange}>
+          
+          {/* Replaced the institution dropdown with a text input */}
+          <input
+            type="text"
+            className="form-control mr-2"
+            name="institution"
+            value={selectedOptions.institution}
+            onChange={handleInputChange}
+            placeholder="Enter Institution"
+          />
+
+          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange}>
             <option value="">Region</option>
             {dropdownOptions.regions.map((option, index) => (
               <option key={index} value={option}>{option}</option>

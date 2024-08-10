@@ -41,7 +41,7 @@ select {
 button {
   padding: 5px 10px;
   font-size: 16px;
-  background-color: #062454; /* Original blue color #4848f5 */
+  background-color: #4848f5; /* Original blue color #4848f5 */
   color: white;
   border: none;
   border-radius: 4px;
@@ -49,5 +49,17 @@ button {
 }
 
 button:hover {
-  background-color: #062454; /* Original hover color */
+  background-color: #3838d8; /* Original hover color */
+}
+
+/* Align the button to the right of the table */
+.download-button {
+  float: right;
+  margin-bottom: 10px;
+  background-color: #4848f5; 
+  color: white;
+}
+
+.download-button:hover {
+  background-color: #3838d8; /* Darken the original blue color for hover effect */
 }

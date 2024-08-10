@@ -26,7 +26,7 @@ const searchExperts = async (req, res) => {
   // The $$ allows selection of columns in a separate table since 
   // the main query selects from Experts
   let query = {};
-  if (field_of_study && field_of_study !== 'All') query.field_of_study = {
+  if (field_of_study && field_of_study !== 'Field') query.field_of_study = {
     [Op.in]: field_of_study.split(',')
   };
 
@@ -39,21 +39,15 @@ const searchExperts = async (req, res) => {
   // Uses LIKE operators, but can only do one entry at a time
   // Need to find a better way in this case
   if (institution && institution !== 'All') {
-    query['$Institution.name$'] = {
-      [Op.like]: institution
-    };
-    query['$Institution.acronym$'] = {
-      [Op.like]: institution
-    };
-    query['$Institution.alias$'] = {
-      [Op.like]: institution
-    };
-    query['$Institution.label$'] = {
-      [Op.like]: institution
-    };
+    query[Op.or] = [
+      { '$Institution.name$': { [Op.like]: institution } },
+      { '$Institution.acronym$': { [Op.like]: institution } },
+      { '$Institution.alias$': { [Op.like]: institution } },
+      { '$Institution.label$': { [Op.like]: institution } }
+    ];
   }
 
-  if (region && region !== 'All') query['$Institution.country$'] = {
+  if (region && region !== 'Region') query['$Institution.country$'] = {
     [Op.in]: region.split(',')
   };
 
