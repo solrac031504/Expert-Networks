@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './home.css'; // Adjust the path if necessary
@@ -70,9 +71,10 @@ const Home = () => {
     }));
   };
 
+  // raw_institution instead of institution because searchController uses raw_institution to format the institution string
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
-    fetch(`http://localhost:4000/api/search?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
+    fetch(`http://localhost:4000/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
       .then(response => response.json())
       .then(data => {
         console.log('Search results:', data);
@@ -81,6 +83,10 @@ const Home = () => {
       .catch(error => {
         console.error('Error during search:', error);
       });
+  };
+
+  const handleDownloadCSV = () => {
+    window.open('http://localhost:4000/api/download/export/csv', '_blank');
   };
 
   return (
@@ -113,6 +119,7 @@ const Home = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-4">
+            <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <table className="table table-bordered">
               <thead>
                 <tr>
