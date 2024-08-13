@@ -15,6 +15,7 @@ const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
 const downloadRoutes = require('./routes/downloads');
 const dataScrapingRoutes = require('./routes/datascrapes.js');
+const nlpRoutes = require('./routes/nlp');
 
 // for DB
 const sequelize = require ('./database');
@@ -58,6 +59,9 @@ app.use('/api/download', downloadRoutes);
 
 // Routes for data scraping
 app.use('/api/data', dataScrapingRoutes);
+
+// Routes for NLP
+app.use('/api/nlp', nlpRoutes);
 
 // Synchronize the database with the scheme
 const syncDatabase = async() => {

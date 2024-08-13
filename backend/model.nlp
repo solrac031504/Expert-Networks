@@ -1,0 +1,1197 @@
+{
+  "settings": {
+    "languages": [
+      "en"
+    ],
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "en"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "can,defens,expert,for,i,make,militari,need,system,that,the": {
+            "intent": "National Security",
+            "domain": "default"
+          },
+          "defens,expert,in,nation,system": {
+            "intent": "National Security",
+            "domain": "default"
+          },
+          "can,defens,militari,on,project,who,work": {
+            "intent": "National Security",
+            "domain": "default"
+          },
+          "creat,in,military-grad,secur,specialist,system": {
+            "intent": "National Security",
+            "domain": "default"
+          },
+          "can,make,more,peopl,secur,server,who": {
+            "intent": "Cybersecurity",
+            "domain": "default"
+          },
+          "applic,cybersecur,for,help,i,need,our,web,with": {
+            "intent": "Cybersecurity",
+            "domain": "default"
+          },
+          "attack,can,cyber,from,network,our,protect,who": {
+            "intent": "Cybersecurity",
+            "domain": "default"
+          },
+          "and,breach,data,expert,in,prevent,secur,server": {
+            "intent": "Cybersecurity",
+            "domain": "default"
+          },
+          "about,artifici,i,intellig,learn,to,want": {
+            "intent": "Artificial Intelligence",
+            "domain": "default"
+          },
+          "ai,and,develop,expert,in,learn,machin": {
+            "intent": "Artificial Intelligence",
+            "domain": "default"
+          },
+          "ai-pow,can,help,solut,who,with": {
+            "intent": "Artificial Intelligence",
+            "domain": "default"
+          },
+          "ai,and,deep,in,learn,research,specialist": {
+            "intent": "Artificial Intelligence",
+            "domain": "default"
+          },
+          "am,i,in,interest,learn,machin": {
+            "intent": "Machine Learning",
+            "domain": "default"
+          },
+          "analysi,data,expert,for,learn,machin": {
+            "intent": "Machine Learning",
+            "domain": "default"
+          },
+          "can,develop,learn,machin,model,who": {
+            "intent": "Machine Learning",
+            "domain": "default"
+          },
+          "and,in,learn,machin,model,predict,specialist": {
+            "intent": "Machine Learning",
+            "domain": "default"
+          },
+          "explain,me,semant,to": {
+            "intent": "Semantics",
+            "domain": "default"
+          },
+          "analysi,and,expert,in,linguist,semant": {
+            "intent": "Semantics",
+            "domain": "default"
+          },
+          "can,help,semant,technolog,web,who,with": {
+            "intent": "Semantics",
+            "domain": "default"
+          },
+          "analysi,and,extract,in,mean,semant,specialist": {
+            "intent": "Semantics",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "National Security": "default",
+          "Cybersecurity": "default",
+          "Artificial Intelligence": "default",
+          "Machine Learning": "default",
+          "Semantics": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "I need experts that can make defense systems for the military",
+            "intent": "National Security"
+          },
+          {
+            "domain": "default",
+            "utterance": "Experts in national defense systems",
+            "intent": "National Security"
+          },
+          {
+            "domain": "default",
+            "utterance": "Who can work on military defense projects?",
+            "intent": "National Security"
+          },
+          {
+            "domain": "default",
+            "utterance": "Specialists in creating military-grade security systems",
+            "intent": "National Security"
+          },
+          {
+            "domain": "default",
+            "utterance": "People who can make servers more secure",
+            "intent": "Cybersecurity"
+          },
+          {
+            "domain": "default",
+            "utterance": "I need help with cybersecurity for our web application",
+            "intent": "Cybersecurity"
+          },
+          {
+            "domain": "default",
+            "utterance": "Who can protect our network from cyber attacks?",
+            "intent": "Cybersecurity"
+          },
+          {
+            "domain": "default",
+            "utterance": "Experts in preventing data breaches and securing servers",
+            "intent": "Cybersecurity"
+          },
+          {
+            "domain": "default",
+            "utterance": "I want to learn about artificial intelligence",
+            "intent": "Artificial Intelligence"
+          },
+          {
+            "domain": "default",
+            "utterance": "Experts in machine learning and AI development",
+            "intent": "Artificial Intelligence"
+          },
+          {
+            "domain": "default",
+            "utterance": "Who can help with AI-powered solutions?",
+            "intent": "Artificial Intelligence"
+          },
+          {
+            "domain": "default",
+            "utterance": "Specialists in deep learning and AI research",
+            "intent": "Artificial Intelligence"
+          },
+          {
+            "domain": "default",
+            "utterance": "I am interested in machine learning",
+            "intent": "Machine Learning"
+          },
+          {
+            "domain": "default",
+            "utterance": "Machine learning experts for data analysis",
+            "intent": "Machine Learning"
+          },
+          {
+            "domain": "default",
+            "utterance": "Who can develop machine learning models?",
+            "intent": "Machine Learning"
+          },
+          {
+            "domain": "default",
+            "utterance": "Specialists in predictive modeling and machine learning",
+            "intent": "Machine Learning"
+          },
+          {
+            "domain": "default",
+            "utterance": "Explain semantics to me",
+            "intent": "Semantics"
+          },
+          {
+            "domain": "default",
+            "utterance": "Experts in linguistic analysis and semantics",
+            "intent": "Semantics"
+          },
+          {
+            "domain": "default",
+            "utterance": "Who can help with semantic web technologies?",
+            "intent": "Semantics"
+          },
+          {
+            "domain": "default",
+            "utterance": "Specialists in meaning extraction and semantic analysis",
+            "intent": "Semantics"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "i": 1,
+              "need": 1,
+              "expert": 1,
+              "that": 1,
+              "can": 1,
+              "make": 1,
+              "defens": 1,
+              "system": 1,
+              "for": 1,
+              "the": 1,
+              "militari": 1,
+              "in": 1,
+              "nation": 1,
+              "who": 1,
+              "work": 1,
+              "on": 1,
+              "project": 1,
+              "specialist": 1,
+              "creat": 1,
+              "military-grad": 1,
+              "secur": 1,
+              "peopl": 1,
+              "server": 1,
+              "more": 1,
+              "help": 1,
+              "with": 1,
+              "cybersecur": 1,
+              "our": 1,
+              "web": 1,
+              "applic": 1,
+              "protect": 1,
+              "network": 1,
+              "from": 1,
+              "cyber": 1,
+              "attack": 1,
+              "prevent": 1,
+              "data": 1,
+              "breach": 1,
+              "and": 1,
+              "want": 1,
+              "to": 1,
+              "learn": 1,
+              "about": 1,
+              "artifici": 1,
+              "intellig": 1,
+              "machin": 1,
+              "ai": 1,
+              "develop": 1,
+              "ai-pow": 1,
+              "solut": 1,
+              "deep": 1,
+              "research": 1,
+              "am": 1,
+              "interest": 1,
+              "analysi": 1,
+              "model": 1,
+              "predict": 1,
+              "explain": 1,
+              "semant": 1,
+              "me": 1,
+              "linguist": 1,
+              "technolog": 1,
+              "mean": 1,
+              "extract": 1
+            },
+            "intents": {
+              "National Security": 1,
+              "Cybersecurity": 1,
+              "Artificial Intelligence": 1,
+              "Machine Learning": 1,
+              "Semantics": 1
+            },
+            "intentFeatures": {
+              "National Security": {
+                "i": 1,
+                "need": 1,
+                "expert": 1,
+                "that": 1,
+                "can": 1,
+                "make": 1,
+                "defens": 1,
+                "system": 1,
+                "for": 1,
+                "the": 1,
+                "militari": 1,
+                "in": 1,
+                "nation": 1,
+                "who": 1,
+                "work": 1,
+                "on": 1,
+                "project": 1,
+                "specialist": 1,
+                "creat": 1,
+                "military-grad": 1,
+                "secur": 1
+              },
+              "Cybersecurity": {
+                "peopl": 1,
+                "who": 1,
+                "can": 1,
+                "make": 1,
+                "server": 1,
+                "more": 1,
+                "secur": 1,
+                "i": 1,
+                "need": 1,
+                "help": 1,
+                "with": 1,
+                "cybersecur": 1,
+                "for": 1,
+                "our": 1,
+                "web": 1,
+                "applic": 1,
+                "protect": 1,
+                "network": 1,
+                "from": 1,
+                "cyber": 1,
+                "attack": 1,
+                "expert": 1,
+                "in": 1,
+                "prevent": 1,
+                "data": 1,
+                "breach": 1,
+                "and": 1
+              },
+              "Artificial Intelligence": {
+                "i": 1,
+                "want": 1,
+                "to": 1,
+                "learn": 1,
+                "about": 1,
+                "artifici": 1,
+                "intellig": 1,
+                "expert": 1,
+                "in": 1,
+                "machin": 1,
+                "and": 1,
+                "ai": 1,
+                "develop": 1,
+                "who": 1,
+                "can": 1,
+                "help": 1,
+                "with": 1,
+                "ai-pow": 1,
+                "solut": 1,
+                "specialist": 1,
+                "deep": 1,
+                "research": 1
+              },
+              "Machine Learning": {
+                "i": 1,
+                "am": 1,
+                "interest": 1,
+                "in": 1,
+                "machin": 1,
+                "learn": 1,
+                "expert": 1,
+                "for": 1,
+                "data": 1,
+                "analysi": 1,
+                "who": 1,
+                "can": 1,
+                "develop": 1,
+                "model": 1,
+                "specialist": 1,
+                "predict": 1,
+                "and": 1
+              },
+              "Semantics": {
+                "explain": 1,
+                "semant": 1,
+                "to": 1,
+                "me": 1,
+                "expert": 1,
+                "in": 1,
+                "linguist": 1,
+                "analysi": 1,
+                "and": 1,
+                "who": 1,
+                "can": 1,
+                "help": 1,
+                "with": 1,
+                "web": 1,
+                "technolog": 1,
+                "specialist": 1,
+                "mean": 1,
+                "extract": 1
+              }
+            },
+            "featuresToIntent": {
+              "i": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning"
+              ],
+              "need": [
+                "National Security",
+                "Cybersecurity"
+              ],
+              "expert": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "that": [
+                "National Security"
+              ],
+              "can": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "make": [
+                "National Security",
+                "Cybersecurity"
+              ],
+              "defens": [
+                "National Security"
+              ],
+              "system": [
+                "National Security"
+              ],
+              "for": [
+                "National Security",
+                "Cybersecurity",
+                "Machine Learning"
+              ],
+              "the": [
+                "National Security"
+              ],
+              "militari": [
+                "National Security"
+              ],
+              "in": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "nation": [
+                "National Security"
+              ],
+              "who": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "work": [
+                "National Security"
+              ],
+              "on": [
+                "National Security"
+              ],
+              "project": [
+                "National Security"
+              ],
+              "specialist": [
+                "National Security",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "creat": [
+                "National Security"
+              ],
+              "military-grad": [
+                "National Security"
+              ],
+              "secur": [
+                "National Security",
+                "Cybersecurity"
+              ],
+              "peopl": [
+                "Cybersecurity"
+              ],
+              "server": [
+                "Cybersecurity"
+              ],
+              "more": [
+                "Cybersecurity"
+              ],
+              "help": [
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Semantics"
+              ],
+              "with": [
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Semantics"
+              ],
+              "cybersecur": [
+                "Cybersecurity"
+              ],
+              "our": [
+                "Cybersecurity"
+              ],
+              "web": [
+                "Cybersecurity",
+                "Semantics"
+              ],
+              "applic": [
+                "Cybersecurity"
+              ],
+              "protect": [
+                "Cybersecurity"
+              ],
+              "network": [
+                "Cybersecurity"
+              ],
+              "from": [
+                "Cybersecurity"
+              ],
+              "cyber": [
+                "Cybersecurity"
+              ],
+              "attack": [
+                "Cybersecurity"
+              ],
+              "prevent": [
+                "Cybersecurity"
+              ],
+              "data": [
+                "Cybersecurity",
+                "Machine Learning"
+              ],
+              "breach": [
+                "Cybersecurity"
+              ],
+              "and": [
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "want": [
+                "Artificial Intelligence"
+              ],
+              "to": [
+                "Artificial Intelligence",
+                "Semantics"
+              ],
+              "learn": [
+                "Artificial Intelligence",
+                "Machine Learning"
+              ],
+              "about": [
+                "Artificial Intelligence"
+              ],
+              "artifici": [
+                "Artificial Intelligence"
+              ],
+              "intellig": [
+                "Artificial Intelligence"
+              ],
+              "machin": [
+                "Artificial Intelligence",
+                "Machine Learning"
+              ],
+              "ai": [
+                "Artificial Intelligence"
+              ],
+              "develop": [
+                "Artificial Intelligence",
+                "Machine Learning"
+              ],
+              "ai-pow": [
+                "Artificial Intelligence"
+              ],
+              "solut": [
+                "Artificial Intelligence"
+              ],
+              "deep": [
+                "Artificial Intelligence"
+              ],
+              "research": [
+                "Artificial Intelligence"
+              ],
+              "am": [
+                "Machine Learning"
+              ],
+              "interest": [
+                "Machine Learning"
+              ],
+              "analysi": [
+                "Machine Learning",
+                "Semantics"
+              ],
+              "model": [
+                "Machine Learning"
+              ],
+              "predict": [
+                "Machine Learning"
+              ],
+              "explain": [
+                "Semantics"
+              ],
+              "semant": [
+                "Semantics"
+              ],
+              "me": [
+                "Semantics"
+              ],
+              "linguist": [
+                "Semantics"
+              ],
+              "technolog": [
+                "Semantics"
+              ],
+              "mean": [
+                "Semantics"
+              ],
+              "extract": [
+                "Semantics"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "i",
+                "need",
+                "expert",
+                "that",
+                "can",
+                "make",
+                "defens",
+                "system",
+                "for",
+                "the",
+                "militari",
+                "in",
+                "nation",
+                "who",
+                "work",
+                "on",
+                "project",
+                "specialist",
+                "creat",
+                "military-grad",
+                "secur",
+                "peopl",
+                "server",
+                "more",
+                "help",
+                "with",
+                "cybersecur",
+                "our",
+                "web",
+                "applic",
+                "protect",
+                "network",
+                "from",
+                "cyber",
+                "attack",
+                "prevent",
+                "data",
+                "breach",
+                "and",
+                "want",
+                "to",
+                "learn",
+                "about",
+                "artifici",
+                "intellig",
+                "machin",
+                "ai",
+                "develop",
+                "ai-pow",
+                "solut",
+                "deep",
+                "research",
+                "am",
+                "interest",
+                "analysi",
+                "model",
+                "predict",
+                "explain",
+                "semant",
+                "me",
+                "linguist",
+                "technolog",
+                "mean",
+                "extract"
+              ],
+              "intents": [
+                "National Security",
+                "Cybersecurity",
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Semantics"
+              ],
+              "perceptrons": [
+                [
+                  -0.2534959018230438,
+                  0.19145876169204712,
+                  0.8471407294273376,
+                  0.44441577792167664,
+                  0.6300055384635925,
+                  -0.32886624336242676,
+                  4.286545276641846,
+                  4.600518703460693,
+                  0.11098539084196091,
+                  0.44441577792167664,
+                  2.4049394130706787,
+                  1.7587041854858398,
+                  1.88422691822052,
+                  0.1836869865655899,
+                  1.958146333694458,
+                  1.958146333694458,
+                  1.958146333694458,
+                  1.595206379890442,
+                  2.269465684890747,
+                  2.269465684890747,
+                  0.8868433833122253,
+                  -0.6647337079048157,
+                  -1.30473792552948,
+                  -0.6647337079048157,
+                  -0.6968465447425842,
+                  -0.6968465447425842,
+                  -0.20509155094623566,
+                  -0.6546907424926758,
+                  -0.3305930495262146,
+                  -0.20509155094623566,
+                  -0.36639755964279175,
+                  -0.36639755964279175,
+                  -0.36639755964279175,
+                  -0.36639755964279175,
+                  -0.36639755964279175,
+                  -0.48428478837013245,
+                  -0.6114271283149719,
+                  -0.48428478837013245,
+                  -2.071777582168579,
+                  -0.0913475975394249,
+                  -0.21012920141220093,
+                  -1.311087727546692,
+                  -0.0913475975394249,
+                  -0.0913475975394249,
+                  -0.0913475975394249,
+                  -0.9037535786628723,
+                  -0.6258335709571838,
+                  -0.33936288952827454,
+                  -0.29272449016571045,
+                  -0.29272449016571045,
+                  -0.24314655363559723,
+                  -0.24314655363559723,
+                  -0.26965582370758057,
+                  -0.26965582370758057,
+                  -0.8009259104728699,
+                  -0.12392925471067429,
+                  -0.07371218502521515,
+                  -0.08106420934200287,
+                  -0.9373005628585815,
+                  -0.08106420934200287,
+                  -0.3454272150993347,
+                  -0.07553621381521225,
+                  -0.3131963312625885,
+                  -0.3131963312625885,
+                  0.9077157448604537
+                ],
+                [
+                  0.9778419137001038,
+                  1.4842419624328613,
+                  -0.12442724406719208,
+                  -0.8544836640357971,
+                  0.004054810851812363,
+                  1.1472594738006592,
+                  -1.1510144472122192,
+                  -1.672714114189148,
+                  1.113779067993164,
+                  -0.8544836640357971,
+                  -1.0774880647659302,
+                  -0.14626272022724152,
+                  -0.049520861357450485,
+                  0.9290692806243896,
+                  -0.1471496969461441,
+                  -0.1471496969461441,
+                  -0.1471496969461441,
+                  -1.0067142248153687,
+                  -0.6559033393859863,
+                  -0.6559033393859863,
+                  3.3062055110931396,
+                  2.0714499950408936,
+                  4.0437726974487305,
+                  2.0714499950408936,
+                  -0.05445251986384392,
+                  -0.05445251986384392,
+                  2.4085350036621094,
+                  4.102197647094727,
+                  1.1499329805374146,
+                  2.4085350036621094,
+                  1.6939390897750854,
+                  1.6939390897750854,
+                  1.6939390897750854,
+                  1.6939390897750854,
+                  1.6939390897750854,
+                  1.9712097644805908,
+                  1.601133942604065,
+                  1.9712097644805908,
+                  0.8898876905441284,
+                  -0.18748684227466583,
+                  -0.32681840658187866,
+                  -1.6365927457809448,
+                  -0.18748684227466583,
+                  -0.18748684227466583,
+                  -0.18748684227466583,
+                  -1.1178873777389526,
+                  -0.49444106221199036,
+                  -0.42692360281944275,
+                  -1.0925929546356201,
+                  -1.0925929546356201,
+                  -0.16859367489814758,
+                  -0.16859367489814758,
+                  -0.15854735672473907,
+                  -0.15854735672473907,
+                  -0.7990721464157104,
+                  -0.1601284146308899,
+                  -0.02332170121371746,
+                  -0.07279373705387115,
+                  -1.766405463218689,
+                  -0.07279373705387115,
+                  -0.31790247559547424,
+                  -1.186172604560852,
+                  -0.046163469552993774,
+                  -0.046163469552993774,
+                  0.7559342104108445
+                ],
+                [
+                  0.17920652031898499,
+                  -0.6409870386123657,
+                  1.3975746631622314,
+                  -0.08315478265285492,
+                  0.10698813199996948,
+                  -0.221731498837471,
+                  -0.8917726874351501,
+                  -0.8375304341316223,
+                  -1.3065685033798218,
+                  -0.08315478265285492,
+                  -0.2928561568260193,
+                  0.4416140019893646,
+                  -0.5701801776885986,
+                  0.22201350331306458,
+                  -0.17729021608829498,
+                  -0.17729021608829498,
+                  -0.17729021608829498,
+                  -0.31066280603408813,
+                  -0.12161621451377869,
+                  -0.12161621451377869,
+                  -1.0614190101623535,
+                  -0.10653553158044815,
+                  -0.909138560295105,
+                  -0.10653553158044815,
+                  2.370137929916382,
+                  2.370137929916382,
+                  -0.5260134339332581,
+                  -0.721682071685791,
+                  -1.8418878316879272,
+                  -0.5260134339332581,
+                  -0.15029475092887878,
+                  -0.15029475092887878,
+                  -0.15029475092887878,
+                  -0.15029475092887878,
+                  -0.15029475092887878,
+                  -0.7769429087638855,
+                  -1.4423567056655884,
+                  -0.7769429087638855,
+                  2.5922491550445557,
+                  2.2783141136169434,
+                  1.9455796480178833,
+                  2.3430776596069336,
+                  2.2783141136169434,
+                  2.2783141136169434,
+                  2.2783141136169434,
+                  -1.4180148839950562,
+                  5.745928764343262,
+                  2.0367140769958496,
+                  4.201930999755859,
+                  4.201930999755859,
+                  1.4980546236038208,
+                  1.4980546236038208,
+                  -1.3149057626724243,
+                  -1.3149057626724243,
+                  -1.6491119861602783,
+                  -3.5843162536621094,
+                  -1.293494701385498,
+                  -0.2968161106109619,
+                  -2.594463586807251,
+                  -0.2968161106109619,
+                  -0.7069337964057922,
+                  -1.2642242908477783,
+                  -0.1910008043050766,
+                  -0.1910008043050766,
+                  0.6153445871785638
+                ],
+                [
+                  0.5758378505706787,
+                  -0.523459792137146,
+                  -1.8612371683120728,
+                  -0.23087765276432037,
+                  0.5045641660690308,
+                  -0.5045617818832397,
+                  -0.7005714178085327,
+                  -0.6072025299072266,
+                  1.9937875270843506,
+                  -0.23087765276432037,
+                  -0.5281703472137451,
+                  -0.6750580668449402,
+                  -0.12234970182180405,
+                  0.8322368264198303,
+                  -0.20361235737800598,
+                  -0.20361235737800598,
+                  -0.20361235737800598,
+                  1.1831698417663574,
+                  -0.11055641621351242,
+                  -0.11055641621351242,
+                  -0.5886610150337219,
+                  -0.1831471472978592,
+                  -0.4207122027873993,
+                  -0.1831471472978592,
+                  -0.6451419591903687,
+                  -0.6451419591903687,
+                  -0.1959528923034668,
+                  -0.4887642562389374,
+                  -0.4057072699069977,
+                  -0.1959528923034668,
+                  -0.27327093482017517,
+                  -0.27327093482017517,
+                  -0.27327093482017517,
+                  -0.27327093482017517,
+                  -0.27327093482017517,
+                  -0.16537737846374512,
+                  2.2752068042755127,
+                  -0.16537737846374512,
+                  -2.534759759902954,
+                  -1.0143805742263794,
+                  -1.1534724235534668,
+                  4.065186023712158,
+                  -1.0143805742263794,
+                  -1.0143805742263794,
+                  -1.0143805742263794,
+                  5.546606540679932,
+                  -3.6333017349243164,
+                  -1.2591009140014648,
+                  -0.23510117828845978,
+                  -0.23510117828845978,
+                  -0.3063191771507263,
+                  -0.3063191771507263,
+                  2.1954689025878906,
+                  2.1954689025878906,
+                  1.8022527694702148,
+                  4.105596542358398,
+                  2.0767030715942383,
+                  -0.1016760915517807,
+                  -0.9853397011756897,
+                  -0.1016760915517807,
+                  -0.2593839466571808,
+                  -0.14972788095474243,
+                  -0.23407289385795593,
+                  -0.23407289385795593,
+                  0.4649812361139586
+                ],
+                [
+                  -0.8992505073547363,
+                  -0.67708820104599,
+                  0.0487617664039135,
+                  -0.1146416887640953,
+                  0.10562887787818909,
+                  -0.3781003952026367,
+                  -0.8398764133453369,
+                  -0.8326799273490906,
+                  -0.8800862431526184,
+                  -0.1146416887640953,
+                  -0.4427901804447174,
+                  0.3493526577949524,
+                  -0.2692042291164398,
+                  0.3349123001098633,
+                  -0.22783702611923218,
+                  -0.22783702611923218,
+                  -0.22783702611923218,
+                  -0.06928668916225433,
+                  -0.229108065366745,
+                  -0.229108065366745,
+                  -1.0451226234436035,
+                  -0.17747744917869568,
+                  -0.7015796899795532,
+                  -0.17747744917869568,
+                  0.6326977610588074,
+                  0.6326977610588074,
+                  -0.4549699127674103,
+                  -0.7796287536621094,
+                  1.8876047134399414,
+                  -0.4549699127674103,
+                  -0.23929135501384735,
+                  -0.23929135501384735,
+                  -0.23929135501384735,
+                  -0.23929135501384735,
+                  -0.23929135501384735,
+                  -0.43659260869026184,
+                  -0.6574276685714722,
+                  -0.43659260869026184,
+                  1.0960114002227783,
+                  -0.13257229328155518,
+                  1.9550222158432007,
+                  -1.514851450920105,
+                  -0.13257229328155518,
+                  -0.13257229328155518,
+                  -0.13257229328155518,
+                  -0.929405152797699,
+                  -0.8751259446144104,
+                  -0.4192109704017639,
+                  -1.2497575283050537,
+                  -1.2497575283050537,
+                  -0.3454958200454712,
+                  -0.3454958200454712,
+                  -0.005025409162044525,
+                  -0.005025409162044525,
+                  2.7049098014831543,
+                  -0.2450101226568222,
+                  -0.2450101226568222,
+                  2.0960121154785156,
+                  7.368579864501953,
+                  2.0960121154785156,
+                  1.871987223625183,
+                  2.4151389598846436,
+                  0.9829838871955872,
+                  0.9829838871955872,
+                  0.8614908572251309
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "en",
+        "I need experts that can make defense systems for the military"
+      ],
+      [
+        "en",
+        "Experts in national defense systems"
+      ],
+      [
+        "en",
+        "Who can work on military defense projects?"
+      ],
+      [
+        "en",
+        "Specialists in creating military-grade security systems"
+      ],
+      [
+        "en",
+        "People who can make servers more secure"
+      ],
+      [
+        "en",
+        "I need help with cybersecurity for our web application"
+      ],
+      [
+        "en",
+        "Who can protect our network from cyber attacks?"
+      ],
+      [
+        "en",
+        "Experts in preventing data breaches and securing servers"
+      ],
+      [
+        "en",
+        "I want to learn about artificial intelligence"
+      ],
+      [
+        "en",
+        "Experts in machine learning and AI development"
+      ],
+      [
+        "en",
+        "Who can help with AI-powered solutions?"
+      ],
+      [
+        "en",
+        "Specialists in deep learning and AI research"
+      ],
+      [
+        "en",
+        "I am interested in machine learning"
+      ],
+      [
+        "en",
+        "Machine learning experts for data analysis"
+      ],
+      [
+        "en",
+        "Who can develop machine learning models?"
+      ],
+      [
+        "en",
+        "Specialists in predictive modeling and machine learning"
+      ],
+      [
+        "en",
+        "Explain semantics to me"
+      ],
+      [
+        "en",
+        "Experts in linguistic analysis and semantics"
+      ],
+      [
+        "en",
+        "Who can help with semantic web technologies?"
+      ],
+      [
+        "en",
+        "Specialists in meaning extraction and semantic analysis"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {}
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}
