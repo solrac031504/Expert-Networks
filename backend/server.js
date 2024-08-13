@@ -68,14 +68,6 @@ const syncDatabase = async() => {
     // "alter" alters the table every time
     await sequelize.sync({ force: false, alter: false }); 
     console.log('DB synced successfully');
-
-    // Serve static files from the 'build' directory
-    app.use(express.static(path.join(__dirname, 'build')));
-
-    // Catch-all handler to serve the React app for any route not handled by the backend API
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'build', 'index.html'));
-    });
     
     // listen to port
     app.listen(PORT, () => {
@@ -88,6 +80,16 @@ const syncDatabase = async() => {
 }
 
 syncDatabase();
+
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the 'build' directory
+  app.use(express.static(path.join(__dirname, 'build')));
+
+  // Catch-all handler to serve the React app for any route not handled by the backend API
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
+}
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
