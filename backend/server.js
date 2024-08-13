@@ -99,7 +99,7 @@ app.get('*', (req, res) => {
 //   });
 // }
 
-console.log("URL in use:", REACT_APP_API_URL);
+console.log("URL in use:", process.env.REACT_APP_API_URL);
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
