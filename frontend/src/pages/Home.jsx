@@ -15,6 +15,7 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
+  console.log("Url being used:", apiUrl);
 
   useEffect(() => {
     fetch(`${apiUrl}/api/dropdown/fields`)
