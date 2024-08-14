@@ -103,6 +103,8 @@ if (process.env.NODE_ENV === 'production') {
 
 console.log("URL in use:", process.env.REACT_APP_API_URL);
 
+console.log("URL in use:", process.env.REACT_APP_API_URL);
+
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
 if (!fs.existsSync(exportDir)) {
