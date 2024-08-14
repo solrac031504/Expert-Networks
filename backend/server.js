@@ -59,6 +59,8 @@ app.use('/api/download', downloadRoutes);
 // Routes for data scraping
 app.use('/api/data', dataScrapingRoutes);
 
+const PORT = process.env.PORT || 5000;
+
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
@@ -68,8 +70,8 @@ const syncDatabase = async() => {
     console.log('DB synced successfully');
     
     // listen to port
-    app.listen(process.env.PORT, () => {
-      console.log('listening for requests on port', process.env.PORT);
+    app.listen(PORT, () => {
+      console.log('Server listening for requests on port', PORT);
     })
   }
   catch(error) {
@@ -78,6 +80,30 @@ const syncDatabase = async() => {
 }
 
 syncDatabase();
+
+// // Serve static files from the 'build' directory
+// app.use(express.static(path.join(__dirname, 'build')));
+
+// // Catch-all handler to serve the React app for any route not handled by the backend API
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the 'build' directory
+  app.use(express.static(path.join(__dirname, 'build')));
+
+  // Catch-all handler to serve the React app for any route not handled by the backend API
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    });
+}
+
+console.log("URL in use:", process.env.REACT_APP_API_URL);
+
+console.log("URL in use:", process.env.REACT_APP_API_URL);
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');

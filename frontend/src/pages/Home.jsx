@@ -14,13 +14,13 @@ const Home = () => {
   });
   const [searchResults, setSearchResults] = useState([]);
 
+  const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
+  console.log("Url being used:", apiUrl);
+
   useEffect(() => {
-    // Fetch unique fields
-    console.log('Fetching unique fields...');
-    fetch('http://localhost:4000/api/dropdown/fields')
+    fetch(`${apiUrl}/api/dropdown/fields`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique fields:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           fields: data,
@@ -30,12 +30,9 @@ const Home = () => {
         console.error('Error fetching fields:', error);
       });
 
-    // Fetch unique regions
-    console.log('Fetching unique regions...');
-    fetch('http://localhost:4000/api/dropdown/regions')
+    fetch(`${apiUrl}/api/dropdown/regions`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique regions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           regions: data,
@@ -44,7 +41,7 @@ const Home = () => {
       .catch(error => {
         console.error('Error fetching regions:', error);
       });
-  }, []);
+  }, [apiUrl]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,13 +51,10 @@ const Home = () => {
     }));
   };
 
-  // raw_institution instead of institution because searchController uses raw_institution to format the institution string
   const handleSearch = () => {
-    console.log('Selected options:', selectedOptions);
-    fetch(`http://localhost:4000/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Search results:', data);
         setSearchResults(data);
       })
       .catch(error => {
@@ -69,7 +63,7 @@ const Home = () => {
   };
 
   const handleDownloadCSV = () => {
-    window.open(`http://localhost:4000/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
   };
 
   return (
