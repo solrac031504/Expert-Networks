@@ -94,16 +94,13 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the 'build' directory
   app.use(express.static(path.join(__dirname, 'build')));
+  console.log("Serving static files from build directory in backned");
 
   // Catch-all handler to serve the React app for any route not handled by the backend API
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
     });
 }
-
-console.log("URL in use:", process.env.REACT_APP_API_URL);
-
-console.log("URL in use:", process.env.REACT_APP_API_URL);
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
