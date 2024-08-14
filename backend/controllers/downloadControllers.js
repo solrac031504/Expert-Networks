@@ -227,7 +227,7 @@ const exportExpertsToPDF = async (req, res) => {
       doc.fontSize(12).text(`Name: ${expert.name}`);
       doc.text(`Field of Study: ${expert.field_of_study}`);
       doc.text(`Institution: ${expert.institution}`);
-      doc.text(`Country: ${expert.country}`);
+      doc.text(`Country: ${expert.region}`);
       doc.text(`Citations: ${expert.citations}`);
       doc.text(`H-index: ${expert.hindex}`);
       doc.text(`I10-index: ${expert.i_ten_index}`);

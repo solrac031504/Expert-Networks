@@ -20,12 +20,19 @@ const Home = () => {
     years: ''
   });
 
-  // const [buttonText, setButtonText] = useState('--');
-
   const [searchResults, setSearchResults] = useState([]);
 
+  // State to keep track of the active sorting button
+  const [activeSorting, setActiveSorting] = useState({
+    citations: '-',
+    hindex: '-',
+    i10: '-',
+    imp_fac: '-',
+    age: '-',
+    years: '-',
+  });
+
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
-  // console.log("Url being used:", apiUrl);
 
   useEffect(() => {
     fetch(`${apiUrl}/api/dropdown/fields`)
@@ -55,7 +62,6 @@ const Home = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log("In handleInputChange; name & value:", name, value);
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: value,
@@ -86,17 +92,23 @@ const Home = () => {
   const handleClearSortingSelection = () => {
     setSelectedOptions(prevState => ({
       ...prevState,
-      ['citations']: '',
-      ['hindex']: '',
-      ['i10']: '',
-      ['imp_fac']: '',
-      ['age']: '',
-      ['years']: ''
+      citations: '',
+      hindex: '',
+      i10: '',
+      imp_fac: '',
+      age: '',
+      years: ''
     }));
 
-    console.log(`citations=${selectedOptions.citations}; hindex=${selectedOptions.hindex}; i10=${selectedOptions.i10}; imp_fac=${selectedOptions.imp_fac}; age=${selectedOptions.age}; years=${selectedOptions.years}`)
+    setActiveSorting({
+      citations: '-',
+      hindex: '-',
+      i10: '-',
+      imp_fac: '-',
+      age: '-',
+      years: '-',
+    });
 
-    // Resubmit the search to clear the filters
     handleSearch();
   };
 
@@ -106,6 +118,12 @@ const Home = () => {
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: 'DESC',
+    }));
+
+    // Update the active sorting button
+    setActiveSorting(prevState => ({
+      ...prevState,
+      [name]: 'v',
     }));
 
     handleSearch();
@@ -125,7 +143,6 @@ const Home = () => {
             ))}
           </select>
           
-          {/* Replaced the institution dropdown with a text input */}
           <input
             type="text"
             className="form-control mr-2"
@@ -156,30 +173,24 @@ const Home = () => {
                   <th title="The current field of the expert">Field of Study</th>
                   <th title="Current institutional affiliation of the expert">Institution</th>
                   <th title="The region in which the expert's institutional affiliation is located">Region</th>
-                  <th title="How many times the expert has been cited">
-                    Times Cited
-                    <button className="btn sorting-button" name="citations" onClick={handleSorting}> v </button>
-                    </th>
-                  <th title="The number of papers (h) that have received (h) or more citations">
-                    H-index
-                    <button className="btn sorting-button" name="hindex" onClick={handleSorting}> v </button>
-                    </th>
-                  <th title="The number of publications an expert has with at least 10 citations">
-                    I10-index
-                    <button className="btn sorting-button" name="i10" onClick={handleSorting}> v </button>
-                    </th>
-                  <th title="The average number of citations of an expert within the last 2 years">
-                    Impact Factor
-                    <button className="btn sorting-button" name="imp_fac" onClick={handleSorting}> v </button>
-                    </th>
-                  <th title="The age of the expert">
-                    Age
-                    <button className="btn sorting-button" name="age" onClick={handleSorting}> v </button>
-                    </th>
-                  <th title="How many years the expert has been in their field">
-                    Years In Field
-                    <button className="btn sorting-button" name="years" onClick={handleSorting}> v </button>
-                    </th>
+                  <th title="How many times the expert has been cited">Times Cited
+                    <button className="btn sorting-button" name="citations" onClick={handleSorting}>{activeSorting.citations}</button>
+                  </th>
+                  <th title="The number of papers (h) that have received (h) or more citations">H-index
+                    <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
+                  </th>
+                  <th title="The number of publications an expert has with at least 10 citations">I10-index
+                    <button className="btn sorting-button" name="i10" onClick={handleSorting}>{activeSorting.i10}</button>
+                  </th>
+                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor
+                    <button className="btn sorting-button" name="imp_fac" onClick={handleSorting}>{activeSorting.imp_fac}</button>
+                  </th>
+                  <th title="The age of the expert">Age
+                    <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
+                  </th>
+                  <th title="How many years the expert has been in their field">Years In Field
+                    <button className="btn sorting-button" name="years" onClick={handleSorting}>{activeSorting.years}</button>
+                  </th>
                   <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
               </thead>
