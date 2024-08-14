@@ -65,12 +65,24 @@ button:hover {
   background-color: #3838d8; /* Darken the original blue color for hover effect */
 }
 
-.test-button {
+.sorting-button {
   float:center;
   background-color: #d8d8d8; 
   color: black;
 }
 
-.test-button:hover {
+.sorting-button:hover {
   background-color: #bebebe; 
+}
+
+.clear-sorting-button {
+  float: left;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  background-color: #4848f5; 
+  color: white;
+}
+
+.clear-sorting-button:hover {
+  background-color: #3838d8;
 }
