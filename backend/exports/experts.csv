@@ -1,3 +1,82 @@
 Name,Field of Study,Institution,Country,Times Cited,H-index,I10-index,Impact Factor,Age,Years in Field,Email
+Andreas Madsack,Semantics,East Stroudsburg University,United States,100,3,1,0,0,0,Verified email at ax-semantics.com
+Ersin Uzun,Cybersecurity,Palo Alto Research Center,United States,6622,22,38,0,0,0,Verified email at rit.edu
+Jeffrey M. Pietryga,National Security,Los Alamos National Laboratory,United States,12279,43,59,0,0,0,Verified email at lanl.gov
+Naunihal Singh,National Security,University of Notre Dame,United States,800,2,1,0,0,0,Verified email at usnwc.edu
+Jordan DeLoach,Semantics,Kansas State University,United States,199,2,1,0,0,0,Verified email at jordandeloach.com
+Erica Marat,National Security,National Defense University,United States,1860,10,11,0.4,0,0,Verified email at ndu.edu
+R. Jason Scharff,National Security,Nevada National Security Site,United States,1103,16,21,0.5,0,0,Verified email at nv.doe.gov
+Justin Tokash,National Security,National Nuclear Security Administration,United States,1510,0,0,0,0,0,Verified email at pxy12.doe.gov
+Ilmo Sung,National Security,New York University,United States,1494,11,12,0,0,0,Verified email at hq.dhs.gov
+Lorenzo Tosi,Semantics,"Rutgers, The State University of New Jersey",United States,2,7,7,3,0,0,Verified email at semantic-web.com
+Vikas Kumar,Artificial Intelligence,University of Idaho,United States,20518,32,72,3.36842,0,0,Verified email at iitp.ac.in
+Gary Klein,Cybersecurity,Florida Institute for Human and Machine Cognition,United States,13413,43,104,1.625,0,0,N/A
+Von Welch,Cybersecurity,Indiana University Bloomington,United States,6334,18,32,1.6,0,0,Verified email at indiana.edu
+Ashish Kundu,Cybersecurity,Cisco Systems (United States),United States,4634,13,16,0.6,0,0,Verified email at acm.org
+Sarah W. Craun,National Security,National Security Agency,United States,3808,15,21,1,0,0,Verified email at cisa.dhs.gov
+Geoff Gordon,Machine Learning,Carnegie Mellon University,United States,24092,19,26,0.692308,0,0,Verified email at cs.cmu.edu
+Alexandra Boldyreva,Cybersecurity,Georgia Institute of Technology,United States,10082,32,57,2.09091,0,0,Verified email at gatech.edu
+Daniel Takabi,Cybersecurity,Georgia State University,United States,5187,7,5,5.18182,0,0,Verified email at odu.edu
+Adrita Barua,Semantics,Kansas State University,United States,35,2,1,6,0,0,Verified email at ksu.edu
+Mashrur Chowdhury,Cybersecurity,Clemson University,United States,6161,27,74,1.37778,0,0,Verified email at clemson.edu
+Elie Bursztein,Cybersecurity,Google (United States),United States,10095,31,44,4.44444,0,0,Verified email at google.com
+Allen C. Johnston,Cybersecurity,University of Alabama,United States,6651,21,32,1.3,0,0,Verified email at ua.edu
+Spiros Mancoridis,Cybersecurity,Drexel University,United States,5788,25,44,1.5,0,0,Verified email at drexel.edu
+David Grangier,Machine Learning,Google (United States),United States,21139,41,63,8.84,0,0,Verified email at apple.com
+Terence Roehrig,National Security,Naval War College,United States,1142,11,14,0.375,0,0,Verified email at usnwc.edu
+Jeffrey Barber,National Security,United States Department of Homeland Security,United States,734,15,20,0.333333,0,0,Verified email at st.dhs.gov
+Gaurav Vaidya,Semantics,Florida Museum of Natural History,United States,4395,9,9,0.125,0,0,Verified email at renci.org
+James Pierce,Cybersecurity,University of Washington,United States,4845,34,73,9.66667,0,0,Verified email at uw.edu
+Abhijeet Sahu,National Security,Texas A&M University,United States,618,10,14,4.68182,0,0,Verified email at nrel.gov
+Maria Glenski,National Security,Pacific Northwest National Laboratory,United States,640,9,9,0.516129,0,0,Verified email at pnnl.gov
+Richard Everson,Machine Learning,UCLA Health,United States,11942,40,75,2.72,0,0,Verified email at exeter.ac.uk
+Eun Yong Kang,Machine Learning,Microsoft (United States),United States,7799,17,21,0.333333,0,0,Verified email at microsoft.com
+John Winn,Machine Learning,Duke University,United States,47103,32,48,0,0,0,Verified email at microsoft.com
+Paul Smith,National Security,Lewis University,United States,1127,68,174,0,0,0,Verified email at usnwc.edu
 Damon L. Woodard,National Security,University of Florida,United States,4275,27,47,3.2,0,0,Verified email at ufl.edu
-Ítalo Oliveira,Semantics,Universidade Federal do Ceará,Brazil,69,2,2,0,0,0,Verified email at utwente.nl
+Artem Revenko,Semantics,Semantic Designs (United States),United States,263,6,1,1,0,0,Verified email at semantic-web.com
+Ruslan Salakhutdinov,Machine Learning,Carnegie Mellon University,United States,205864,92,276,5.94118,0,0,Verified email at cs.cmu.edu
+Jason Dunkelberger,Semantics,University of Pennsylvania,United States,531,4,3,0,0,0,Verified email at allenai.org
+Sotirios Tsaftaris,Machine Learning,Cedars-Sinai Medical Center,United States,7815,0,0,0,0,0,Verified email at ed.ac.uk
+David Houghton,National Security,Ochsner Health System,United States,1811,28,65,7,0,0,Verified email at usnwc.edu
+Tyler Moore,Cybersecurity,University of Tulsa,United States,13081,36,76,2.72727,0,0,Verified email at utulsa.edu
+Mike Tipping,Machine Learning,Microsoft (United States),United States,23241,1,1,0,0,0,Verified email at miketipping.com
+Anna Breit,Semantics,Semantic Designs (United States),United States,95,3,2,0.125,0,0,Verified email at semantic-web.com
+Arabinda Acharya,National Security,National Defense University,United States,3631,10,11,0,0,0,Verified email at ra.ac.ae
+Zachary C. Lipton,Machine Learning,Carnegie Mellon University,United States,26124,45,108,1.5,0,0,Verified email at cmu.edu
+Tom Mitchell,Machine Learning,Carnegie Mellon University,United States,119465,74,201,1.25714,0,0,Verified email at cs.cmu.edu
+Paul Cuddihy,Semantics,GE Global Research (United States),United States,3393,14,16,2.33333,0,0,Verified email at research.ge.com
+Bhavani Thuraisingham,Cybersecurity,The University of Texas at Dallas,United States,18278,47,183,4.43243,0,0,Verified email at utdallas.edu
+Peter Clark,Artificial Intelligence,The Ohio State University Newark,United States,19318,47,84,0,0,0,Verified email at allenai.org
+Christopher P. Twomey,National Security,Naval Postgraduate School,United States,789,7,6,0,0,0,Verified email at nps.edu
+Sotiris Karampatakis,Semantics,Semantic Designs (United States),United States,126,1,0,0,0,0,Verified email at auth.gr
+Ann B. Lee,Machine Learning,Carnegie Mellon University,United States,7971,17,19,0,0,0,Verified email at cmu.edu
+Richa Sood,National Security,Mayo Clinic,United States,1299,18,30,1.42857,0,0,Verified email at icar.gov.in
+James Glass,Artificial Intelligence,Reed College,United States,29209,61,295,5.6506,0,0,Verified email at mit.edu
+Richard B. Andres,National Security,Pacific Northwest National Laboratory,United States,645,6,4,0,0,0,Verified email at ndu.edu
+Steven Noel,Cybersecurity,Mitre (United States),United States,5506,22,28,1,0,0,Verified email at mitre.org
+Peng Liu,Cybersecurity,University of Pittsburgh,United States,15498,68,190,9.7451,0,0,Verified email at ist.psu.edu
+Maice Costa,National Security,Virginia Tech,United States,1251,10,10,1,0,0,Verified email at vt.edu
+Jeff Boleng,Cybersecurity,Software Engineering Institute,United States,8511,11,11,0,0,0,Verified email at boleng.com
+Yan Solihin,Cybersecurity,University of Central Florida,United States,9119,37,74,2.09524,0,0,Verified email at ucf.edu
+Sarah Ann Adams,Semantics,Pratt Institute,United States,8,1,0,0,0,0,Verified email at nypl.org
+Martin Renqiang Min,Machine Learning,Princeton University,United States,24280,18,25,2.7037,0,0,Verified email at nec-labs.com
+Sourabh Vora,Machine Learning,"University of California, San Diego",United States,9827,10,11,2.4,0,0,Verified email at nutonomy.com
+Noah A. Smith,Artificial Intelligence,University of Washington,United States,54458,82,296,3.03361,0,0,Verified email at cs.washington.edu
+Andreas Blumauer,Semantics,Semantic Designs (United States),United States,562,3,2,0,0,0,Verified email at semantic-web.com
+Richard G. Smith,Cybersecurity,University of New Hampshire,United States,8118,53,158,4.09091,0,0,Verified email at dmu.ac.uk
+Patrick OBrien,Semantics,Montana State University,United States,393,8,6,0,0,0,Verified email at revxcorp.com
+James B. Ellsworth,National Security,Naval War College,United States,966,6,2,0,0,0,Verified email at unm.edu
+Aarti Singh,Machine Learning,Carnegie Mellon University,United States,7671,42,141,1.86842,0,0,Verified email at cmu.edu
+Yejin Choi,Artificial Intelligence,University of Washington,United States,48240,66,187,4.37097,0,0,Verified email at cs.washington.edu
+Samy Bengio,Machine Learning,Google (United States),United States,83777,84,230,28.7143,0,0,Verified email at apple.com
+Ira Baxter,Semantics,Semantic Designs (United States),United States,3697,3,0,0,0,0,Verified email at semdesigns.com
+Shouhuai Xu,Cybersecurity,University of Colorado Colorado Springs,United States,11872,43,110,5.37209,0,0,Verified email at uccs.edu
+Larry Wasserman,Machine Learning,Carnegie Mellon University,United States,39809,69,82,4.25641,0,0,Verified email at stat.cmu.edu
+Fabien Campagne,Machine Learning,Cornell University,United States,7561,29,41,20,0,0,Verified email at cornell.edu
+Marina Barysheva,National Security,Imaging Center,United States,2484,19,26,0,0,0,Verified email at ucla.edu
+James L. Wayman,National Security,San Jose State University,United States,7784,17,22,0,0,0,Verified email at obim.dhs.gov
+Mark Hadley,National Security,Pacific Northwest National Laboratory,United States,1220,5,3,0,0,0,Verified email at pnnl.gov
+David B Beach,National Security,Knoxville College,United States,3419,0,0,0,0,0,N/A
+Stefan Schaal,Machine Learning,Intrinsic LifeSciences (United States),United States,48813,83,241,3.30303,0,0,Verified email at google.com
+Jiasen Lu,Artificial Intelligence,Allen Institute for Artificial Intelligence,United States,17761,0,0,0,0,0,Verified email at allenai.org

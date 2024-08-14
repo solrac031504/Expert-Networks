@@ -14,7 +14,7 @@ require('dotenv').config(); //Import dotenv for environment variables
 
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  const { field_of_study, raw_institution, region } = req.query;
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years } = req.query;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -26,6 +26,8 @@ const searchExperts = async (req, res) => {
   // The $$ allows selection of columns in a separate table since 
   // the main query selects from Experts
   let query = {};
+  let order_query = [];
+
   if (field_of_study && field_of_study !== 'Field') query.field_of_study = {
     [Op.in]: field_of_study.split(',')
   };
@@ -51,6 +53,17 @@ const searchExperts = async (req, res) => {
     [Op.in]: region.split(',')
   };
 
+  // build order by
+  if (citations)  order_query.push(['citations', citations]);
+  if (hindex)  order_query.push(['hindex', hindex]);
+  if (i10)  order_query.push(['i_ten_index', i10]);
+  if (imp_fac)  order_query.push(['impact_factor', imp_fac]);
+  if (age)  order_query.push(['age', age]);
+  if (years)  order_query.push(['years_in_field', years]);
+
+  console.log(query);
+  console.log(order_query);
+
   try {
     const results = await Expert.findAll({
         attributes: [
@@ -72,6 +85,7 @@ const searchExperts = async (req, res) => {
             required: false, // This makes it a LEFT JOIN
           }],
         where: query,
+        order: order_query
     });
 
     res.status(200).json(results);

@@ -76,6 +76,70 @@ const Home = () => {
     console.log("Yippee Yippee Yippee");
   };
 
+  const sortCitations = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+  const sortHIndex = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&hindex=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+  const sortI10 = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&i10=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+
+  const sortIF = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&imp_fac=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+
+  const sortAge = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&age=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+
+  const sortYears = () => {
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&years=DESC`)
+      .then(response => response.json())
+      .then(data => {
+        setSearchResults(data);
+      })
+      .catch(error => {
+        console.error('Error during search:', error);
+      });
+  };
+
   return (
     <div>
       <nav className="navbar custom-navbar">
@@ -120,12 +184,30 @@ const Home = () => {
                   <th title="The current field of the expert">Field of Study</th>
                   <th title="Current institutional affiliation of the expert">Institution</th>
                   <th title="The region in which the expert's institutional affiliation is located">Region</th>
-                  <th title="How many times the expert has been cited">Times Cited</th>
-                  <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-index</th>
-                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor</th>
-                  <th title="The age of the expert">Age</th>
-                  <th title="How many years the expert has been in their field">Years In Field</th>
+                  <th title="How many times the expert has been cited">
+                    Times Cited
+                    <button className="btn test-button" onClick={sortCitations}> v </button>
+                    </th>
+                  <th title="The number of papers (h) that have received (h) or more citations">
+                    H-index
+                    <button className="btn test-button" onClick={sortHIndex}> v </button>
+                    </th>
+                  <th title="The number of publications an expert has with at least 10 citations">
+                    I10-index
+                    <button className="btn test-button" onClick={sortI10}> v </button>
+                    </th>
+                  <th title="The average number of citations of an expert within the last 2 years">
+                    Impact Factor
+                    <button className="btn test-button" onClick={sortIF}> v </button>
+                    </th>
+                  <th title="The age of the expert">
+                    Age
+                    <button className="btn test-button" onClick={sortAge}> v </button>
+                    </th>
+                  <th title="How many years the expert has been in their field">
+                    Years In Field
+                    <button className="btn test-button" onClick={sortYears}> v </button>
+                    </th>
                   <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
               </thead>
