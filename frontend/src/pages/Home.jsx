@@ -18,6 +18,7 @@ const Home = () => {
   console.log("Url being used:", apiUrl);
 
   useEffect(() => {
+    console.log(`Fetch request at ${apiUrl}/api/dropdown/fields`);
     fetch(`${apiUrl}/api/dropdown/fields`)
       .then(response => response.json())
       .then(data => {
