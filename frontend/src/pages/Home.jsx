@@ -18,7 +18,6 @@ const Home = () => {
   console.log("Url being used:", apiUrl);
 
   useEffect(() => {
-    console.log(`Fetch request at ${apiUrl}/api/dropdown/fields`);
     fetch(`${apiUrl}/api/dropdown/fields`)
       .then(response => response.json())
       .then(data => {
@@ -63,8 +62,18 @@ const Home = () => {
       });
   };
 
+  /* Download CSV */
   const handleDownloadCSV = () => {
     window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
+  };
+
+  /* Download PDF */
+  const handleDownloadPDF = () => {
+    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
+  };
+
+  const testButton = () => {
+    console.log("Yippee Yippee Yippee");
   };
 
   return (
@@ -103,6 +112,7 @@ const Home = () => {
         {searchResults.length > 0 && (
           <div className="mt-4">
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
+            <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
             <table className="table table-bordered">
               <thead>
                 <tr>
