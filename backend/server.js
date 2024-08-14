@@ -102,6 +102,8 @@ const syncDatabase = async() => {
 
 syncDatabase();
 
+console.log("URL in use from server.js:", process.env.REACT_APP_API_URL);
+
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
 if (!fs.existsSync(exportDir)) {
