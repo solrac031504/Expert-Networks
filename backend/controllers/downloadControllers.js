@@ -12,7 +12,7 @@ const sequelize = require('../database');
 require('dotenv').config(); 
 
 const exportExpertsToCSV = async (req, res) => {
-  const { field_of_study, raw_institution, region } = req.query;
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years } = req.query;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -24,6 +24,8 @@ const exportExpertsToCSV = async (req, res) => {
   // The $$ allows selection of columns in a separate table since 
   // the main query selects from Experts
   let query = {};
+  let order_query = [];
+
   if (field_of_study && field_of_study !== 'Field') query.field_of_study = {
     [Op.in]: field_of_study.split(',')
   };
@@ -49,31 +51,40 @@ const exportExpertsToCSV = async (req, res) => {
     [Op.in]: region.split(',')
   };
 
-  try {
-    // const experts = await Expert.find({}).sort({ createdAt: -1 });
-    const experts = await Expert.findAll({
-      attributes: [
-        'name',
-        'field_of_study',
-        [Sequelize.col('Institution.name'), 'institution'],
-        [Sequelize.col('Institution.country'), 'country'],
-        'citations',
-        'hindex',
-        'i_ten_index',
-        'impact_factor',
-        'age',
-        'years_in_field',
-        'email'
-    ],
-    include: [{
-        model: Institution,
-        attributes: [], // No need to include Institution attributes as they are already selected above
-        required: false, // This makes it a LEFT JOIN
-      }],
-    where: query,
-  });
+  // build order by
+  if (citations)  order_query.push(['citations', citations]);
+  if (hindex)  order_query.push(['hindex', hindex]);
+  if (i10)  order_query.push(['i_ten_index', i10]);
+  if (imp_fac)  order_query.push(['impact_factor', imp_fac]);
+  if (age)  order_query.push(['age', age]);
+  if (years)  order_query.push(['years_in_field', years]);
 
-    console.log(experts);
+  console.log(query);
+  console.log(order_query);
+
+  try {
+    const experts = await Expert.findAll({
+        attributes: [
+            'name',
+            'field_of_study',
+            [Sequelize.col('Institution.name'), 'institution'],
+            [Sequelize.col('Institution.country'), 'region'],
+            'citations',
+            'hindex',
+            'i_ten_index',
+            'impact_factor',
+            'age',
+            'years_in_field',
+            'email'
+        ],
+        include: [{
+            model: Institution,
+            attributes: [], // No need to include Institution attributes as they are already selected above
+            required: false, // This makes it a LEFT JOIN
+          }],
+        where: query,
+        order: order_query
+    });
 
     const results = experts.map(expert => expert.get({ plain: true }));
 
@@ -124,7 +135,7 @@ const exportExpertsToCSV = async (req, res) => {
 };
 
 const exportExpertsToPDF = async (req, res) => {
-  const { field_of_study, raw_institution, region } = req.query;
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years } = req.query;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -136,6 +147,8 @@ const exportExpertsToPDF = async (req, res) => {
   // The $$ allows selection of columns in a separate table since 
   // the main query selects from Experts
   let query = {};
+  let order_query = [];
+
   if (field_of_study && field_of_study !== 'Field') query.field_of_study = {
     [Op.in]: field_of_study.split(',')
   };
@@ -161,27 +174,39 @@ const exportExpertsToPDF = async (req, res) => {
     [Op.in]: region.split(',')
   };
 
+  // build order by
+  if (citations)  order_query.push(['citations', citations]);
+  if (hindex)  order_query.push(['hindex', hindex]);
+  if (i10)  order_query.push(['i_ten_index', i10]);
+  if (imp_fac)  order_query.push(['impact_factor', imp_fac]);
+  if (age)  order_query.push(['age', age]);
+  if (years)  order_query.push(['years_in_field', years]);
+
+  console.log(query);
+  console.log(order_query);
+
   try {
     const experts = await Expert.findAll({
-      attributes: [
-        'name',
-        'field_of_study',
-        [Sequelize.col('Institution.name'), 'institution'],
-        [Sequelize.col('Institution.country'), 'country'],
-        'citations',
-        'hindex',
-        'i_ten_index',
-        'impact_factor',
-        'age',
-        'years_in_field',
-        'email'
-      ],
-      include: [{
-        model: Institution,
-        attributes: [], 
-        required: false, // This makes it a LEFT JOIN
-      }],
-      where: query,
+        attributes: [
+            'name',
+            'field_of_study',
+            [Sequelize.col('Institution.name'), 'institution'],
+            [Sequelize.col('Institution.country'), 'region'],
+            'citations',
+            'hindex',
+            'i_ten_index',
+            'impact_factor',
+            'age',
+            'years_in_field',
+            'email'
+        ],
+        include: [{
+            model: Institution,
+            attributes: [], // No need to include Institution attributes as they are already selected above
+            required: false, // This makes it a LEFT JOIN
+          }],
+        where: query,
+        order: order_query
     });
 
     const results = experts.map(expert => expert.get({ plain: true }));

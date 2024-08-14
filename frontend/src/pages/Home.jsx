@@ -11,11 +11,17 @@ const Home = () => {
     field: '',
     institution: '',
     region: '',
+    citations: '',
+    hindex: '',
+    i10: '',
+    imp_fac: '',
+    age: '',
+    years: ''
   });
   const [searchResults, setSearchResults] = useState([]);
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
-  console.log("Url being used:", apiUrl);
+  // console.log("Url being used:", apiUrl);
 
   useEffect(() => {
     fetch(`${apiUrl}/api/dropdown/fields`)
@@ -45,6 +51,7 @@ const Home = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log("In handleInputChange; name & value:", name, value);
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: value,
@@ -52,7 +59,7 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`)
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`)
       .then(response => response.json())
       .then(data => {
         setSearchResults(data);
@@ -72,72 +79,27 @@ const Home = () => {
     window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}`, '_blank');
   };
 
-  const testButton = () => {
-    console.log("Yippee Yippee Yippee");
+  const handleClerSortingSelection = () => {
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      ['citations']: '',
+      ['hindex']: '',
+      ['i10']: '',
+      ['imp_fac']: '',
+      ['age']: '',
+      ['years']: ''
+    }));
   };
 
-  const sortCitations = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-  };
-  const sortHIndex = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&hindex=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-  };
-  const sortI10 = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&i10=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-  };
+  const handleSorting = (e) => {
+    const { name } = e.target;
 
-  const sortIF = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&imp_fac=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-  };
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      [name]: 'DESC',
+    }));
 
-  const sortAge = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&age=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-  };
-
-  const sortYears = () => {
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&years=DESC`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
+    handleSearch();
   };
 
   return (
@@ -186,27 +148,27 @@ const Home = () => {
                   <th title="The region in which the expert's institutional affiliation is located">Region</th>
                   <th title="How many times the expert has been cited">
                     Times Cited
-                    <button className="btn test-button" onClick={sortCitations}> v </button>
+                    <button className="btn test-button" name="citations" onClick={handleSorting}> v </button>
                     </th>
                   <th title="The number of papers (h) that have received (h) or more citations">
                     H-index
-                    <button className="btn test-button" onClick={sortHIndex}> v </button>
+                    <button className="btn test-button" name="hindex" onClick={handleSorting}> v </button>
                     </th>
                   <th title="The number of publications an expert has with at least 10 citations">
                     I10-index
-                    <button className="btn test-button" onClick={sortI10}> v </button>
+                    <button className="btn test-button" name="i10" onClick={handleSorting}> v </button>
                     </th>
                   <th title="The average number of citations of an expert within the last 2 years">
                     Impact Factor
-                    <button className="btn test-button" onClick={sortIF}> v </button>
+                    <button className="btn test-button" name="imp_fac" onClick={handleSorting}> v </button>
                     </th>
                   <th title="The age of the expert">
                     Age
-                    <button className="btn test-button" onClick={sortAge}> v </button>
+                    <button className="btn test-button" name="age" onClick={handleSorting}> v </button>
                     </th>
                   <th title="How many years the expert has been in their field">
                     Years In Field
-                    <button className="btn test-button" onClick={sortYears}> v </button>
+                    <button className="btn test-button" name="years" onClick={handleSorting}> v </button>
                     </th>
                   <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
