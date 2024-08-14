@@ -61,6 +61,27 @@ app.use('/api/data', dataScrapingRoutes);
 
 const PORT = process.env.PORT || 5000;
 
+// // Serve static files from the 'build' directory
+// app.use(express.static(path.join(__dirname, 'build')));
+
+// // Catch-all handler to serve the React app for any route not handled by the backend API
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the 'build' directory
+  app.use(express.static(path.join(__dirname, 'build')));
+  console.log("Serving static files from build directory in backned");
+
+  // Catch-all handler to serve the React app for any route not handled by the backend API
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    });
+}
+
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
   try {
@@ -80,27 +101,6 @@ const syncDatabase = async() => {
 }
 
 syncDatabase();
-
-// // Serve static files from the 'build' directory
-// app.use(express.static(path.join(__dirname, 'build')));
-
-// // Catch-all handler to serve the React app for any route not handled by the backend API
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
-
-console.log("NODE_ENV:", process.env.NODE_ENV);
-
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the 'build' directory
-  app.use(express.static(path.join(__dirname, 'build')));
-  console.log("Serving static files from build directory in backned");
-
-  // Catch-all handler to serve the React app for any route not handled by the backend API
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-    });
-}
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');
