@@ -38,7 +38,7 @@ const searchExperts = async (req, res) => {
 
   // Uses LIKE operators, but can only do one entry at a time
   // Need to find a better way in this case
-  if (institution && institution !== 'All') {
+  if (raw_institution && raw_institution !== 'All') {
     query[Op.or] = [
       { '$Institution.name$': { [Op.like]: institution } },
       { '$Institution.acronym$': { [Op.like]: institution } },
