@@ -69,6 +69,9 @@ const searchExperts = async (req, res) => {
     if (!pair) continue;
 
     let pairSort = pair.split(':');
+
+    // [name, value] pairSort[1] is value. If null, skip to avoid error
+    if (!pairSort[1]) continue;
     // console.log(`Pair: ${pairSort}`);
 
     order_query.push(pairSort);

@@ -106,13 +106,13 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
@@ -142,28 +142,100 @@ const Home = () => {
   };
 
   // Sort the column and change the state of the button
+  // Creates the string used for sorting
   const handleSorting = (e) => {
     const { name } = e.target;
 
     // handleClearSortingSelection();
 
-    let sortingSequence = selectedOptions.sorting_sequence
+    //  let sortingSequence = selectedOptions.sorting_sequence
     const oldDirection = activeSorting[name];
     let buttonDirection = '';
     let sortOrder = '';
 
+    // Change the direction of the button
     if (oldDirection === '-') buttonDirection = 'v';
     else if (oldDirection === 'v') buttonDirection = '^';
     else if (oldDirection === '^') buttonDirection = '-';
 
+    // Decide sorting order based on the button
     if (buttonDirection === '-') sortOrder = '';
     else if (buttonDirection === 'v') sortOrder = 'DESC';
     else if (buttonDirection === '^') sortOrder = 'ASC';
 
+    console.log(`name: ${name}, value: ${sortOrder}`);
+
+    // Create the sorting sequence string and format correctly
+    //==================================================
+
+    const sortingSequence = selectedOptions.sorting_sequence;
+    console.log(`sortingSequence = ${sortingSequence}`);
+
+    const sequenceSplitComma = sortingSequence ? sortingSequence.split(',') : [];
+    console.log(`sequenceSplitComma = ${sequenceSplitComma}`);
+
+    let finalSequence = '';
+
+    // boolean used to add the new value at the end if it hasn't been added yet
+    let addFinal = true;
+
+    // case if nothing is in the sortingSequence
+    // Only execute if empty sequence AND sortOrder is not NULL
+    if (!sortingSequence && sortOrder) {
+      console.log("sortingSequence is empty and sortOrder is not null");
+
+      // creates a single string "name:value"
+      let subSequence = '';
+      subSequence = subSequence.concat(name,':',sortOrder);
+      console.log(`subSequence = ${subSequence}`);
+
+      // full string "name1:value1,name2:value2,"
+      finalSequence = finalSequence.concat(subSequence, ",");
+
+      addFinal = false;
+    } else {
+      console.log("Reformatting sorting sequence");
+      for (let pair of sequenceSplitComma) {
+        // If the pair does not exist, don't proceed
+        if (!pair) continue;
+
+        let nameValPair = pair.split(':');
+        console.log(`Old name value pair: ${nameValPair}`)
+  
+        // then name in name:value
+        let oldName = nameValPair[0]
+  
+        if (name === oldName) {
+          nameValPair[1] = sortOrder;
+
+          // value got updated, don't use again
+          addFinal = false;
+        };
+        
+        console.log(`New name value pair: ${nameValPair}`);
+  
+        // value in name:value
+        // if the value exists, append. Else, don't append
+        if (nameValPair[1]) {
+          // creates a single string "name:value"
+          let subSequence = '';
+          subSequence = subSequence.concat(nameValPair[0], ':', nameValPair[1])
+          console.log(`subSequence = ${subSequence}`);
+        
+          // full string "name1:value1,name2:value2,"
+          finalSequence = finalSequence.concat(subSequence, ",");
+        }
+      }
+    }
+
+    if (addFinal) {
+      // Add the new value if it wasn't already added
     let nameValPair = name.concat(':',sortOrder);
     console.log(`nameValPair = ${nameValPair}`)
-    let sortingSeqVal = sortingSequence.concat(nameValPair, ',');
-    console.log(`sortingSeqVal = ${sortingSeqVal}`)
+    finalSequence = finalSequence.concat(nameValPair, ',');
+    }
+
+    //==================================================
 
     // console.log(`Sorting ${name} in ${sortOrder} order`);
     // setSelectedOptions(prevState => ({
@@ -171,12 +243,12 @@ const Home = () => {
     //   [name]: sortOrder,
     // }));
     
-    // Concatenate the newly added value into the sorting sequence
-    console.log(`Sorting sequence = ${sortingSequence}`);
+    // Set the sorting sequence to the new adjusted sequence
+    console.log(`Final sorting sequence = ${finalSequence}`);
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: sortOrder,
-      ['sorting_sequence']: sortingSeqVal,
+      ['sorting_sequence']: finalSequence,
     }));
 
     console.log(`Setting the button of ${name} to ${buttonDirection}`);
