@@ -144,19 +144,31 @@ const Home = () => {
   const handleSorting = (e) => {
     const { name } = e.target;
 
-    handleClearSortingSelection();
+    // handleClearSortingSelection();
 
-    console.log(`Sorting ${name} in DESC order`);
+    const oldDirection = activeSorting[name];
+    let buttonDirection = '';
+    let sortOrder = '';
+
+    if (oldDirection === '-') buttonDirection = 'v';
+    else if (oldDirection === 'v') buttonDirection = '^';
+    else if (oldDirection === '^') buttonDirection = '-';
+
+    if (buttonDirection === '-') sortOrder = '';
+    else if (buttonDirection === 'v') sortOrder = 'DESC';
+    else if (buttonDirection === '^') sortOrder = 'ASC';
+
+    console.log(`Sorting ${name} in ${sortOrder} order`);
     setSelectedOptions(prevState => ({
       ...prevState,
-      [name]: 'DESC',
+      [name]: sortOrder,
     }));
 
-    console.log(`Setting the button of ${name} to v`);
+    console.log(`Setting the button of ${name} to ${buttonDirection}`);
     // Update the active sorting button
     setActiveSorting(prevState => ({
       ...prevState,
-      [name]: 'v',
+      [name]: buttonDirection,
     }));
   };
 
@@ -194,7 +206,7 @@ const Home = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-4">
-            {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
+            <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
             <table className="table table-bordered">
