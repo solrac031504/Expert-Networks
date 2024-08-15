@@ -14,7 +14,7 @@ require('dotenv').config(); //Import dotenv for environment variables
 
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sortingSequence } = req.query;
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sorting_sequence } = req.query;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -62,12 +62,14 @@ const searchExperts = async (req, res) => {
   // if (years)  order_query.push(['years_in_field', years]);
 
   // ',' splits name:value pairs
-  const sortingSequenceArray = sortingSequence ? sortingSequence.split(',') : [];
+  const sortingSequenceArray = sorting_sequence ? sorting_sequence.split(',') : [];
 
   // iterate through the array and split on ':'. Then, construct the order query
   for (var pair of sortingSequenceArray) {
+    if (!pair) continue;
+
     let pairSort = pair.split(':');
-    console.log(`Pair: ${pairSort}`);
+    // console.log(`Pair: ${pairSort}`);
 
     order_query.push(pairSort);
   }

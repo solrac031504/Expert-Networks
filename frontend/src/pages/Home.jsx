@@ -14,10 +14,11 @@ const Home = () => {
     region: '',
     citations: '',
     hindex: '',
-    i10: '',
-    imp_fac: '',
+    i_ten_index: '',
+    impact_factor: '',
     age: '',
-    years: ''
+    years_in_field: '',
+    sorting_sequence: ''
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -26,10 +27,10 @@ const Home = () => {
   const [activeSorting, setActiveSorting] = useState({
     citations: '-',
     hindex: '-',
-    i10: '-',
-    imp_fac: '-',
+    i_ten_index: '-',
+    impact_factor: '-',
     age: '-',
-    years: '-',
+    years_in_field: '-',
   });
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
@@ -70,10 +71,10 @@ const Home = () => {
     handleSearch();
   }, [selectedOptions.citations,
       selectedOptions.hindex,
-      selectedOptions.i10,
-      selectedOptions.imp_fac,
+      selectedOptions.i_ten_index,
+      selectedOptions.impact_factor,
       selectedOptions.age,
-      selectedOptions.years
+      selectedOptions.years_in_field
   ]); // Trigger search whenever selectedOptions of sorting changes
 
   // For dropdown menus
@@ -89,7 +90,9 @@ const Home = () => {
   // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`)
+    
+    // fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`)
+    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`)
       .then(response => response.json())
       .then(data => {
         console.log('Search results:', data);
@@ -103,13 +106,13 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`, '_blank');
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
@@ -120,24 +123,22 @@ const Home = () => {
       ...prevState,
       citations: '',
       hindex: '',
-      i10: '',
-      imp_fac: '',
+      i_ten_index: '',
+      impact_factor: '',
       age: '',
-      years: ''
+      years_in_field: '',
+      sorting_sequence: ''
     }));
 
     console.log("Setting buttons to -");
     setActiveSorting({
       citations: '-',
       hindex: '-',
-      i10: '-',
-      imp_fac: '-',
+      i_ten_index: '-',
+      impact_factor: '-',
       age: '-',
-      years: '-',
+      years_in_field: '-'
     });
-
-    // console.log("Searching again");
-    // handleSearch();
   };
 
   // Sort the column and change the state of the button
@@ -146,6 +147,7 @@ const Home = () => {
 
     // handleClearSortingSelection();
 
+    let sortingSequence = selectedOptions.sorting_sequence
     const oldDirection = activeSorting[name];
     let buttonDirection = '';
     let sortOrder = '';
@@ -158,10 +160,23 @@ const Home = () => {
     else if (buttonDirection === 'v') sortOrder = 'DESC';
     else if (buttonDirection === '^') sortOrder = 'ASC';
 
-    console.log(`Sorting ${name} in ${sortOrder} order`);
+    let nameValPair = name.concat(':',sortOrder);
+    console.log(`nameValPair = ${nameValPair}`)
+    let sortingSeqVal = sortingSequence.concat(nameValPair, ',');
+    console.log(`sortingSeqVal = ${sortingSeqVal}`)
+
+    // console.log(`Sorting ${name} in ${sortOrder} order`);
+    // setSelectedOptions(prevState => ({
+    //   ...prevState,
+    //   [name]: sortOrder,
+    // }));
+    
+    // Concatenate the newly added value into the sorting sequence
+    console.log(`Sorting sequence = ${sortingSequence}`);
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: sortOrder,
+      ['sorting_sequence']: sortingSeqVal,
     }));
 
     console.log(`Setting the button of ${name} to ${buttonDirection}`);
@@ -222,17 +237,17 @@ const Home = () => {
                   <th title="The number of papers (h) that have received (h) or more citations">H-index
                     <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
                   </th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-index
-                    <button className="btn sorting-button" name="i10" onClick={handleSorting}>{activeSorting.i10}</button>
+                  <th title="The number of publications an expert has with at least 10 citations">i_ten_index-index
+                    <button className="btn sorting-button" name="i_ten_index" onClick={handleSorting}>{activeSorting.i_ten_index}</button>
                   </th>
                   <th title="The average number of citations of an expert within the last 2 years">Impact Factor
-                    <button className="btn sorting-button" name="imp_fac" onClick={handleSorting}>{activeSorting.imp_fac}</button>
+                    <button className="btn sorting-button" name="impact_factor" onClick={handleSorting}>{activeSorting.impact_factor}</button>
                   </th>
                   <th title="The age of the expert">Age
                     <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
                   </th>
                   <th title="How many years the expert has been in their field">Years In Field
-                    <button className="btn sorting-button" name="years" onClick={handleSorting}>{activeSorting.years}</button>
+                    <button className="btn sorting-button" name="years_in_field" onClick={handleSorting}>{activeSorting.years_in_field}</button>
                   </th>
                   <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
