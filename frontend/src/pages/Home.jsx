@@ -35,9 +35,12 @@ const Home = () => {
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
   useEffect(() => {
+    // Fetch unique fields
+    console.log('Fetching unique fields...');
     fetch(`${apiUrl}/api/dropdown/fields`)
       .then(response => response.json())
       .then(data => {
+        console.log('Received unique fields:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           fields: data,
@@ -47,9 +50,12 @@ const Home = () => {
         console.error('Error fetching fields:', error);
       });
 
+    // Fetch unique regions
+    console.log('Fetching unique regions...');
     fetch(`${apiUrl}/api/dropdown/regions`)
       .then(response => response.json())
       .then(data => {
+        console.log('Received unique regions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           regions: data,
@@ -60,18 +66,33 @@ const Home = () => {
       });
   }, [apiUrl]);
 
+  useEffect(() => {
+    handleSearch();
+  }, [selectedOptions.citations,
+      selectedOptions.hindex,
+      selectedOptions.i10,
+      selectedOptions.imp_fac,
+      selectedOptions.age,
+      selectedOptions.years
+  ]); // Trigger search whenever selectedOptions of sorting changes
+
+  // For dropdown menus
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Changing setting state of ${name} to ${value}`)
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: value,
     }));
   };
 
+  // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = () => {
+    console.log('Selected options:', selectedOptions);
     fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`)
       .then(response => response.json())
       .then(data => {
+        console.log('Search results:', data);
         setSearchResults(data);
       })
       .catch(error => {
@@ -79,17 +100,22 @@ const Home = () => {
       });
   };
 
-  /* Download CSV */
+  // Download CSV
   const handleDownloadCSV = () => {
+    console.log("Downloading CSV");
     window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`, '_blank');
   };
 
-  /* Download PDF */
+  // Download PDF
   const handleDownloadPDF = () => {
+    console.log("Downloading PDF");
     window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i10=${selectedOptions.i10}&imp_fac=${selectedOptions.imp_fac}&age=${selectedOptions.age}&years=${selectedOptions.years}`, '_blank');
   };
 
+  // Clear selections in sorting and revert butons to un-sorting state
   const handleClearSortingSelection = () => {
+    console.log("Clearing sorting states");
+
     setSelectedOptions(prevState => ({
       ...prevState,
       citations: '',
@@ -100,6 +126,7 @@ const Home = () => {
       years: ''
     }));
 
+    console.log("Setting buttons to -");
     setActiveSorting({
       citations: '-',
       hindex: '-',
@@ -109,24 +136,28 @@ const Home = () => {
       years: '-',
     });
 
-    handleSearch();
+    // console.log("Searching again");
+    // handleSearch();
   };
 
+  // Sort the column and change the state of the button
   const handleSorting = (e) => {
     const { name } = e.target;
 
+    handleClearSortingSelection();
+
+    console.log(`Sorting ${name} in DESC order`);
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: 'DESC',
     }));
 
+    console.log(`Setting the button of ${name} to v`);
     // Update the active sorting button
     setActiveSorting(prevState => ({
       ...prevState,
       [name]: 'v',
     }));
-
-    handleSearch();
   };
 
   return (
@@ -163,7 +194,7 @@ const Home = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-4">
-            <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
+            {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
             <table className="table table-bordered">
