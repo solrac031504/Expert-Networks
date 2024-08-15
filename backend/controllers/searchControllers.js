@@ -12,9 +12,8 @@ const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-// search experts with query parameters
-const searchExperts = async (req, res) => {
-  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sorting_sequence } = req.query;
+const fetchExperts = async(queryParams) => {
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sorting_sequence } = queryParams;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -80,30 +79,36 @@ const searchExperts = async (req, res) => {
   console.log(query);
   console.log(order_query);
 
-  try {
-    const results = await Expert.findAll({
-        attributes: [
-            'name',
-            'field_of_study',
-            [Sequelize.col('Institution.name'), 'institution'],
-            [Sequelize.col('Institution.country'), 'region'],
-            'citations',
-            'hindex',
-            'i_ten_index',
-            'impact_factor',
-            'age',
-            'years_in_field',
-            'email'
-        ],
-        include: [{
-            model: Institution,
-            attributes: [], // No need to include Institution attributes as they are already selected above
-            required: false, // This makes it a LEFT JOIN
-          }],
-        where: query,
-        order: order_query
-    });
+  const results = await Expert.findAll({
+      attributes: [
+          'name',
+          'field_of_study',
+          [Sequelize.col('Institution.name'), 'institution'],
+          [Sequelize.col('Institution.country'), 'region'],
+          'citations',
+          'hindex',
+          'i_ten_index',
+          'impact_factor',
+          'age',
+          'years_in_field',
+          'email'
+      ],
+      include: [{
+          model: Institution,
+          attributes: [], // No need to include Institution attributes as they are already selected above
+          required: false, // This makes it a LEFT JOIN
+        }],
+      where: query,
+      order: order_query
+  });
 
+  return results;
+};
+
+// search experts with query parameters
+const searchExperts = async (req, res) => {
+  try {
+    const results = await fetchExperts(req.query);
     res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -111,5 +116,6 @@ const searchExperts = async (req, res) => {
 };
 
 module.exports = {
-  searchExperts
+  searchExperts,
+  fetchExperts
 };

@@ -163,16 +163,16 @@ const Home = () => {
     else if (buttonDirection === 'v') sortOrder = 'DESC';
     else if (buttonDirection === '^') sortOrder = 'ASC';
 
-    console.log(`name: ${name}, value: ${sortOrder}`);
+    // console.log(`name: ${name}, value: ${sortOrder}`);
 
     // Create the sorting sequence string and format correctly
     //==================================================
 
     const sortingSequence = selectedOptions.sorting_sequence;
-    console.log(`sortingSequence = ${sortingSequence}`);
+    // console.log(`sortingSequence = ${sortingSequence}`);
 
     const sequenceSplitComma = sortingSequence ? sortingSequence.split(',') : [];
-    console.log(`sequenceSplitComma = ${sequenceSplitComma}`);
+    // console.log(`sequenceSplitComma = ${sequenceSplitComma}`);
 
     let finalSequence = '';
 
@@ -182,25 +182,25 @@ const Home = () => {
     // case if nothing is in the sortingSequence
     // Only execute if empty sequence AND sortOrder is not NULL
     if (!sortingSequence && sortOrder) {
-      console.log("sortingSequence is empty and sortOrder is not null");
+      // console.log("sortingSequence is empty and sortOrder is not null");
 
       // creates a single string "name:value"
       let subSequence = '';
       subSequence = subSequence.concat(name,':',sortOrder);
-      console.log(`subSequence = ${subSequence}`);
+      // console.log(`subSequence = ${subSequence}`);
 
       // full string "name1:value1,name2:value2,"
       finalSequence = finalSequence.concat(subSequence, ",");
 
       addFinal = false;
     } else {
-      console.log("Reformatting sorting sequence");
+      // console.log("Reformatting sorting sequence");
       for (let pair of sequenceSplitComma) {
         // If the pair does not exist, don't proceed
         if (!pair) continue;
 
         let nameValPair = pair.split(':');
-        console.log(`Old name value pair: ${nameValPair}`)
+        // console.log(`Old name value pair: ${nameValPair}`)
   
         // then name in name:value
         let oldName = nameValPair[0]
@@ -212,7 +212,7 @@ const Home = () => {
           addFinal = false;
         };
         
-        console.log(`New name value pair: ${nameValPair}`);
+        // console.log(`New name value pair: ${nameValPair}`);
   
         // value in name:value
         // if the value exists, append. Else, don't append
@@ -220,7 +220,7 @@ const Home = () => {
           // creates a single string "name:value"
           let subSequence = '';
           subSequence = subSequence.concat(nameValPair[0], ':', nameValPair[1])
-          console.log(`subSequence = ${subSequence}`);
+          // console.log(`subSequence = ${subSequence}`);
         
           // full string "name1:value1,name2:value2,"
           finalSequence = finalSequence.concat(subSequence, ",");
@@ -231,17 +231,11 @@ const Home = () => {
     if (addFinal) {
       // Add the new value if it wasn't already added
     let nameValPair = name.concat(':',sortOrder);
-    console.log(`nameValPair = ${nameValPair}`)
+    // console.log(`nameValPair = ${nameValPair}`)
     finalSequence = finalSequence.concat(nameValPair, ',');
     }
 
     //==================================================
-
-    // console.log(`Sorting ${name} in ${sortOrder} order`);
-    // setSelectedOptions(prevState => ({
-    //   ...prevState,
-    //   [name]: sortOrder,
-    // }));
     
     // Set the sorting sequence to the new adjusted sequence
     console.log(`Final sorting sequence = ${finalSequence}`);
@@ -252,7 +246,7 @@ const Home = () => {
     }));
 
     console.log(`Setting the button of ${name} to ${buttonDirection}`);
-    // Update the active sorting button
+    // Update the button symbol
     setActiveSorting(prevState => ({
       ...prevState,
       [name]: buttonDirection,

@@ -1,19 +1,54 @@
 Name,Field of Study,Institution,Country,Times Cited,H-index,I10-index,Impact Factor,Age,Years in Field,Email
-Samy Bengio,Machine Learning,Google (United States),,83777,84,230,28.7143,0,0,Verified email at apple.com
-Fabien Campagne,Machine Learning,Cornell University,,7561,29,41,20,0,0,Verified email at cornell.edu
-David Grangier,Machine Learning,Google (United States),,21139,41,63,8.84,0,0,Verified email at apple.com
-Ruslan Salakhutdinov,Machine Learning,Carnegie Mellon University,,205864,92,276,5.94118,0,0,Verified email at cs.cmu.edu
-Larry Wasserman,Machine Learning,Carnegie Mellon University,,39809,69,82,4.25641,0,0,Verified email at stat.cmu.edu
-Stefan Schaal,Machine Learning,Intrinsic LifeSciences (United States),,48813,83,241,3.30303,0,0,Verified email at google.com
-Richard Everson,Machine Learning,UCLA Health,,11942,40,75,2.72,0,0,Verified email at exeter.ac.uk
-Martin Renqiang Min,Machine Learning,Princeton University,,24280,18,25,2.7037,0,0,Verified email at nec-labs.com
-Sourabh Vora,Machine Learning,"University of California, San Diego",,9827,10,11,2.4,0,0,Verified email at nutonomy.com
-Aarti Singh,Machine Learning,Carnegie Mellon University,,7671,42,141,1.86842,0,0,Verified email at cmu.edu
-Zachary C. Lipton,Machine Learning,Carnegie Mellon University,,26124,45,108,1.5,0,0,Verified email at cmu.edu
-Tom Mitchell,Machine Learning,Carnegie Mellon University,,119465,74,201,1.25714,0,0,Verified email at cs.cmu.edu
-Geoff Gordon,Machine Learning,Carnegie Mellon University,,24092,19,26,0.692308,0,0,Verified email at cs.cmu.edu
-Eun Yong Kang,Machine Learning,Microsoft (United States),,7799,17,21,0.333333,0,0,Verified email at microsoft.com
-Ann B. Lee,Machine Learning,Carnegie Mellon University,,7971,17,19,0,0,0,Verified email at cmu.edu
-John Winn,Machine Learning,Duke University,,47103,32,48,0,0,0,Verified email at microsoft.com
-Mike Tipping,Machine Learning,Microsoft (United States),,23241,1,1,0,0,0,Verified email at miketipping.com
-Sotirios Tsaftaris,Machine Learning,Cedars-Sinai Medical Center,,7815,0,0,0,0,0,Verified email at ed.ac.uk
+Geoff Webb,Artificial Intelligence,Monash University,,26810,3,2,2.4,0,0,Verified email at monash.edu
+Christian Blum,Artificial Intelligence,Artificial Intelligence Research Institute,,20201,31,71,2.05882,0,0,Verified email at iiia.csic.es
+Xiao-Jun Wu,Artificial Intelligence,Jiangnan University,,19406,30,84,6.11392,0,0,Verified email at jiangnan.edu.cn
+Asuncion Gomez Perez,Artificial Intelligence,N/A,,28263,0,0,0,0,0,Verified email at fi.upm.es
+"Qi Tian, Chief Scientist in Artificial Intelligence, Fellow of IEEE/CAAI/CCF, IEAS Academician",Artificial Intelligence,N/A,,72092,0,0,0,0,0,Verified email at huawei.com
+Vikas Kumar,Artificial Intelligence,University of Idaho,,20518,32,72,3.36842,0,0,Verified email at iitp.ac.in
+Xiaojun Chang,Artificial Intelligence,University of Technology Sydney,,17023,50,157,7.68939,0,0,Verified email at uts.edu.au
+Fakhreddine (Fakhri) Karray,Artificial Intelligence,N/A,,21142,0,0,0,0,0,Verified email at uwaterloo.ca
+Johanna Moore,Artificial Intelligence,N/A,,18029,1,1,0,0,0,Verified email at ed.ac.uk
+Dipanjan Roy,Artificial Intelligence,Indian Institute of Technology Jodhpur,,22788,20,40,2.65385,0,0,Verified email at iitj.ac.in
+Ian D Reid,Artificial Intelligence,N/A,,62403,0,0,0,0,0,Verified email at adelaide.edu.au
+Han-Chieh Chao,Artificial Intelligence,Wuhan Polytechnic University,,16961,28,55,8.5625,0,0,Verified email at o365.tku.edu.tw
+Shengcai Liao,Artificial Intelligence,Beijing Academy of Artificial Intelligence,,20924,44,95,7.07143,0,0,Verified email at inceptioniai.org
+Tianrui Li,Artificial Intelligence,Southwest Jiaotong University,,21414,65,297,7.04734,0,0,Verified email at swjtu.edu.cn
+Rolf Pfeifer,Artificial Intelligence,University of Zurich,,21070,41,118,0,0,0,Verified email at ifi.uzh.ch
+Alberto Fernández Hilario,Artificial Intelligence,N/A,,22790,0,0,0,0,0,Verified email at decsai.ugr.es
+Enrique Herrera-Viedma,Artificial Intelligence,N/A,,65564,0,0,0,0,0,Verified email at decsai.ugr.es
+Junichi Tsujii,Artificial Intelligence,Sumitomo Precision Products (Japan),,23173,1,0,0,0,0,Verified email at aist.go.jp
+Nguyen-Thoi Trung,Artificial Intelligence,N/A,,22968,0,0,0,0,0,Verified email at vlu.edu.vn
+Pedro Larrañaga,Artificial Intelligence,Universidad Politécnica de Madrid,,29644,44,142,3.38889,0,0,Verified email at fi.upm.es
+Gitta Kutyniok,Artificial Intelligence,Ludwig-Maximilians-Universität München,,18470,45,119,3.84444,0,0,Verified email at math.lmu.de
+"Prof. Tanzila Saba, IEEE Senior Member, ACM, AIS & AAAI Member",Artificial Intelligence,N/A,,18801,0,0,0,0,0,Verified email at psu.edu.sa
+André Carlos Ponce de Leon Ferreira de Carvalho,Artificial Intelligence,Universidade de São Paulo,,20085,0,0,0,0,0,Verified email at icmc.usp.br
+Matthew E Peters,Artificial Intelligence,N/A,,28604,0,0,0,0,0,Verified email at allenai.org
+"Jie LU AO, FIEEE, FIFSA, FACS, Australian Laureate Fellow",Artificial Intelligence,N/A,,25810,0,0,0,0,0,Verified email at uts.edu.au
+Fuzhen Zhuang (庄福振),Artificial Intelligence,N/A,,16422,0,0,0,0,0,Verified email at buaa.edu.cn
+Thomas Serre,Artificial Intelligence,N/A,,18739,0,0,0,0,0,Verified email at brown.edu
+Professor Kay Chen TAN,Artificial Intelligence,N/A,,28221,0,0,0,0,0,Verified email at polyu.edu.hk
+Marco Zorzi,Artificial Intelligence,San Camillo IRCCS di Venezia,,15619,49,114,2.8,0,0,Verified email at unipd.it
+Michael Beetz,Artificial Intelligence,University of Bremen,,24758,52,214,0.83871,0,0,Verified email at cs.uni-bremen.de
+Jeremy Schwartzentruber,Artificial Intelligence,European Bioinformatics Institute,,20090,56,93,60.875,0,0,Verified email at illumina.com
+Robert Altshuler,Artificial Intelligence,N/A,,17819,0,0,0,0,0,Verified email at csail.mit.edu
+Peter Clark,Artificial Intelligence,The Ohio State University Newark,,19318,47,84,0,0,0,Verified email at allenai.org
+Peter Flach,Artificial Intelligence,University of Bristol,,20379,56,144,3.29032,0,0,Verified email at bristol.ac.uk
+Abdenour Hadid,Artificial Intelligence,Sorbonne University Abu Dhabi,,24657,43,104,2.10526,0,0,Verified email at sorbonne.ae
+Vasant G Honavar,Artificial Intelligence,N/A,,19594,0,0,0,0,0,Verified email at psu.edu
+James Glass,Artificial Intelligence,Reed College,,29209,61,295,5.6506,0,0,Verified email at mit.edu
+Piotr Slomka,Artificial Intelligence,N/A,,27923,0,0,0,0,0,Verified email at cshs.org
+P Anandan,Artificial Intelligence,N/A,,18333,0,0,0,0,0,Verified email at wadhwaniai.org
+Graham Taylor,Artificial Intelligence,University College London,,21286,22,44,0,0,0,Verified email at uoguelph.ca
+Kun Zhang,Artificial Intelligence,Chinese Academy of Sciences,,19087,22,32,39.4,0,0,Verified email at cmu.edu
+"Mohsen Guizani, FIEEE",Artificial Intelligence,N/A,,76344,0,0,0,0,0,Verified email at mbzuai.ac.ae
+"Bing Xue, Fellow of IEEE, Fellow of Engineering NZ",Artificial Intelligence,N/A,,17714,0,0,0,0,0,Verified email at ecs.vuw.ac.nz
+Qihao Weng,Artificial Intelligence,Hong Kong Polytechnic University,,34266,68,136,5.15385,0,0,Verified email at polyu.edu.hk
+Noah A. Smith,Artificial Intelligence,University of Washington,,54458,82,296,3.03361,0,0,Verified email at cs.washington.edu
+Yejin Choi,Artificial Intelligence,University of Washington,,48240,66,187,4.37097,0,0,Verified email at cs.washington.edu
+Salvador García,Artificial Intelligence,Universidad de Granada,,44149,57,124,2.54167,0,0,Verified email at decsai.ugr.es
+Ross Girshick,Artificial Intelligence,Meta (Israel),,480329,91,150,60.8696,0,0,Verified email at allenai.org
+Sebastián Ventura (ORCID: 0000-0003-4216-6378),Artificial Intelligence,N/A,,26806,0,0,0,0,0,Verified email at uco.es
+Luis M. Sarro,Artificial Intelligence,N/A,,31031,0,0,0,0,0,Verified email at dia.uned.es
+Carles Sierra,Artificial Intelligence,Artificial Intelligence Research Institute,,21906,40,141,0.7,0,0,Verified email at iiia.csic.es
+Le Song,Artificial Intelligence,Mohamed bin Zayed University of Artificial Intelligence,,33492,58,201,2.63889,0,0,Verified email at biomap.com
+Jiasen Lu,Artificial Intelligence,Allen Institute for Artificial Intelligence,,17761,0,0,0,0,0,Verified email at allenai.org
