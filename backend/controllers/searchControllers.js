@@ -14,7 +14,7 @@ require('dotenv').config(); //Import dotenv for environment variables
 
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years } = req.query;
+  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sortingSequence } = req.query;
 
   // Format the institution String for LIKE matching %___%
   let temp = '%';
@@ -54,12 +54,23 @@ const searchExperts = async (req, res) => {
   };
 
   // build order by
-  if (citations)  order_query.push(['citations', citations]);
-  if (hindex)  order_query.push(['hindex', hindex]);
-  if (i10)  order_query.push(['i_ten_index', i10]);
-  if (imp_fac)  order_query.push(['impact_factor', imp_fac]);
-  if (age)  order_query.push(['age', age]);
-  if (years)  order_query.push(['years_in_field', years]);
+  // if (citations)  order_query.push(['citations', citations]);
+  // if (hindex)  order_query.push(['hindex', hindex]);
+  // if (i10)  order_query.push(['i_ten_index', i10]);
+  // if (imp_fac)  order_query.push(['impact_factor', imp_fac]);
+  // if (age)  order_query.push(['age', age]);
+  // if (years)  order_query.push(['years_in_field', years]);
+
+  // ',' splits name:value pairs
+  const sortingSequenceArray = sortingSequence ? sortingSequence.split(',') : [];
+
+  // iterate through the array and split on ':'. Then, construct the order query
+  for (var pair of sortingSequenceArray) {
+    let pairSort = pair.split(':');
+    console.log(`Pair: ${pairSort}`);
+
+    order_query.push(pairSort);
+  }
 
   console.log(query);
   console.log(order_query);
