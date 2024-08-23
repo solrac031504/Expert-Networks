@@ -9,9 +9,9 @@ const Home = () => {
   });
 
   const [selectedOptions, setSelectedOptions] = useState({
-    field: '',
+    field: [],
     institution: '',
-    region: '',
+    region: [],
     citations: '',
     hindex: '',
     i_ten_index: '',
@@ -79,20 +79,32 @@ const Home = () => {
 
   // For dropdown menus
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    console.log(`Changing setting state of ${name} to ${value}`)
-    setSelectedOptions(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+    const { name, value, selectedOptions } = e.target;
+    if (e.target.multiple) {
+      const values = Array.from(selectedOptions, option => option.value);
+      setSelectedOptions(prevState => ({
+        ...prevState,
+        [name]: values,
+      }));
+    } else {
+      setSelectedOptions(prevState => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
-    
-    // fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&citations=${selectedOptions.citations}&hindex=${selectedOptions.hindex}&i_ten_index=${selectedOptions.i_ten_index}&impact_factor=${selectedOptions.impact_factor}&age=${selectedOptions.age}&years_in_field=${selectedOptions.years_in_field}`)
-    fetch(`${apiUrl}/api/search?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`)
+    const queryString = new URLSearchParams({
+      field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
+      raw_institution: selectedOptions.institution,
+      region: selectedOptions.region.join(','), // Join selected regions with commas
+      sorting_sequence: selectedOptions.sorting_sequence,
+    }).toString();
+
+    fetch(`${apiUrl}/api/search?${queryString}`)
       .then(response => response.json())
       .then(data => {
         console.log('Search results:', data);
@@ -258,25 +270,31 @@ const Home = () => {
       <nav className="navbar custom-navbar">
         <div className="navbar-title">For the People, Find the People</div>
       </nav>
+      <div className="input-info">
+        <p>For the institutions, please enter institutions separated by a comma with no space, as such: Institution 1,Institution 2,Institution 3</p>
+      </div>
       <div className="container">
         <div className="dropdown-container d-flex align-items-center mt-4">
-          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleInputChange}>
+          {/* Field dropdown menu */}
+          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleInputChange} multiple>
             <option value="">Field</option>
             {dropdownOptions.fields.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
           
+          {/* Institution text input */}
           <input
             type="text"
             className="form-control mr-2"
             name="institution"
             value={selectedOptions.institution}
             onChange={handleInputChange}
-            placeholder="Enter Institution"
+            placeholder="Enter Institution(s)"
           />
 
-          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange}>
+          {/* Region dropdown menu */}
+          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange} multiple>
             <option value="">Region</option>
             {dropdownOptions.regions.map((option, index) => (
               <option key={index} value={option}>{option}</option>
@@ -290,6 +308,9 @@ const Home = () => {
             <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
+            <div className="sorting-order"> 
+              <p>Sorting order: {selectedOptions.sorting_sequence}</p>
+            </div>
             <table className="table table-bordered">
               <thead>
                 <tr>
