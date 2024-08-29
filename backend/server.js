@@ -8,7 +8,6 @@ const cors = require('cors'); // Import cors package
 
 // Routes
 const expertRoutes = require('./routes/experts');
-const testExpertRoutes = require('./routes/testExperts');
 const institutionRoutes = require('./routes/institutions');
 const institutionImportRoutes = require('./routes/institutionsImport');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
@@ -20,7 +19,6 @@ const dataScrapingRoutes = require('./routes/datascrapes.js');
 const sequelize = require ('./database');
 const Expert = require('./models/Expert');
 const Institution = require('./models/Institution');
-const TestExpert = require('./models/TestExpert');
 
 // express app
 const app = express();
@@ -37,9 +35,6 @@ app.use((req, res, next) => {
 
 // Routes for experts
 app.use('/api/experts', expertRoutes);
-
-// Routes for the test experts
-app.use('/api/testexperts', testExpertRoutes);
 
 // Routes for institutions
 app.use('/api/institutions', institutionRoutes);

@@ -2,9 +2,6 @@
 const Expert = require('../models/Expert');
 // const Institution = require('..models/Institution');
 
-// Test
-const TestExpert = require('../models/TestExpert');
-
 const path = require('path');
 const fs = require('fs');
 

@@ -67,6 +67,7 @@ const Home = () => {
       });
   }, [apiUrl]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     handleSearch();
   }, [selectedOptions.citations,
@@ -254,7 +255,7 @@ const Home = () => {
     setSelectedOptions(prevState => ({
       ...prevState,
       [name]: sortOrder,
-      ['sorting_sequence']: finalSequence,
+      sorting_sequence: finalSequence,
     }));
 
     console.log(`Setting the button of ${name} to ${buttonDirection}`);
@@ -330,12 +331,12 @@ const Home = () => {
                   <th title="The average number of citations of an expert within the last 2 years">Impact Factor
                     <button className="btn sorting-button" name="impact_factor" onClick={handleSorting}>{activeSorting.impact_factor}</button>
                   </th>
-                  <th title="The age of the expert">Age
+                  {/* <th title="The age of the expert">Age
                     <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
                   </th>
                   <th title="How many years the expert has been in their field">Years In Field
                     <button className="btn sorting-button" name="years_in_field" onClick={handleSorting}>{activeSorting.years_in_field}</button>
-                  </th>
+                  </th> */}
                   <th title="The email of the expert or where their email can be found">Email</th>
                 </tr>
               </thead>
@@ -350,8 +351,8 @@ const Home = () => {
                     <td>{result.hindex}</td>
                     <td>{result.i_ten_index}</td>
                     <td>{result.impact_factor}</td>
-                    <td>{result.age}</td>
-                    <td>{result.years_in_field}</td>
+                    {/* <td>{result.age}</td>
+                    <td>{result.years_in_field}</td> */}
                     <td>{result.email}</td>
                   </tr>
                 ))}
