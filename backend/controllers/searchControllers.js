@@ -14,10 +14,6 @@ require('dotenv').config(); //Import dotenv for environment variables
 
 const fetchExperts = async(queryParams) => {
   const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sorting_sequence } = queryParams;
-
-  // Format the institution String for LIKE matching %___%
-  let temp = '%';
-  institution = temp.concat(raw_institution, '%');
   
   // Applied to the WHERE clause of the SQL Query
   // If the var is not null AND it is not All, then the request is comma
@@ -38,14 +34,26 @@ const fetchExperts = async(queryParams) => {
   // }
 
   // Uses LIKE operators, but can only do one entry at a time
-  // Need to find a better way in this case
+  // For multiple institutions:
+  // Chaining everything with OR should work
   if (raw_institution && raw_institution !== 'All') {
-    query[Op.or] = [
-      { '$Institution.name$': { [Op.like]: institution } },
-      { '$Institution.acronym$': { [Op.like]: institution } },
-      { '$Institution.alias$': { [Op.like]: institution } },
-      { '$Institution.label$': { [Op.like]: institution } }
-    ];
+    // Split the institution input
+    const institutionArr = raw_institution.split(',');
+    // Push the OR conditions in here one institution at a time
+    let finalLikeChain = [];
+
+    for (const institution of institutionArr) {
+      finalLikeChain.push({
+        [Op.or]: [
+          { '$Institution.name$': { [Op.like]: `%${institution}%` } },
+          { '$Institution.acronym$': { [Op.like]: `%${institution}%` } },
+          { '$Institution.alias$': { [Op.like]: `%${institution}%` } },
+          { '$Institution.label$': { [Op.like]: `%${institution}%` } }
+        ]
+      });
+    }
+
+    query[Op.or] = finalLikeChain;
   }
 
   if (region && region !== 'Region') query['$Institution.country$'] = {
