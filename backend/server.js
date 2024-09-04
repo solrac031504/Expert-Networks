@@ -16,9 +16,13 @@ const downloadRoutes = require('./routes/downloads');
 const dataScrapingRoutes = require('./routes/datascrapes.js');
 
 // for DB
-const sequelize = require ('./database');
+const sequelize = require('./database');
 const Expert = require('./models/Expert');
 const Institution = require('./models/Institution');
+const Continent = require('./models/Continent');
+const Region = require('./models/Region');
+const Subregion = require('./models/Subregion');
+const Country = require('./models/Country');
 
 // express app
 const app = express();
@@ -82,7 +86,7 @@ const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: false }); 
+    await sequelize.sync({ force: false, alter: true }); 
     console.log('DB synced successfully');
     
     // listen to port
