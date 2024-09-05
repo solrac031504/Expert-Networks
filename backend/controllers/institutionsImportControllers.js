@@ -30,7 +30,7 @@ const importInstitutionsCSV = async (req, res) => {
       institutions.push({
         institution_id: row.id, // institution_id
         name: row.ror_display, // name
-        acronym: row.acronym, // name acrony
+        acronym: row.acronym, // name acronym
         alias: row.alias, // name alias
         label: row.label, // name label
         country: row.country_name,  // country

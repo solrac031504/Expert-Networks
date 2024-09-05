@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require ('../database');
-
 const Subfield = require('./Subfield');
 
 const Topic = sequelize.define('Topic', {

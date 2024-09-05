@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require ('../database');
-const Region = require('./Region');
+const Field = require('./Field');
 
-const Subregion = sequelize.define('Subregion', {
+const Subfield = sequelize.define('Subfield', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true
@@ -11,10 +11,10 @@ const Subregion = sequelize.define('Subregion', {
     type: DataTypes.STRING,
     defaultValue: 'N/A'
   },
-  region_id: {
+  field_id: {
     type: DataTypes.INTEGER,
     references: {
-        model: Region,
+        model: Field,
         key: 'id'
     },
     allowNull: false
@@ -22,7 +22,7 @@ const Subregion = sequelize.define('Subregion', {
 }, { timestamps: false });
 
 // Define associations
-Subregion.belongsTo(Region, { foreignKey: 'region_id' });
-Region.hasMany(Subregion, { foreignKey: 'region_id' });
+Subfield.belongsTo(Field, { foreignKey: 'field_id' });
+Field.hasMany(Subfield, { foreignKey: 'field_id' });
 
-module.exports = Subregion;
+module.exports = Subfield;

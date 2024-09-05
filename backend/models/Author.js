@@ -11,23 +11,23 @@ const Author = sequelize.define('Author', {
     type: DataTypes.STRING
   },
   works_count: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.MEDIUMINT.UNSIGNED,
     defaultValue: 0
   },
   cited_by_count: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.MEDIUMINT.UNSIGNED,
     defaultValue: 0
   },
   hindex: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     defaultValue: 0
   },
   i_ten_index: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     defaultValue: 0
   },
   impact_factor: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.FLOAT.UNSIGNED,
     defaultValue: 0
   },
   last_known_institution_id: {
@@ -40,19 +40,19 @@ const Author = sequelize.define('Author', {
     defaultValue: '000000'
   },
   works_count_2yr: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.MEDIUMINT.UNSIGNED,
     defaultValue: 0
   },
   cited_by_count_2yr: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.MEDIUMINT.UNSIGNED,
     defaultValue: 0
   },
   hindex_2yr: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     defaultValue: 0
   },
   i_ten_index_2yr: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.SMALLINT.UNSIGNED,
     defaultValue: 0
   }
 });
