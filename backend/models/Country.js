@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require ('../database');
-const Continent = require('./Continent');
 const Region = require('./Region');
 const Subregion = require('./Subregion');
 
@@ -29,14 +28,6 @@ const Country = sequelize.define('Country', {
   is_global_south: {
     type: DataTypes.BOOLEAN
   },
-  continent_id: {
-    type: DataTypes.INTEGER,
-    references: {
-        model: Continent,
-        key: 'id'
-    },
-    allowNull: false
-  },
   region_id: {
     type: DataTypes.INTEGER,
     references: {
@@ -56,9 +47,6 @@ const Country = sequelize.define('Country', {
 }, { timestamps: false });
 
 // Define associations
-Country.belongsTo(Continent, { foreignKey: 'continent_id' });
-Continent.hasMany(Country, { foreignKey: 'continent_id' });
-
 Country.belongsTo(Region, { foreignKey: 'region_id' });
 Region.hasMany(Country, { foreignKey: 'region_id' });
 

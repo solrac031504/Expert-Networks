@@ -1,25 +1,28 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require ('../database');
-const Field = require('./Field');
+const Region = require('./Region');
 
-const Subfield = sequelize.define('Subfield', {
+const Subregion = sequelize.define('Subregion', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true
   },
-  display_name: {
-    type: DataTypes.STRING
+  name: {
+    type: DataTypes.STRING,
+    defaultValue: 'N/A'
   },
-  field_id: {
+  region_id: {
     type: DataTypes.INTEGER,
     references: {
-        model: Field,
+        model: Region,
         key: 'id'
-    }
+    },
+    allowNull: false
   }
 }, { timestamps: false });
 
-Subfield.belongsTo(Field, { foreignKey: 'field_id' });
-Field.hasMany(Subfield, { foreignKey: 'field_id' });
+// Define associations
+Subregion.belongsTo(Region, { foreignKey: 'region_id' });
+Region.hasMany(Subregion, { foreignKey: 'region_id' });
 
-module.exports = Subfield;
+module.exports = Subregion;
