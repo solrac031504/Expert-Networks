@@ -14,6 +14,7 @@ const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
 const downloadRoutes = require('./routes/downloads');
 const dataScrapingRoutes = require('./routes/datascrapes.js');
+const csvImportRoutes = require('./routes/csvImport');
 
 // for DB
 const sequelize = require('./database');
@@ -23,6 +24,9 @@ const Continent = require('./models/Continent');
 const Region = require('./models/Region');
 const Subregion = require('./models/Subregion');
 const Country = require('./models/Country');
+const Author = require('./models/Author');
+const Topic = require('./models/Topic');
+const AuthorTopic = require('./models/AuthorTopic');
 
 // express app
 const app = express();
@@ -58,6 +62,9 @@ app.use('/api/download', downloadRoutes);
 // Routes for data scraping
 app.use('/api/data', dataScrapingRoutes);
 
+// Routes for importing OpenAlex data from CSV
+app.use('/api/csv-import', csvImportRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 // // Serve static files from the 'build' directory
@@ -86,7 +93,7 @@ const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: true }); 
+    await sequelize.sync({ force: false, alter: false }); 
     console.log('DB synced successfully');
     
     // listen to port

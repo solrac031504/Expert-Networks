@@ -1,6 +1,9 @@
 // import DB models
 const Expert = require('../models/Expert');
 // const Institution = require('..models/Institution');
+const Author = require('../models/Author');
+const Topic = require('../models/Topic');
+const AuthorTopic = require('../models/AuthorTopic');
 
 const path = require('path');
 const fs = require('fs');
@@ -10,6 +13,15 @@ const { query } = require('express');
 const sequelize = require('../database');
 
 require('dotenv').config(); // Import dotenv for environment variables
+
+const { extractTopicID } = require('../controllers/csvImportControllers');
+
+// All author ID follow the pattern https://openalex.org/T##### https://openalex.org/authors/A##########
+// Only want the ########## for faster indexing
+const extractAuthorID = (raw_id) => {
+  const match = raw_id.match(/A(\d+)$/);
+  return match ? parseInt(match[1], 10) : null;
+}
 
 // Fetch for experts
 const fetchExperts = async (req, res) => {
@@ -145,6 +157,110 @@ const fetchExperts = async (req, res) => {
   }
 };
 
+// Import the authors from OpenAlex using the API link
+const importExpertsOA = async(req, res) => {
+  try {
+    let authors = [];
+  const authorURL = 'https://api.openalex.org/authors';
+
+  const { data } = await axios.get(authorURL);
+
+  // Holds all of the authors from OpenAlex
+  authors = data.results;
+
+  for (const record of authors) {
+    const { 
+      id,
+      display_name,
+      works_count, 
+      cited_by_count,
+      summary_stats,
+      last_known_institutions,
+      topics,
+      updated_date,
+      created_date
+    } = record;
+
+    let adjusted_id = extractAuthorID(id);
+
+    // console.log("id:", id);
+    // console.log("adjusted_id:", adjusted_id);
+    // console.log("display_name:", display_name);
+    // console.log("works_count:", works_count);
+    // console.log("cited_by_count:", cited_by_count);
+    // console.log("summary_stats:", summary_stats);
+    // console.log("last_known_institutions:", last_known_institutions);
+    // console.log("topics:", topics);
+    // console.log("updated_date:", updated_date);
+    // console.log("created_date:", created_date);
+
+    let existingAuthor = await Author.findByPk(adjusted_id);
+
+    // If existingAuthor is null, then create
+    // Reassign existingAuthor so that it can be used in the topics loop
+    if (!existingAuthor) {
+      existingAuthor = await Author.create({
+        id: adjusted_id,
+        display_name: display_name,
+        works_count: works_count,
+        cited_by_count: cited_by_count,
+        hindex: summary_stats.h_index,
+        i_ten_index: summary_stats.i10_index,
+        impact_factor: summary_stats['2yr_mean_citedness'],
+        last_known_institution_id: last_known_institutions.ror,
+        works_count_2yr: summary_stats['2yr_works_count'],
+        cited_by_count_2yr: summary_stats['2yr_cited_by_count'],
+        hindex_2yr: summary_stats['2yr_h_index'],
+        i_ten_index: summary_stats['2yr_i10_index']
+      });
+    } else {
+      existingAuthor = await existingAuthor.update({
+        id: adjusted_id,
+        display_name: display_name,
+        works_count: works_count,
+        cited_by_count: cited_by_count,
+        hindex: summary_stats.h_index,
+        i_ten_index: summary_stats.i10_index,
+        impact_factor: summary_stats['2yr_mean_citedness'],
+        last_known_institution_id: last_known_institutions.ror,
+        works_count_2yr: summary_stats['2yr_works_count'],
+        cited_by_count_2yr: summary_stats['2yr_cited_by_count'],
+        hindex_2yr: summary_stats['2yr_h_index'],
+        i_ten_index: summary_stats['2yr_i10_index']
+      });
+    }
+
+    // For each topic,
+    // Find the topic using the PK
+    // Add that topic to the author
+    // That topic gets added to the table AuthorTopics
+    for (const topic of topics) {
+      let adjustedTopicID = extractTopicID(topic.id);
+      const retrievedTopic = await Topic.findByPk(adjustedTopicID);
+
+      // The result of a (author_id, topic_id) search
+      const tuple = await AuthorTopic.findOne({
+        where: {
+          author_id: existingAuthor.id,
+          topic_id: retrievedTopic.id
+        }
+      });
+
+      // The topic will be added to the author only if the topic did not already exist for that author
+      if (!tuple) await existingAuthor.addTopic(retrievedTopic);
+    }
+
+    break;
+  }
+
+  res.status(200).json({ message: 'Experts added to database' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching experts from API' });
+  }
+}
+
 module.exports = {
-  fetchExperts
+  fetchExperts,
+  importExpertsOA
 };
