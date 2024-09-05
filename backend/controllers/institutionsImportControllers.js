@@ -34,6 +34,9 @@ const importInstitutionsCSV = async (req, res) => {
         alias: row.alias, // name alias
         label: row.label, // name label
         country: row.country_name,  // country
+        country_code: row.country_code, // alpha2 code
+        status: row.status, // status
+        types: row.types, // type of institution
         createdAt: row.created, // date created
         updatedAt: row.last_modified // data modified
       });
@@ -45,35 +48,33 @@ const importInstitutionsCSV = async (req, res) => {
       // debugging
       // let i = 1;
 
+      // Connection was interrupted
+      // Rather than iterating through the entire array, just iterate through the last couple of values
+      // that were not imported
+      // Use either the console or workbench to find the last value before connection failure
+      // let previousIndex = institutions.findIndex(record => record.institution_id === 'https://ror.org/0139hn422');
+      // console.log(`previousIndex = ${previousIndex}`);
+      // let restOfInstitutions = institutions.slice(previousIndex);
+      // console.log(`Remaining institutions = ${restOfInstitutions.length}`);
+
+
+      // let i = 0;
+      // Change institutions to restOfInstitutions to pick up where you left off in case of connection loss mid import
       for (const record of institutions) {
+        // if (i === 100) break;
+        // console.log(record);
         // find an existing institution with this ID
         // existingInstitution is NULL if no record is found
         let existingInstitution = await Institution.findByPk(record.institution_id);
 
         // create if institution does not exist
         if (!existingInstitution) {
-          await Institution.create({
-            institution_id: record.institution_id,
-            name: record.name,
-            acronym: record.acronym,
-            alias: record.alias,
-            label: record.label,
-            country: record.country,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt
-          });
+          console.log("Creating institution...");
+          await Institution.create(record);
         } else {
+          console.log("Updating institution...");
           // If it does exist, update the information
-          await existingInstitution.update({
-            institution_id: record.institution_id,
-            name: record.name,
-            acronym: record.acronym,
-            alias: record.alias,
-            label: record.label,
-            country: record.country,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt
-          });
+          await existingInstitution.update(record);
         }
 
         // console.log(i);

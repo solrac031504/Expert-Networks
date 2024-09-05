@@ -24,6 +24,8 @@ const extractAuthorID = (raw_id) => {
 }
 
 // Fetch for experts
+// DO NOT USE, WILL REMOVE. DOES NOT WORK FOR ALL AUTHORS, ONLY RETRIEVES 25 AND HAVE A LIMIT TO 100,000 API CALLS PER DAY PER USER
+// USE THE CSV IMPORT. WILL TAKE CARE OF BOTH AUTHORS AND THE AUTHOR TOPICS
 const fetchExperts = async (req, res) => {
   // Topics to search for
   const topics = [
@@ -167,7 +169,9 @@ const importExpertsOA = async(req, res) => {
 
   // Holds all of the authors from OpenAlex
   authors = data.results;
+  console.log("Number of authors returned:", data.results.length);
 
+  let i = 0;
   for (const record of authors) {
     const { 
       id,

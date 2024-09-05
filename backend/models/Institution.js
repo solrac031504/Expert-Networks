@@ -38,6 +38,12 @@ const Institution = sequelize.define('Institution', {
       model: Country,
       key: 'alpha2'
     }
+  },
+  status: {
+    type: DataTypes.STRING
+  },
+  types: {
+    type: DataTypes.STRING
   }
 });
 
