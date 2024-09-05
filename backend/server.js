@@ -18,14 +18,20 @@ const csvImportRoutes = require('./routes/csvImport');
 
 // for DB
 const sequelize = require('./database');
+
 const Expert = require('./models/Expert');
 const Institution = require('./models/Institution');
+
 const Continent = require('./models/Continent');
 const Region = require('./models/Region');
 const Subregion = require('./models/Subregion');
 const Country = require('./models/Country');
-const Author = require('./models/Author');
+
+const Domain = require('./models/Domain');
+const Field = require('./models/Field');
+const Subfield = require('./models/Subfield');
 const Topic = require('./models/Topic');
+const Author = require('./models/Author');
 const AuthorTopic = require('./models/AuthorTopic');
 
 // express app
@@ -93,7 +99,7 @@ const syncDatabase = async() => {
   try {
     // "force" deletes a table if it already exists
     // "alter" alters the table every time
-    await sequelize.sync({ force: false, alter: false }); 
+    await sequelize.sync({ force: false, alter: true }); 
     console.log('DB synced successfully');
     
     // listen to port

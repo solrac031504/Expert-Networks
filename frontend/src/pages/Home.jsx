@@ -325,7 +325,7 @@ const Home = () => {
                   <th title="The number of papers (h) that have received (h) or more citations">H-index
                     <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
                   </th>
-                  <th title="The number of publications an expert has with at least 10 citations">i_ten_index-index
+                  <th title="The number of publications an expert has with at least 10 citations">I10-Index
                     <button className="btn sorting-button" name="i_ten_index" onClick={handleSorting}>{activeSorting.i_ten_index}</button>
                   </th>
                   <th title="The average number of citations of an expert within the last 2 years">Impact Factor
