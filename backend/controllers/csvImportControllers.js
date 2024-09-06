@@ -281,9 +281,76 @@ const importAuthorsCSV = async (req, res) => {
   });
 }
 
+// import all OpenAlex author-topics from CSV
+const importAuthorTopicsCSV = async (req, res) => {
+  const ifp = path.resolve('author_topics.csv');
+
+  // Stores CSV data
+  const author_topics = [];
+
+  // Read CSV
+  // let j = 0;
+  const readStream = fs.createReadStream(ifp)
+  readStream
+  .pipe(csv())
+  .on('data', (row) => {
+    // Only read the first 100 for debugging
+    // if (j === 100) {
+    //   readStream.pause();
+    //   readStream.emit('end');
+    // }
+    // Skip header row OR empty row
+    if (row['author_id'] !== 'author_id' && row['author_id']) {
+      // Exctract the id number
+      let extracted_author_id = extractAuthorID(row.author_id);
+      let extracted_topic_id = extractTopicID(row.topic_id);
+      // only push if it exists, i.e., not NULL
+      if (extracted_author_id) {
+        author_topics.push({
+          author_id: extracted_author_id,
+          topic_id: extracted_topic_id
+        });
+      }
+    }
+    // j++;
+  })
+  .on('end', async () => {
+    try {
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < author_topics.length; i += 1000) {
+        console.log(i);
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = Math.min(i + 1000, author_topics.length);
+
+        // console.log(`(${lowerBound},${upperBound})`);
+
+        let records = author_topics.slice(lowerBound, upperBound);
+        // console.log(records);
+        await AuthorTopic.bulkCreate(records, {
+          updateOnDuplicate: [
+            'author_id',
+            'topic_id'
+          ]
+        });
+      }
+
+      console.log('Author-topic pairs successfully imported and inserted');
+      res.status(200).json(author_topics[0]);
+
+    } catch(error) {
+      console.error('Error inserting author-topic pairs:', error);
+      res.status(500).json({ error: error.message});
+    }
+  });
+}
+
 module.exports = {
   importSubfieldsCSV,
   importTopicsCSV,
   importAuthorsCSV,
-  extractTopicID
+  extractTopicID,
+  importAuthorTopicsCSV
 };
