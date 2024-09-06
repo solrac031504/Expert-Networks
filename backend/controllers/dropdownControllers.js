@@ -115,10 +115,10 @@ const getUniqueCountries = async (req, res) => {
     // extract the region_id and the subregion_id
     const { region_id, subregion_id } = req.query;
 
-    // If subregion_id is NULL (i.e., no selection), use the region_id
+    // If subregion_id is NULL (i.e., no selection) or undefined, use the region_id
     // Else, use subregion_id
     let countries;
-    if (!subregion_id) {
+    if (!subregion_id || subregion_id==='undefined') {
       countries = await Country.findAll({
         where: {
           region_id: region_id

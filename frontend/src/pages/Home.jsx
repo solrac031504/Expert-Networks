@@ -8,7 +8,10 @@ const Home = () => {
     fields: [],
     subfields: [],
     topics: [],
+    continents: [],
     regions: [],
+    subregions: [],
+    countries: []
   });
 
   const [selectedOptions, setSelectedOptions] = useState({
@@ -17,7 +20,10 @@ const Home = () => {
     subfield: [],
     topic: [],
     institution: '',
+    continent: [],
     region: [],
+    subregion: [],
+    country: [],
     citations: '',
     hindex: '',
     i_ten_index: '',
@@ -57,19 +63,19 @@ const Home = () => {
         console.error('Error fetching domains:', error);
       });
 
-    // Fetch unique regions
-    console.log('Fetching unique regions...');
-    fetch(`${apiUrl}/api/dropdown/regions`)
+    // Fetch unique continents
+    console.log('Fetching unique continents...');
+    fetch(`${apiUrl}/api/dropdown/geo/continents`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique regions:', data);
+        console.log('Received unique continents:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
-          regions: data,
+          continents: data,
         }));
       })
       .catch(error => {
-        console.error('Error fetching regions:', error);
+        console.error('Error fetching continents:', error);
       });
   }, [apiUrl]);
 
@@ -135,6 +141,71 @@ const Home = () => {
         console.error('Error fetching topics:', error);
       });
   }, [selectedOptions.subfield])
+
+  // Fetch unique regions when continent changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      continent_id: selectedOptions.continent.id,
+    }).toString();
+
+    console.log('Fetching unique regions...');
+    fetch(`${apiUrl}/api/dropdown/geo/regions?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique regions:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          regions: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching regions:', error);
+      });
+  }, [selectedOptions.continent])
+
+  // Fetch unique subregions when region changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      region_id: selectedOptions.region.id,
+    }).toString();
+
+    console.log('Fetching unique subregions...');
+    fetch(`${apiUrl}/api/dropdown/geo/subregions?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique subregions:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          subregions: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching subregions:', error);
+      });
+  }, [selectedOptions.region])
+
+  // Fetch unique countries when regions OR subregions changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      region_id: selectedOptions.region.id,
+      subregion_id: selectedOptions.subregion.id
+    }).toString();
+
+    console.log('Fetching unique countries...');
+    fetch(`${apiUrl}/api/dropdown/geo/countries?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique countries:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          countries: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  }, [selectedOptions.region, selectedOptions.subregion])
+
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -393,6 +464,40 @@ const Home = () => {
         </div>
 
         <div className="dropdown-container d-flex align-items-center mt-4">
+          {/* Continent dropdown menu */}
+          <select className="form-control mr-2" name="continent" value={selectedOptions.continent.id || ''} onChange={handleInputChange}>
+            <option value="">Continent</option>
+            {dropdownOptions.continents.map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Region dropdown menu */}
+          <select className="form-control mr-2" name="region" value={selectedOptions.region.id || ''} onChange={handleInputChange}>
+            <option value="">Region</option>
+            {(Array.isArray(dropdownOptions.regions) ? dropdownOptions.regions : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Subregion dropdown menu */}
+          <select className="form-control mr-2" name="subregion" value={selectedOptions.subregion.id || ''} onChange={handleInputChange}>
+            <option value="">Subregion</option>
+            {(Array.isArray(dropdownOptions.subregions) ? dropdownOptions.subregions : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Country dropdown menu */}
+          <select className="form-control mr-2" name="country" value={selectedOptions.country.id || ''} onChange={handleInputChange}>
+            <option value="">Country</option>
+            {(Array.isArray(dropdownOptions.countries) ? dropdownOptions.countries : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Institution text input */}
           <input
             type="text"
@@ -402,14 +507,6 @@ const Home = () => {
             onChange={handleInputChange}
             placeholder="Enter Institution(s)"
           />
-
-          {/* Region dropdown menu */}
-          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange}>
-            <option value="">Region</option>
-            {dropdownOptions.regions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
         </div>
 
         <div className="dropdown-container d-flex align-items-center mt-4">
