@@ -252,7 +252,7 @@ const importAuthorsCSV = async (req, res) => {
         // console.log(`(${lowerBound},${upperBound})`);
 
         let records = authors.slice(lowerBound, upperBound);
-        console.log(records);
+        // console.log(records);
         await Author.bulkCreate(records, {
           updateOnDuplicate: [
             'id',

@@ -42,7 +42,7 @@ csv_files = {
             ]
         },
         'ids': {
-            'name': os.path.join(CSV_DIR, 'authors_ids.csv.gz'),
+            'name': os.path.join(CSV_DIR, 'author_ids.csv.gz'),
             'columns': [
                 'author_id', 
                 'openalex', 
@@ -54,7 +54,7 @@ csv_files = {
             ]
         },
         'counts_by_year': {
-            'name': os.path.join(CSV_DIR, 'authors_counts_by_year.csv.gz'),
+            'name': os.path.join(CSV_DIR, 'author_counts_by_year.csv.gz'),
             'columns': [
                 'author_id', 
                 'year', 
@@ -85,99 +85,94 @@ csv_files = {
 }
 
 
-def flatten_authors():
+def flatten_authors(subfolder=''):
     file_spec = csv_files['authors']
 
-    with gzip.open(file_spec['authors']['name'], 'wt',
-                   encoding='utf-8') as authors_csv, \
-            gzip.open(file_spec['ids']['name'], 'wt',
-                      encoding='utf-8') as ids_csv, \
-            gzip.open(file_spec['counts_by_year']['name'], 'wt',
-                      encoding='utf-8') as counts_by_year_csv, \
-            gzip.open(file_spec['author_topics']['name'], 'wt',
-                      encoding='utf-8') as topics_csv:
+    try:
+        with open(file_spec['authors']['name'], 'wt', encoding='utf-8') as authors_csv, \
+                open(file_spec['ids']['name'], 'wt', encoding='utf-8') as ids_csv, \
+                open(file_spec['counts_by_year']['name'], 'wt', encoding='utf-8') as counts_by_year_csv, \
+                open(file_spec['author_topics']['name'], 'wt', encoding='utf-8') as topics_csv:
 
-        # Writers for the CSV files
-        authors_writer = csv.DictWriter(
-            authors_csv, fieldnames=file_spec['authors']['columns'],
-            extrasaction='ignore'
-        )
-        authors_writer.writeheader()
+            # Writers for the CSV files
+            authors_writer = csv.DictWriter(
+                authors_csv, fieldnames=file_spec['authors']['columns'],
+                extrasaction='ignore'
+            )
+            authors_writer.writeheader()
 
-        ids_writer = csv.DictWriter(ids_csv,
-                                    fieldnames=file_spec['ids']['columns'])
-        ids_writer.writeheader()
+            ids_writer = csv.DictWriter(ids_csv, fieldnames=file_spec['ids']['columns'])
+            ids_writer.writeheader()
 
-        counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=
-        file_spec['counts_by_year']['columns'])
-        counts_by_year_writer.writeheader()
+            counts_by_year_writer = csv.DictWriter(counts_by_year_csv, fieldnames=file_spec['counts_by_year']['columns'])
+            counts_by_year_writer.writeheader()
 
-        topics_writer = csv.DictWriter(
-            topics_csv, fieldnames=file_spec['author_topics']['columns']
-        )
-        topics_writer.writeheader()
+            topics_writer = csv.DictWriter(
+                topics_csv, fieldnames=file_spec['author_topics']['columns']
+            )
+            topics_writer.writeheader()
 
-        files_done = 0
-        for jsonl_file_name in glob.glob(
-                os.path.join(SNAPSHOT_DIR, 'data', 'authors', '*', '*.gz')):
-            print(jsonl_file_name)
-            with gzip.open(jsonl_file_name, 'r') as authors_jsonl:
-                for author_json in authors_jsonl:
-                    if not author_json.strip():
-                        continue
+            files_done = 0
+            for jsonl_file_name in glob.glob(os.path.join(SNAPSHOT_DIR, 'data', 'authors', subfolder, '*.gz')):
+                print(f"Processing file: {jsonl_file_name}")
+                try:
+                    with gzip.open(jsonl_file_name, 'r') as authors_jsonl:
+                        for author_json in authors_jsonl:
+                            if not author_json.strip():
+                                continue
 
-                    author = json.loads(author_json)
+                            author = json.loads(author_json)
 
-                    if not (author_id := author.get('id')):
-                        continue
+                            if not (author_id := author.get('id')):
+                                continue
 
-                    # authors
-                    # flatten display_name_alternatives
-                    author['display_name_alternatives'] = json.dumps(
-                        author.get('display_name_alternatives'),
-                        ensure_ascii=False)
-                    # Using 'ror' instead of 'id'
-                    author['last_known_institution'] = (
-                                author.get('last_known_institution') or {}).get(
-                        'ror')
+                            # authors
+                            author['display_name_alternatives'] = json.dumps(
+                                author.get('display_name_alternatives'),
+                                ensure_ascii=False
+                            )
+                            author['last_known_institution'] = (
+                                    author.get('last_known_institution') or {}).get('ror')
 
-                    # Flatten summary_stats into individual fields
-                    summary_stats = author.get('summary_stats', {})
-                    author['2yr_mean_citedness'] = summary_stats.get('2yr_mean_citedness')
-                    author['h_index'] = summary_stats.get('h_index')
-                    author['i10_index'] = summary_stats.get('i10_index')
-                    author['2yr_works_count'] = summary_stats.get('2yr_works_count')
-                    author['2yr_cited_by_count'] = summary_stats.get('2yr_cited_by_count')
-                    author['2yr_i10_index'] = summary_stats.get('2yr_i10_index')
-                    author['2yr_h_index'] = summary_stats.get('2yr_h_index')
+                            summary_stats = author.get('summary_stats', {})
+                            author['2yr_mean_citedness'] = summary_stats.get('2yr_mean_citedness')
+                            author['h_index'] = summary_stats.get('h_index')
+                            author['i10_index'] = summary_stats.get('i10_index')
+                            author['2yr_works_count'] = summary_stats.get('2yr_works_count')
+                            author['2yr_cited_by_count'] = summary_stats.get('2yr_cited_by_count')
+                            author['2yr_i10_index'] = summary_stats.get('2yr_i10_index')
+                            author['2yr_h_index'] = summary_stats.get('2yr_h_index')
 
-                    # Write to authors.csv.gz
-                    authors_writer.writerow(author)
+                            # Write to authors.csv.gz
+                            authors_writer.writerow(author)
 
-                    # ids
-                    # Write to ids.csv.gz
-                    if author_ids := author.get('ids'):
-                        author_ids['author_id'] = author_id
-                        ids_writer.writerow(author_ids)
+                            # ids
+                            if author_ids := author.get('ids'):
+                                author_ids['author_id'] = author_id
+                                ids_writer.writerow(author_ids)
 
-                    # counts_by_year
-                    # Write counts_by_year to counts_by_year.csv.gz
-                    if counts_by_year := author.get('counts_by_year'):
-                        for count_by_year in counts_by_year:
-                            count_by_year['author_id'] = author_id
-                            counts_by_year_writer.writerow(count_by_year)
+                            # counts_by_year
+                            if counts_by_year := author.get('counts_by_year'):
+                                for count_by_year in counts_by_year:
+                                    count_by_year['author_id'] = author_id
+                                    counts_by_year_writer.writerow(count_by_year)
 
-                    # Write topic associations to author_topics.csv.gz
-                    if topics := author.get('topics'):
-                        for topic in topics:
-                            topics_writer.writerow({
-                                'author_id': author_id,
-                                'topic_id': topic['id']
-                            })
+                            # Write topic associations to author_topics.csv.gz
+                            if topics := author.get('topics'):
+                                for topic in topics:
+                                    topics_writer.writerow({
+                                        'author_id': author_id,
+                                        'topic_id': topic['id']
+                                    })
+                except Exception as e:
+                    print(f"Error processing file {jsonl_file_name}: {e}")
 
-            files_done += 1
-            if FILES_PER_ENTITY and files_done >= FILES_PER_ENTITY:
-                break
+                files_done += 1
+                if FILES_PER_ENTITY and files_done >= FILES_PER_ENTITY:
+                    break
+    except Exception as e:
+        print(f"Error in flatten_authors function: {e}")
+
 
 
 def flatten_topics():
@@ -225,7 +220,6 @@ def init_dict_writer(csv_file, file_spec, **kwargs):
     writer.writeheader()
     return writer
 
-
 if __name__ == '__main__':
-    flatten_topics()
-    flatten_authors()
+    # flatten_topics()
+    flatten_authors('updated_date=2023-06-08')
