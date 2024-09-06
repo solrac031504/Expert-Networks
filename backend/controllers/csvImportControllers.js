@@ -205,57 +205,71 @@ const importAuthorsCSV = async (req, res) => {
   const authors = [];
 
   // Read CSV
-  fs.createReadStream(ifp)
+  let j = 0;
+  const readStream = fs.createReadStream(ifp)
+  readStream
   .pipe(csv())
   .on('data', (row) => {
+    // Only read the first 100 for debugging
+    // if (j === 100) {
+    //   readStream.pause();
+    //   readStream.emit('end');
+    // }
     // Skip header row OR empty row
-    if (row['id'] !== 'id' || row['id'] !== '') {
-      // Exctract the id number for all of them
-      console.log("Raw row:", row);
+    if (row['id'] !== 'id' && row['id']) {
+      // Exctract the id number
       let extracted_author_id = extractAuthorID(row.id);
-
       // only push if it exists, i.e., not NULL
       if (extracted_author_id) {
         authors.push({
-          id: extracted_author_id, 
+          id: extracted_author_id,
           display_name: row.display_name,
-          works_count: row.works_count,
-          cited_by_count: row.cited_by_count,
-          hindex: row.hindex,
-          i_ten_index: row.i_ten_index,
-          impact_factor: row.impact_factor,
-          last_known_institution_id: row.last_known_institution_id, // uses the OpenAlex Institution ID, not ROR. Will not work for 
-          works_count_2yr: row.works_count_2yr,
-          cited_by_count_2yr: row.cited_by_count_2yr,
-          hindex_2yr: row.hindex_2yr,
-          i_ten_index_2yr: row.i_ten_index_2yr
+          works_count: Number.isNaN(parseInt(row.works_count)) ? 0 : parseInt(row.works_count),
+          cited_by_count: Number.isNaN(parseInt(row.cited_by_count)) ? 0 : parseInt(row.cited_by_count),
+          hindex: Number.isNaN(parseInt(row.h_index)) ? 0 : parseInt(row.h_index),
+          i_ten_index: Number.isNaN(parseInt(row.i10_index)) ? 0 : parseInt(row.i10_index),
+          impact_factor: Number.isNaN(parseInt(row.impact_factor)) ? 0 : parseInt(row.impact_factor),
+          last_known_institution_id: (row.last_known_institution === '') ? '000000' : row.last_known_institution, // uses the OpenAlex Institution ID, not ROR
+          works_count_2yr: Number.isNaN(parseInt(row['2yr_works_count'])) ? 0 : parseInt(row['2yr_works_count']),
+          cited_by_count_2yr: Number.isNaN(parseInt(row['2yr_cited_by_count'])) ? 0 : parseInt(row['2yr_cited_by_count']),
+          hindex_2yr: Number.isNaN(parseInt(row['2yr_h_index'])) ? 0 : parseInt(row['2yr_h_index']),
+          i_ten_index_2yr: Number.isNaN(parseInt(row['2yr_i10_index'])) ? 0 : parseInt(row['2yr_i10_index'])
         });
       }
     }
+    // j++;
   })
   .on('end', async () => {
     try {
-      let i = 0;
-      for (const record of topics) {
-        // Debugging, only do first 100
-        if (i === 100) break;
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < authors.length; i += 1000) {
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = (i + 1000 > authors.length) ? authors.length : i + 1000;
 
-        // find an existing topic with this ID
-        // existingTopic is NULL if no record is found
-        // let existingAuthor = await Author.findByPk(record.id);
+        // console.log(`(${lowerBound},${upperBound})`);
 
-        // create if topic does not exist
-        // if (!existingAuthor) {
-        //   await Author.create(record);
-        // } else {
-        //   // If it does exist, update the information
-        //   await existingAuthor.update(record);
-        // }
-
-        // console.log(i);
-        console.log(record);
-        i++;
-      };
+        let records = authors.slice(lowerBound, upperBound);
+        console.log(records);
+        await Author.bulkCreate(records, {
+          updateOnDuplicate: [
+            'id',
+            'display_name',
+            'works_count',
+            'cited_by_count',
+            'hindex',
+            'i_ten_index',
+            'impact_factor',
+            'last_known_institution_id',
+            'works_count_2yr',
+            'cited_by_count_2yr',
+            'hindex_2yr',
+            'i_ten_index_2yr'
+          ]
+        });
+      }
 
       console.log('Authors successfully imported and inserted');
       res.status(200).json(authors[0]);
