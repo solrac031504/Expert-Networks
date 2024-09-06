@@ -3,6 +3,8 @@ const Author = require('../models/Author');
 const Topic = require('../models/Topic');
 const AuthorTopic = require('../models/AuthorTopic');
 
+const Subfield = require('../models/Subfield');
+
 const path = require('path');
 const fs = require('fs');
 const csv = require('csv-parser');
@@ -122,6 +124,78 @@ const importTopicsCSV = async (req, res) => {
   });
 }
 
+const importSubfieldsCSV = async (req, res) => {
+  const ifp = path.resolve('subfields.csv');
+  // const ifp = path.resolve('testImport.csv');
+
+  // Stores CSV data
+  const subfields = [];
+
+  // Read CSV
+  fs.createReadStream(ifp)
+  .pipe(csv())
+  .on('data', (row) => {
+    // Skip header row OR empty row
+    if (row['id'] !== 'subfield_id') {
+      // console.log("Raw row:", row);
+
+      subfields.push({
+        id: row.subfield_id, 
+        display_name: row.subfield_display_name,
+        field_id: row.field_id
+      });
+    }
+  })
+  .on('end', async () => {
+    try {
+      // let i = 0;
+      // for (const record of subfields) {
+      //   // Debugging, only do first 100
+      //   // if (i === 100) break;
+
+      //   // find an existing topic with this ID
+      //   // existingTopic is NULL if no record is found
+      //   let existingSubfield = await Topic.findByPk(record.id);
+
+      //   // create if topic does not exist
+      //   if (!existingTopic) {
+      //     await Topic.create(record);
+      //   } else {
+      //     // If it does exist, update the information
+      //     await existingTopic.update(record);
+      //   }
+
+      //   // console.log(i);
+      //   // console.log(record);
+      //   // i++;
+      // };
+
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < subfields.length; i += 1000) {
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = (i+1000 > subfields.length) ? subfields.length : i + 1000
+
+        console.log(`(${lowerBound},${upperBound})`);
+
+        let records = subfields.slice(lowerBound, upperBound);
+        await Subfield.bulkCreate(records, {
+          updateOnDuplicate: ['id', 'display_name', 'field_id']
+        });
+      }
+
+      console.log('Subfields successfully imported');
+      res.status(200).json(subfields[0]);
+
+    } catch(error) {
+      console.error('Error inserting subfields:', error);
+      res.status(500).json({ error: error.message});
+    }
+  });
+}
+
 // import all OpenAlex topics from CSV
 const importAuthorsCSV = async (req, res) => {
   const ifp = path.resolve('authors.csv');
@@ -194,6 +268,7 @@ const importAuthorsCSV = async (req, res) => {
 }
 
 module.exports = {
+  importSubfieldsCSV,
   importTopicsCSV,
   importAuthorsCSV,
   extractTopicID

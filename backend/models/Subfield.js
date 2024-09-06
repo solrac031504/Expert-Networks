@@ -7,7 +7,7 @@ const Subfield = sequelize.define('Subfield', {
     type: DataTypes.INTEGER,
     primaryKey: true
   },
-  name: {
+  display_name: {
     type: DataTypes.STRING,
     defaultValue: 'N/A'
   },
