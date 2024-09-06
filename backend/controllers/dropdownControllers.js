@@ -46,7 +46,11 @@ const Topic = require('../models/Topic');
 // get unique continents
 const getUniqueContinents = async (req, res) => {
   try {
-    const continents = await Continent.findAll();
+    const continents = await Continent.findAll({
+      order: [
+        ['name', 'ASC']
+      ]
+    });
 
     // converts objects to array
     res.status(200).json(continents.map(continent => ({
@@ -64,7 +68,10 @@ const getUniqueRegions = async (req, res) => {
     const regions = await Region.findAll({
       where: {
         continent_id: req.body.continent_id
-      }
+      },
+      order: [
+        ['name', 'ASC']
+      ]
     })
 
     // converts objects to array
@@ -85,7 +92,10 @@ const getUniqueSubregions = async (req,res) => {
     const subregions = await Subregion.findAll({
       where: {
         region_id: req.body.region_id
-      }
+      },
+      order: [
+        ['name', 'ASC']
+      ]
     })
 
     // converts objects to array
@@ -112,13 +122,19 @@ const getUniqueCountries = async (req, res) => {
       countries = await Country.findAll({
         where: {
           region_id: region_id
-        }
+        },
+        order: [
+          ['name', 'ASC']
+        ]
       })
     } else {
       countries = await Country.findAll({
         where: {
           subregion_id: subregion_id
-        }
+        },
+        order: [
+          ['name', 'ASC']
+        ]
       })
     }
 
@@ -135,7 +151,11 @@ const getUniqueCountries = async (req, res) => {
 // get the domains
 const getUniqueDomains = async (req, res) => {
   try {
-    const domains = await Domain.findAll();
+    const domains = await Domain.findAll({
+      order: [
+        ['display_name', 'ASC']
+      ]
+    });
 
     // converts objects to array
     res.status(200).json(domains.map(domain => ({
@@ -153,7 +173,10 @@ const getUniqueFields = async (req, res) => {
     const fields = await Field.findAll({
       where: {
         domain_id: req.body.domain_id
-      }
+      },
+      order: [
+        ['display_name', 'ASC']
+      ]
     })
   
     // converts objects to array
@@ -174,7 +197,10 @@ const getUniqueSubfields = async (req, res) => {
     const subfields = await Subfield.findAll({
       where: {
         field_id: req.body.field_id
-      }
+      },
+      order: [
+        ['display_name', 'ASC']
+      ]
     })
   
     // converts objects to array
@@ -195,7 +221,10 @@ const getUniqueTopics = async (req, res) => {
     const topics = await Topic.findAll({
       where: {
         subfield_id: req.body.subfield_id
-      }
+      },
+      order: [
+        ['display_name', 'ASC']
+      ]
     })
   
     // converts objects to array
