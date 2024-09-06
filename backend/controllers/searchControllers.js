@@ -13,7 +13,11 @@ const sequelize = require('../database');
 require('dotenv').config(); //Import dotenv for environment variables
 
 const fetchExperts = async(queryParams) => {
-  const { field_of_study, raw_institution, region, citations, hindex, i10, imp_fac, age, years, sorting_sequence } = queryParams;
+  const { field_of_study, raw_institution, region, sorting_sequence } = queryParams;
+
+  if (!field_of_study && !raw_institution && !region) {
+    return [];
+  }
   
   // Applied to the WHERE clause of the SQL Query
   // If the var is not null AND it is not All, then the request is comma

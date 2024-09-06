@@ -4,12 +4,18 @@ import './home.css'; // Adjust the path if necessary
 
 const Home = () => {
   const [dropdownOptions, setDropdownOptions] = useState({
+    domains: [],
     fields: [],
+    subfields: [],
+    topics: [],
     regions: [],
   });
 
   const [selectedOptions, setSelectedOptions] = useState({
+    domain: [],
     field: [],
+    subfield: [],
+    topic: [],
     institution: '',
     region: [],
     citations: '',
@@ -36,19 +42,19 @@ const Home = () => {
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
   useEffect(() => {
-    // Fetch unique fields
-    console.log('Fetching unique fields...');
-    fetch(`${apiUrl}/api/dropdown/fields`)
+    // Fetch unique domains
+    console.log('Fetching unique domains...');
+    fetch(`${apiUrl}/api/dropdown/study/domains`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique fields:', data);
+        console.log('Received unique domains:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
-          fields: data,
+          domains: data,
         }));
       })
       .catch(error => {
-        console.error('Error fetching fields:', error);
+        console.error('Error fetching domains:', error);
       });
 
     // Fetch unique regions
@@ -67,6 +73,69 @@ const Home = () => {
       });
   }, [apiUrl]);
 
+  // Fetch unique fields when domain changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      domain_id: selectedOptions.domain.id,
+    }).toString();
+
+    console.log('Fetching unique fields...');
+    fetch(`${apiUrl}/api/dropdown/study/fields?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique fields:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          fields: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching fields:', error);
+      });
+  }, [selectedOptions.domain])
+
+  // Fetch unique subfields when field changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      field_id: selectedOptions.field.id,
+    }).toString();
+
+    console.log('Fetching unique subfields...');
+    fetch(`${apiUrl}/api/dropdown/study/subfields?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique subfields:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          subfields: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching subfields:', error);
+      });
+  }, [selectedOptions.field])
+
+  // Fetch unique topics when subfield changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      subfield_id: selectedOptions.subfield.id,
+    }).toString();
+
+    console.log('Fetching unique topics...');
+    fetch(`${apiUrl}/api/dropdown/study/topics?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique topics:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          topics: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching topics:', error);
+      });
+  }, [selectedOptions.subfield])
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     handleSearch();
@@ -78,19 +147,32 @@ const Home = () => {
       selectedOptions.years_in_field
   ]); // Trigger search whenever selectedOptions of sorting changes
 
-  // For dropdown menus
+  // Dropdown menus
   const handleInputChange = (e) => {
-    const { name, value, selectedOptions } = e.target;
+    const { name, value, selectedOptions, options } = e.target;
+  
+    // Supposedly for multiple, will handle later
     if (e.target.multiple) {
-      const values = Array.from(selectedOptions, option => option.value);
+      const selectedValues = Array.from(selectedOptions, option => {
+        return {
+          id: option.value,
+          name: option.textContent // Assuming the textContent is the name
+        };
+      });
+      
       setSelectedOptions(prevState => ({
         ...prevState,
-        [name]: values,
+        [name]: selectedValues,
       }));
     } else {
+      const selectedData = {
+        id: value,
+        name: options ? options.textContent : ''
+      };
+      
       setSelectedOptions(prevState => ({
         ...prevState,
-        [name]: value,
+        [name]: selectedData,
       }));
     }
   };
@@ -98,6 +180,7 @@ const Home = () => {
   // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
+
     const queryString = new URLSearchParams({
       field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
       raw_institution: selectedOptions.institution,
@@ -276,14 +359,40 @@ const Home = () => {
       </div>
       <div className="container">
         <div className="dropdown-container d-flex align-items-center mt-4">
-          {/* Field dropdown menu */}
-          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleInputChange} multiple>
-            <option value="">Field</option>
-            {dropdownOptions.fields.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
+          {/* Domain dropdown menu */}
+          <select className="form-control mr-2" name="domain" value={selectedOptions.domain.id || ''} onChange={handleInputChange}>
+            <option value="">Domain</option>
+            {dropdownOptions.domains.map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-          
+
+          {/* Field dropdown menu */}
+          <select className="form-control mr-2" name="field" value={selectedOptions.field.id || ''} onChange={handleInputChange}>
+            <option value="">Field</option>
+            {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Subfield dropdown menu */}
+          <select className="form-control mr-2" name="subfield" value={selectedOptions.subfield.id || ''} onChange={handleInputChange}>
+            <option value="">Subfield</option>
+            {(Array.isArray(dropdownOptions.subfields) ? dropdownOptions.subfields : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Topic dropdown menu */}
+          <select className="form-control mr-2" name="topic" value={selectedOptions.topic.id || ''} onChange={handleInputChange}>
+            <option value="">Topic</option>
+            {(Array.isArray(dropdownOptions.topics) ? dropdownOptions.topics : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Institution text input */}
           <input
             type="text"
@@ -295,12 +404,15 @@ const Home = () => {
           />
 
           {/* Region dropdown menu */}
-          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange} multiple>
+          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange}>
             <option value="">Region</option>
             {dropdownOptions.regions.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
+        </div>
+
+        <div className="dropdown-container d-flex align-items-center mt-4">
           <button className="btn btn-primary" onClick={handleSearch}>Search</button>
         </div>
 

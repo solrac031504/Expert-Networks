@@ -67,7 +67,7 @@ const getUniqueRegions = async (req, res) => {
   try {
     const regions = await Region.findAll({
       where: {
-        continent_id: req.body.continent_id
+        continent_id: req.query.continent_id
       },
       order: [
         ['name', 'ASC']
@@ -91,7 +91,7 @@ const getUniqueSubregions = async (req,res) => {
   try {
     const subregions = await Subregion.findAll({
       where: {
-        region_id: req.body.region_id
+        region_id: req.query.region_id
       },
       order: [
         ['name', 'ASC']
@@ -113,7 +113,7 @@ const getUniqueSubregions = async (req,res) => {
 const getUniqueCountries = async (req, res) => {
   try {
     // extract the region_id and the subregion_id
-    const { region_id, subregion_id } = req.body;
+    const { region_id, subregion_id } = req.query;
 
     // If subregion_id is NULL (i.e., no selection), use the region_id
     // Else, use subregion_id
@@ -172,7 +172,7 @@ const getUniqueFields = async (req, res) => {
   try {
     const fields = await Field.findAll({
       where: {
-        domain_id: req.body.domain_id
+        domain_id: req.query.domain_id
       },
       order: [
         ['display_name', 'ASC']
@@ -196,7 +196,7 @@ const getUniqueSubfields = async (req, res) => {
   try {
     const subfields = await Subfield.findAll({
       where: {
-        field_id: req.body.field_id
+        field_id: req.query.field_id
       },
       order: [
         ['display_name', 'ASC']
@@ -220,7 +220,7 @@ const getUniqueTopics = async (req, res) => {
   try {
     const topics = await Topic.findAll({
       where: {
-        subfield_id: req.body.subfield_id
+        subfield_id: req.query.subfield_id
       },
       order: [
         ['display_name', 'ASC']
