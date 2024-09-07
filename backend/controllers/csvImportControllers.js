@@ -217,6 +217,7 @@ const importAuthorsCSV = async (req, res) => {
     // }
     // Skip header row OR empty row
     if (row['id'] !== 'id' && row['id']) {
+      // console.log(row);
       // Exctract the id number
       let extracted_author_id = extractAuthorID(row.id);
       // only push if it exists, i.e., not NULL
@@ -235,6 +236,7 @@ const importAuthorsCSV = async (req, res) => {
           hindex_2yr: Number.isNaN(parseInt(row['2yr_h_index'])) ? 0 : parseInt(row['2yr_h_index']),
           i_ten_index_2yr: Number.isNaN(parseInt(row['2yr_i10_index'])) ? 0 : parseInt(row['2yr_i10_index'])
         });
+        // console.log(authors[authors.length - 1]);
       }
     }
     // j++;
@@ -318,6 +320,7 @@ const importAuthorTopicsCSV = async (req, res) => {
     try {
       // Use bulkCreate and updateOnDuplicate to improve import times
       // Increments of 1000
+      let error_ids = [];
       for (let i = 0; i < author_topics.length; i += 1000) {
         console.log(i);
         // Lower bound is the current i value, increments of 1000
@@ -329,14 +332,50 @@ const importAuthorTopicsCSV = async (req, res) => {
 
         let records = author_topics.slice(lowerBound, upperBound);
         // console.log(records);
-        await AuthorTopic.bulkCreate(records, {
-          updateOnDuplicate: [
-            'author_id',
-            'topic_id'
-          ]
-        });
+        // await AuthorTopic.bulkCreate(records, {
+        //   updateOnDuplicate: [
+        //     'author_id',
+        //     'topic_id'
+        //   ]
+        // });
+
+        try {
+          await AuthorTopic.bulkCreate(records, {
+            updateOnDuplicate: [
+              'author_id',
+              'topic_id'
+            ]
+          });
+        } catch(error) {
+          // If the bulk insertion failes, iterate through and update/create manually
+          // Store failed values in the error_id array
+          try {
+
+          } catch(error) {
+            
+          }
+          for (const record of records) {
+            try {
+              // Find the record based on the composite PK
+              // Created is true if the value was created
+              const [existingPair, created] = await AuthorTopic.findOrCreate({
+                where: {
+                  author_id: record.author_id,
+                  topic_id: record.topic_id
+                }
+              });
+
+              // If created is false (i.e., already existed), then update the record
+              if (!created) existingPair.update(record);
+            } catch(error) {
+              // Upon failure, save the id pair for debugging
+              error_ids.push(record);
+            }
+          }
+        }
       }
 
+      console.log('Errors:', error_ids);
       console.log('Author-topic pairs successfully imported and inserted');
       res.status(200).json(author_topics[0]);
 

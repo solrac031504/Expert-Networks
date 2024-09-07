@@ -131,8 +131,11 @@ def flatten_authors(subfolder=''):
                                 author.get('display_name_alternatives'),
                                 ensure_ascii=False
                             )
+                            # last_known_institution deprecated, last_known_institutions is in use
+                            last_known_institutions = author.get('last_known_institutions', [])
                             author['last_known_institution'] = (
-                                    author.get('last_known_institution') or {}).get('ror')
+                                last_known_institutions[0].get('ror') if last_known_institutions else ''
+                            )
 
                             summary_stats = author.get('summary_stats', {})
                             author['2yr_mean_citedness'] = summary_stats.get('2yr_mean_citedness')
@@ -220,6 +223,22 @@ def init_dict_writer(csv_file, file_spec, **kwargs):
     writer.writeheader()
     return writer
 
+def check_files():
+    for filename in [
+        csv_files['authors']['authors']['name'],
+        csv_files['authors']['ids']['name'],
+        csv_files['authors']['counts_by_year']['name'],
+        csv_files['authors']['author_topics']['name'],
+        # csv_files['topics']['topics']['name']
+    ]:
+        if os.path.exists(filename):
+            print(f"{filename} exists and has size {os.path.getsize(filename)} bytes")
+        else:
+            print(f"{filename} does not exist")
+
 if __name__ == '__main__':
     # flatten_topics()
-    flatten_authors('updated_date=2023-06-08')
+    # pick the subfolder to make it more manageable
+    # Use * as wildcard
+    flatten_authors('updated_date=2023-06-*')
+    check_files()

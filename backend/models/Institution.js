@@ -27,11 +27,6 @@ const Institution = sequelize.define('Institution', {
     allowNull: false,
     defaultValue: 'N/A'
   },
-  country: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'N/A'
-  },
   country_code: {
     type: DataTypes.STRING(2),
     references: {
