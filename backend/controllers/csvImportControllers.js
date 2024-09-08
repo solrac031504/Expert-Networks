@@ -19,6 +19,7 @@ require('dotenv').config(); //Import dotenv for environment variables
 // All topic ID follow the pattern https://openalex.org/T#####
 // Only want the ##### for faster indexing
 const extractTopicID = (raw_id) => {
+  if(!raw_id) return null;
   const match = raw_id.match(/T(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
 }
@@ -26,6 +27,7 @@ const extractTopicID = (raw_id) => {
 // All subfield ID follow the pattern https://openalex.org/subfields/####
 // Only want the #### for faster indexing
 const extractSubfieldID = (raw_id) => {
+  if(!raw_id) return null;
   const match = raw_id.match(/subfields\/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
 }
@@ -33,6 +35,7 @@ const extractSubfieldID = (raw_id) => {
 // All field ID follow the pattern https://openalex.org/fields/##
 // Only want the ## for faster indexing
 const extractFieldID = (raw_id) => {
+  if(!raw_id) return null;
   const match = raw_id.match(/fields\/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
 }
@@ -40,6 +43,7 @@ const extractFieldID = (raw_id) => {
 // All domain ID follow the pattern https://openalex.org/domains/#
 // Only want the # for faster indexing
 const extractDomainID = (raw_id) => {
+  if(!raw_id) return null;
   const match = raw_id.match(/domains\/(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
 }
@@ -47,6 +51,7 @@ const extractDomainID = (raw_id) => {
 // All author ID follow the pattern https://openalex.org/T##### https://openalex.org/authors/A##########
 // Only want the ########## for faster indexing
 const extractAuthorID = (raw_id) => {
+  if(!raw_id) return null;
   const match = raw_id.match(/A(\d+)$/);
   return match ? parseInt(match[1], 10) : null;
 }
@@ -229,7 +234,7 @@ const importAuthorsCSV = async (req, res) => {
           cited_by_count: Number.isNaN(parseInt(row.cited_by_count)) ? 0 : parseInt(row.cited_by_count),
           hindex: Number.isNaN(parseInt(row.h_index)) ? 0 : parseInt(row.h_index),
           i_ten_index: Number.isNaN(parseInt(row.i10_index)) ? 0 : parseInt(row.i10_index),
-          impact_factor: Number.isNaN(parseInt(row.impact_factor)) ? 0 : parseInt(row.impact_factor),
+          impact_factor: Number.isNaN(parseInt(row.impact_factor)) ? 0 : parseInt(row['2yr_mean_citedness']),
           last_known_institution_id: (row.last_known_institution === '') ? '000000' : row.last_known_institution, // uses the OpenAlex Institution ID, not ROR
           works_count_2yr: Number.isNaN(parseInt(row['2yr_works_count'])) ? 0 : parseInt(row['2yr_works_count']),
           cited_by_count_2yr: Number.isNaN(parseInt(row['2yr_cited_by_count'])) ? 0 : parseInt(row['2yr_cited_by_count']),
@@ -270,7 +275,7 @@ const importAuthorsCSV = async (req, res) => {
             'hindex_2yr',
             'i_ten_index_2yr'
           ]
-        });
+        }, { logging: false });
       }
 
       console.log('Authors successfully imported and inserted');
@@ -302,12 +307,12 @@ const importAuthorTopicsCSV = async (req, res) => {
     //   readStream.emit('end');
     // }
     // Skip header row OR empty row
-    if (row['author_id'] !== 'author_id' && row['author_id']) {
+    if (row['author_id'] !== 'author_id' && row['topic_id'] !== 'topic_id' && row['author_id'] && row['topic_id']) {
       // Exctract the id number
       let extracted_author_id = extractAuthorID(row.author_id);
       let extracted_topic_id = extractTopicID(row.topic_id);
       // only push if it exists, i.e., not NULL
-      if (extracted_author_id) {
+      if (extracted_author_id && extracted_topic_id) {
         author_topics.push({
           author_id: extracted_author_id,
           topic_id: extracted_topic_id
@@ -322,7 +327,6 @@ const importAuthorTopicsCSV = async (req, res) => {
       // Increments of 1000
       let error_ids = [];
       for (let i = 0; i < author_topics.length; i += 1000) {
-        console.log(i);
         // Lower bound is the current i value, increments of 1000
         let lowerBound = i;
         // Upper bound is 
@@ -345,7 +349,7 @@ const importAuthorTopicsCSV = async (req, res) => {
               'author_id',
               'topic_id'
             ]
-          });
+          }, { logging: false });
         } catch(error) {
           // If the bulk insertion failes, iterate through and update/create manually
           // Store failed values in the error_id array
