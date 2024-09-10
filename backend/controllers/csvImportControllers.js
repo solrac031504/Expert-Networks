@@ -234,7 +234,7 @@ const importAuthorsCSV = async (req, res) => {
           cited_by_count: Number.isNaN(parseInt(row.cited_by_count)) ? 0 : parseInt(row.cited_by_count),
           hindex: Number.isNaN(parseInt(row.h_index)) ? 0 : parseInt(row.h_index),
           i_ten_index: Number.isNaN(parseInt(row.i10_index)) ? 0 : parseInt(row.i10_index),
-          impact_factor: Number.isNaN(parseFloat(row.impact_factor)) ? 0 : parseFloat(row['2yr_mean_citedness']),
+          impact_factor: Number.isNaN(parseFloat(row['2yr_mean_citedness'])) ? 0 : parseFloat(row['2yr_mean_citedness']),
           last_known_institution_id: (row.last_known_institution === '') ? '000000' : row.last_known_institution, // uses the OpenAlex Institution ID, not ROR
           works_count_2yr: Number.isNaN(parseInt(row['2yr_works_count'])) ? 0 : parseInt(row['2yr_works_count']),
           cited_by_count_2yr: Number.isNaN(parseInt(row['2yr_cited_by_count'])) ? 0 : parseInt(row['2yr_cited_by_count']),
