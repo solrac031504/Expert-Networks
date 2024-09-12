@@ -64,7 +64,7 @@ csv_files = {
             ]
         },
         'author_topics': {
-            'name': os.path.join(CSV_DIR, 'author_topics.csv.gz'),
+            'name': os.path.join(CSV_DIR, 'author_topics.csv'),
             'columns': [
                 'author_id', 
                 'topic_id'
@@ -150,15 +150,15 @@ def flatten_authors(subfolder=''):
                             authors_writer.writerow(author)
 
                             # ids
-                            if author_ids := author.get('ids'):
-                                author_ids['author_id'] = author_id
-                                ids_writer.writerow(author_ids)
+                            # if author_ids := author.get('ids'):
+                            #     author_ids['author_id'] = author_id
+                            #     ids_writer.writerow(author_ids)
 
                             # counts_by_year
-                            if counts_by_year := author.get('counts_by_year'):
-                                for count_by_year in counts_by_year:
-                                    count_by_year['author_id'] = author_id
-                                    counts_by_year_writer.writerow(count_by_year)
+                            # if counts_by_year := author.get('counts_by_year'):
+                            #     for count_by_year in counts_by_year:
+                            #         count_by_year['author_id'] = author_id
+                            #         counts_by_year_writer.writerow(count_by_year)
 
                             # Write topic associations to author_topics.csv.gz
                             if topics := author.get('topics'):
@@ -238,7 +238,5 @@ def check_files():
 
 if __name__ == '__main__':
     # flatten_topics()
-    # pick the subfolder to make it more manageable
-    # Use * as wildcard
-    flatten_authors('updated_date=2023-06-*')
+    flatten_authors('updated_date=2024-08-*')
     check_files()
