@@ -33,7 +33,6 @@ const importInstitutionsCSV = async (req, res) => {
         acronym: row.acronym, // name acronym
         alias: row.alias, // name alias
         label: row.label, // name label
-        country: row.country_name,  // country
         country_code: row.country_code, // alpha2 code
         status: row.status, // status
         types: row.types, // type of institution
@@ -44,48 +43,25 @@ const importInstitutionsCSV = async (req, res) => {
   })
   .on('end', async () => {
     try {
-      // await Institution.bulkCreate(institutions);
-      // debugging
-      // let i = 1;
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < institutions.length; i += 1000) {
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = (i+1000 > institutions.length) ? institutions.length : i + 1000
 
-      // Connection was interrupted
-      // Rather than iterating through the entire array, just iterate through the last couple of values
-      // that were not imported
-      // Use either the console or workbench to find the last value before connection failure
-      // let previousIndex = institutions.findIndex(record => record.institution_id === 'https://ror.org/0139hn422');
-      // console.log(`previousIndex = ${previousIndex}`);
-      // let restOfInstitutions = institutions.slice(previousIndex);
-      // console.log(`Remaining institutions = ${restOfInstitutions.length}`);
+        let records = institutions.slice(lowerBound, upperBound);
+        await Institution.bulkCreate(records, {
+          updateOnDuplicate: ['name', 'acronym', 'alias', 'label', 'country_code', 'status', 'types', 'createdAt', 'updatedAt']
+        });
+      }
 
-
-      // let i = 0;
-      // Change institutions to restOfInstitutions to pick up where you left off in case of connection loss mid import
-      for (const record of institutions) {
-        // if (i === 100) break;
-        // console.log(record);
-        // find an existing institution with this ID
-        // existingInstitution is NULL if no record is found
-        let existingInstitution = await Institution.findByPk(record.institution_id);
-
-        // create if institution does not exist
-        if (!existingInstitution) {
-          console.log("Creating institution...");
-          await Institution.create(record);
-        } else {
-          console.log("Updating institution...");
-          // If it does exist, update the information
-          await existingInstitution.update(record);
-        }
-
-        // console.log(i);
-        // i++;
-      };
-
-      console.log('Institutions successfully imported and inserted');
+      console.log('Institutions successfully imported');
       res.status(200).json(institutions[0]);
 
     } catch(error) {
-      console.error('Error inserting institutions:', error);
+      console.error('Error importing institutions:', error);
       res.status(500).json({ error: error.message});
     }
   });

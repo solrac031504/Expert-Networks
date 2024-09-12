@@ -153,28 +153,6 @@ const importSubfieldsCSV = async (req, res) => {
   })
   .on('end', async () => {
     try {
-      // let i = 0;
-      // for (const record of subfields) {
-      //   // Debugging, only do first 100
-      //   // if (i === 100) break;
-
-      //   // find an existing topic with this ID
-      //   // existingTopic is NULL if no record is found
-      //   let existingSubfield = await Topic.findByPk(record.id);
-
-      //   // create if topic does not exist
-      //   if (!existingTopic) {
-      //     await Topic.create(record);
-      //   } else {
-      //     // If it does exist, update the information
-      //     await existingTopic.update(record);
-      //   }
-
-      //   // console.log(i);
-      //   // console.log(record);
-      //   // i++;
-      // };
-
       // Use bulkCreate and updateOnDuplicate to improve import times
       // Increments of 1000
       for (let i = 0; i < subfields.length; i += 1000) {

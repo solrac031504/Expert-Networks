@@ -14,35 +14,6 @@ const Field = require('../models/Field');
 const Subfield = require('../models/Subfield');
 const Topic = require('../models/Topic');
 
-// get unique fields of study
-// Old function, deprecated
-// const getUniqueFields = async (req, res) => {
-//   try {
-//     const fields = await sequelize.query('SELECT DISTINCT field_of_study FROM `Experts` ORDER BY field_of_study ASC', {
-//       type: QueryTypes.SELECT
-//     });
-
-//     // converts objects to array
-//     res.status(200).json(fields.map(field => field.field_of_study));
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// get unique institutions
-// const getUniqueInstitutions = async (req, res) => {
-//   try {
-//     const institutions = await sequelize.query('SELECT DISTINCT name FROM `Institutions` ORDER BY name ASC LIMIT 25', {
-//       type: QueryTypes.SELECT
-//     });
-
-//     // converts objects to array
-//     res.status(200).json(institutions.map(institution => institution.name));
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 // get unique continents
 const getUniqueContinents = async (req, res) => {
   try {
