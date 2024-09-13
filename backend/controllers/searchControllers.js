@@ -120,7 +120,9 @@ const fetchExperts = async(queryParams) => {
 // search experts with query parameters
 const searchExperts = async (req, res) => {
   try {
-    const results = await fetchExperts(req.query);
+    // const results = await fetchExperts(req.query);
+
+    const results = await Expert.findAll();
     res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
