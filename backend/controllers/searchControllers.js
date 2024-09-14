@@ -128,61 +128,41 @@ const fetchExperts = async(queryParams) => {
   return results;
 };
 
-const pairSearch = async() => {
-  const results = await Author.findAll({
-    attributes: [
-      ['display_name', 'author_name']
-    ],
-    include: [
-      {
-        model: Topic,
-        attributes: [['display_name', 'topic_name']],
-        through: { attributes: [] },
-        required: true
-      }
-    ],
-    limit: 10
-  });
-  return results;
-};
-
 const testSearch = async() => {
-  const results = await Author.findAll({
+  const results = Author.findAll({
     attributes: [
-      [Sequelize.fn('DISTINCT', Sequelize.col('Author.display_name')), 'author_name'],
-      [Sequelize.col('Institution.name'), 'institution_name'],
-      [Sequelize.col('Institution->Country.name'), 'country_name'],
+      'display_name',
       'works_count',
+      'works_count_2yr',
       'cited_by_count',
+      'cited_by_count_2yr',
       'hindex',
+      'hindex_2yr',
       'i_ten_index',
-      'impact_factor',
+      'i_ten_index_2yr',
+      'impact_factor'
     ],
     include: [
       {
-        model: Institution,
+        model: AuthorTopic,
         attributes: [],
-        required: true,
         include: [
           {
-            model: Country,
-            attributes: [],
+            model: Topic,
+            attributes: [['display_name', 'name']],
             required: true,
             include: [
               {
-                model: Subregion,
+                model: Subfield,
                 attributes: [],
-                required: false
-              },
-              {
-                model: Region,
-                attributes: [],
-                required: true,
                 include: [
                   {
-                    model: Continent,
-                    attributes: [],
-                    required: true
+                    model: Field,
+                    include: [
+                      {
+                        model: Domain
+                      }
+                    ]
                   }
                 ]
               }
@@ -191,27 +171,23 @@ const testSearch = async() => {
         ]
       },
       {
-        model: Topic,
-        attributes: [],
-        through: {
-          attributes: [] // Don't select the values from AuthorTopics
-        },
-        required: true,
+        model: Institution,
+        attributes: ['name'],
         include: [
           {
-            model: Subfield,
-            attributes: [],
-            required: true,
+            model: Country,
+            attributes: ['name'],
             include: [
               {
-                model: Field,
+                model: Subregion,
+                attributes: []
+              },
+              {
+                model: Region,
                 attributes: [],
-                required: true,
                 include: [
                   {
-                    model: Domain,
-                    attributes: [],
-                    required: true
+                    model: Continent
                   }
                 ]
               }
@@ -220,8 +196,7 @@ const testSearch = async() => {
         ]
       }
     ],
-    limit: 10,
-    raw: true
+    limit: 10
   });
 
   return results;
@@ -233,7 +208,6 @@ const searchExperts = async (req, res) => {
     // const results = await fetchExperts(req.query);
 
     const test = await testSearch();
-    // const pairs = await pairSearch();
     // console.log(test);
     // const results = await Expert.findAll();
     res.status(200).json(test);
