@@ -253,10 +253,19 @@ const Home = () => {
     console.log('Selected options:', selectedOptions);
 
     const queryString = new URLSearchParams({
-      field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
-      raw_institution: selectedOptions.institution,
-      region: selectedOptions.region.join(','), // Join selected regions with commas
-      sorting_sequence: selectedOptions.sorting_sequence,
+      // field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
+      // raw_institution: selectedOptions.institution,
+      // region: selectedOptions.region.join(','), // Join selected regions with commas
+      // sorting_sequence: selectedOptions.sorting_sequence,
+      domain: selectedOptions.domain.id,
+      field: selectedOptions.field.id,
+      subfield: selectedOptions.subfield.id,
+      topic: selectedOptions.topic.id,
+      continent: selectedOptions.continent.id,
+      region: selectedOptions.region.id,
+      subregion: selectedOptions.subregion.id,
+      country: selectedOptions.country.id,
+      institution: selectedOptions.institution.id
     }).toString();
 
     fetch(`${apiUrl}/api/search?${queryString}`)
@@ -525,44 +534,27 @@ const Home = () => {
               <thead>
                 <tr>
                   <th title="Full name of the expert">Name</th>
-                  <th title="The current field of the expert">Field of Study</th>
                   <th title="Current institutional affiliation of the expert">Institution</th>
-                  <th title="The region in which the expert's institutional affiliation is located">Region</th>
-                  <th title="How many times the expert has been cited">Times Cited
-                    <button className="btn sorting-button" name="citations" onClick={handleSorting}>{activeSorting.citations}</button>
-                  </th>
-                  <th title="The number of papers (h) that have received (h) or more citations">H-index
-                    <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
-                  </th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-Index
-                    <button className="btn sorting-button" name="i_ten_index" onClick={handleSorting}>{activeSorting.i_ten_index}</button>
-                  </th>
-                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor
-                    <button className="btn sorting-button" name="impact_factor" onClick={handleSorting}>{activeSorting.impact_factor}</button>
-                  </th>
-                  {/* <th title="The age of the expert">Age
-                    <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
-                  </th>
-                  <th title="How many years the expert has been in their field">Years In Field
-                    <button className="btn sorting-button" name="years_in_field" onClick={handleSorting}>{activeSorting.years_in_field}</button>
-                  </th> */}
-                  <th title="The email of the expert or where their email can be found">Email</th>
+                  <th title="The country in which the expert's institutional affiliation is located">Country</th>
+                  <th title="Total number of works published by this expert">Works Count</th>
+                  <th title="How many times the expert has been cited">Times Cited</th>
+                  <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
+                  <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
+                  <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
                 </tr>
               </thead>
               <tbody>
                 {searchResults.map((result, index) => (
                   <tr key={index}>
-                    <td>{result.name}</td>
-                    <td>{result.field_of_study}</td>
-                    <td>{result.institution}</td>
-                    <td>{result.region}</td>
-                    <td>{result.citations}</td>
+                    <td>{result.display_name}</td>
+                    <td>{result.works_count}</td>
+                    <td>{result.Institution.name}</td>
+                    <td>{result.Country?.name || 'N/A'}</td>
+                    <td>{result.works_count}</td>
+                    <td>{result.cited_by_count}</td>
                     <td>{result.hindex}</td>
                     <td>{result.i_ten_index}</td>
                     <td>{result.impact_factor}</td>
-                    {/* <td>{result.age}</td>
-                    <td>{result.years_in_field}</td> */}
-                    <td>{result.email}</td>
                   </tr>
                 ))}
               </tbody>

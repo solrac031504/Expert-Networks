@@ -23,7 +23,7 @@ const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-const fetchExperts = async(queryParams) => {
+const oldSearch = async(queryParams) => {
   const { field_of_study, raw_institution, region, sorting_sequence } = queryParams;
 
   if (!field_of_study && !raw_institution && !region) {
@@ -128,8 +128,58 @@ const fetchExperts = async(queryParams) => {
   return results;
 };
 
-const testSearch = async() => {
-  const results = Author.findAll({
+const fetchExperts = async(queryParams) => {
+  // Get the query parameters
+  // These are id
+  const {
+    domain,
+    field,
+    subfield,
+    topic,
+    continent,
+    region,
+    subregion,
+    country,
+    institution
+  } = queryParams;
+
+  let query = {};
+
+  // Create the queries for the different joins
+  // Narrows down the table at each join
+  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
+  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
+  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
+  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
+  if (continent) query['Institution.Country.Region.Continent.id'] = { [Op.eq]: parseInt(continent) };
+  if (region) query['Institution->Country->Region.id'] = { [Op.eq]: parseInt(region) };
+  if (subregion) query['Institution->Country->Subregion.id'] = { [Op.eq]: parseInt(subregion) };
+  if (country) query['Institution->Country.id'] = { [Op.eq]: parseInt(country) };
+
+
+  if (institution) {
+    // Split the institution input
+    const institutionArr = raw_institution.split(',');
+    // Push the OR conditions in here one institution at a time
+    let finalLikeChain = [];
+
+    for (const record of institutionArr) {
+      finalLikeChain.push({
+        [Op.or]: [
+          { '$Institution.name$': { [Op.like]: `%${record}%` } },
+          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
+          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
+          { '$Institution.label$': { [Op.like]: `%${record}%` } }
+        ]
+      });
+    }
+
+    query[Op.or] = finalLikeChain;
+  }
+
+  console.log(query);
+
+  const results = await Author.findAll({
     attributes: [
       'display_name',
       'works_count',
@@ -158,9 +208,11 @@ const testSearch = async() => {
                 include: [
                   {
                     model: Field,
+                    required: true,
                     include: [
                       {
-                        model: Domain
+                        model: Domain,
+                        required: true
                       }
                     ]
                   }
@@ -180,14 +232,14 @@ const testSearch = async() => {
             include: [
               {
                 model: Subregion,
-                attributes: []
+                attributes: [],
               },
               {
                 model: Region,
                 attributes: [],
                 include: [
                   {
-                    model: Continent
+                    model: Continent,
                   }
                 ]
               }
@@ -202,15 +254,30 @@ const testSearch = async() => {
   return results;
 };
 
+const testSearch = async(queryParams) => {
+  const results = await AuthorTopic.findAll({
+    
+  });
+};
+
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  try {
-    // const results = await fetchExperts(req.query);
+  console.log("Author associations", Author.associations);
+  console.log("AuthorTopic associations", AuthorTopic.associations);
+  console.log("Topic associations", Topic.associations);
+  console.log("Subfield associations", Subfield.associations);
+  console.log("Field associations", Field.associations);
+  console.log("Domain associations", Domain.associations);
+  console.log("Institution associations", Institution.associations);
+  console.log("Country associations", Country.associations);
+  console.log("Region associations", Region.associations);
+  console.log("Continent associations", Continent.associations);
 
-    const test = await testSearch();
-    // console.log(test);
-    // const results = await Expert.findAll();
-    res.status(200).json(test);
+
+  try {
+    const results = await testSearch(req.query);
+    // const results = await fetchExperts(req.query);
+    res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
