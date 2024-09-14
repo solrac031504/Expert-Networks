@@ -42,7 +42,7 @@ const Institution = sequelize.define('Institution', {
   }
 });
 
-Institution.belongsTo(Country, { foreignKey: 'country_code' });
+Institution.belongsTo(Country, { foreignKey: 'country_code', targetKey: 'alpha2' });
 Country.hasMany(Institution, { foreignKey: 'country_code' });
 
 module.exports = Institution;

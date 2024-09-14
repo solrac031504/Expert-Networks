@@ -1,6 +1,17 @@
 // import DB models
 const Expert = require('../models/Expert');
+
+const Author = require('../models/Author');
+const AuthorTopic = require('../models/AuthorTopic');
+const Continent = require('../models/Continent');
+const Country = require('../models/Country');
+const Domain = require('../models/Domain');
+const Field = require('../models/Field');
 const Institution = require('../models/Institution');
+const Region = require('../models/Region');
+const Subfield = require('../models/Subfield');
+const Subregion = require('../models/Subregion');
+const Topic = require('../models/Topic');
 
 const { Sequelize, Op, QueryTypes } = require('sequelize');
 const path = require('path');
@@ -117,13 +128,115 @@ const fetchExperts = async(queryParams) => {
   return results;
 };
 
+const pairSearch = async() => {
+  const results = await Author.findAll({
+    attributes: [
+      ['display_name', 'author_name']
+    ],
+    include: [
+      {
+        model: Topic,
+        attributes: [['display_name', 'topic_name']],
+        through: { attributes: [] },
+        required: true
+      }
+    ],
+    limit: 10
+  });
+  return results;
+};
+
+const testSearch = async() => {
+  const results = await Author.findAll({
+    attributes: [
+      [Sequelize.fn('DISTINCT', Sequelize.col('Author.display_name')), 'author_name'],
+      [Sequelize.col('Institution.name'), 'institution_name'],
+      [Sequelize.col('Institution->Country.name'), 'country_name'],
+      'works_count',
+      'cited_by_count',
+      'hindex',
+      'i_ten_index',
+      'impact_factor',
+    ],
+    include: [
+      {
+        model: Institution,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Country,
+            attributes: [],
+            required: true,
+            include: [
+              {
+                model: Subregion,
+                attributes: [],
+                required: false
+              },
+              {
+                model: Region,
+                attributes: [],
+                required: true,
+                include: [
+                  {
+                    model: Continent,
+                    attributes: [],
+                    required: true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        model: Topic,
+        attributes: [],
+        through: {
+          attributes: [] // Don't select the values from AuthorTopics
+        },
+        required: true,
+        include: [
+          {
+            model: Subfield,
+            attributes: [],
+            required: true,
+            include: [
+              {
+                model: Field,
+                attributes: [],
+                required: true,
+                include: [
+                  {
+                    model: Domain,
+                    attributes: [],
+                    required: true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    limit: 10,
+    raw: true
+  });
+
+  return results;
+};
+
 // search experts with query parameters
 const searchExperts = async (req, res) => {
   try {
     // const results = await fetchExperts(req.query);
 
-    const results = await Expert.findAll();
-    res.status(200).json(results);
+    const test = await testSearch();
+    // const pairs = await pairSearch();
+    // console.log(test);
+    // const results = await Expert.findAll();
+    res.status(200).json(test);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
