@@ -23,6 +23,20 @@ const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
+const arrToWhere = async(where_arr) => {
+  if (where_arr.length === 0) return ''
+
+  let result = 'WHERE';
+
+  for (let i = 0; i < where_arr.length; i++) {
+    result = result.concat(' ', where_arr[i]);
+
+    if (i + 1 < where_arr.length) result = result.concat(' ', 'AND');
+  }
+
+  return result;
+};
+
 const oldSearch = async(queryParams) => {
   const { field_of_study, raw_institution, region, sorting_sequence } = queryParams;
 
@@ -367,19 +381,19 @@ const rawSearch = async(queryParams) => {
     institution
   } = queryParams;
 
-  let query = {};
+  let where_clause;
+  let where_arr = [];
 
-  // Create the queries for the different joins
-  // Narrows down the table at each join
-  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
-  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
-  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
-  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
-  if (continent) query['$Author.Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
-  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
-  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
-  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
+  if (domain) where_arr.push(`Domains.id=${domain}`);
+  if (field) where_arr.push(`Fields.id=${field}`);
+  if (subfield) where_arr.push(`Subfields.id=${subfield}`);
+  if (topic) where_arr.push(`Topics.id=${topic}`);
+  if (continent) where_arr.push(`Continents.id=${continent}`);
+  if (region) where_arr.push(`Regions.id=${region}`);
+  if (subregion) where_arr.push(`Subregions.id=${subregion}`);
+  if (country) where_arr.push(`Countries.id=${country}`);
 
+  where_clause = await arrToWhere(where_arr);
 
   if (institution) {
     // Split the institution input
@@ -401,7 +415,7 @@ const rawSearch = async(queryParams) => {
     query[Op.or] = finalLikeChain;
   }
 
-  console.log(query);
+  console.log(where_clause);
 
   const results = await sequelize.query(`
     SELECT DISTINCT Authors.display_name AS 'author_name',
@@ -434,6 +448,7 @@ const rawSearch = async(queryParams) => {
                   ON Subfields.field_id = Fields.id
           INNER JOIN Domains
                   ON Fields.domain_id = Domains.id
+    ${where_clause}
     LIMIT 15`,
     { type: QueryTypes.SELECT }
   );
