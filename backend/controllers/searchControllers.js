@@ -151,10 +151,10 @@ const fetchExperts = async(queryParams) => {
   if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
   if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
   if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
-  if (continent) query['Institution.Country.Region.Continent.id'] = { [Op.eq]: parseInt(continent) };
-  if (region) query['Institution->Country->Region.id'] = { [Op.eq]: parseInt(region) };
-  if (subregion) query['Institution->Country->Subregion.id'] = { [Op.eq]: parseInt(subregion) };
-  if (country) query['Institution->Country.id'] = { [Op.eq]: parseInt(country) };
+  if (continent) query['$Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
+  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
+  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
+  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
 
 
   if (institution) {
@@ -190,31 +190,20 @@ const fetchExperts = async(queryParams) => {
       'hindex_2yr',
       'i_ten_index',
       'i_ten_index_2yr',
-      'impact_factor'
+      'impact_factor',
     ],
     include: [
       {
-        model: AuthorTopic,
-        attributes: [],
+        model: Topic,
         include: [
           {
-            model: Topic,
-            attributes: [['display_name', 'name']],
-            required: true,
+            model: Subfield,
             include: [
               {
-                model: Subfield,
-                attributes: [],
+                model: Field,
                 include: [
                   {
-                    model: Field,
-                    required: true,
-                    include: [
-                      {
-                        model: Domain,
-                        required: true
-                      }
-                    ]
+                    model: Domain,
                   }
                 ]
               }
@@ -224,19 +213,15 @@ const fetchExperts = async(queryParams) => {
       },
       {
         model: Institution,
-        attributes: ['name'],
         include: [
           {
             model: Country,
-            attributes: ['name'],
             include: [
               {
                 model: Subregion,
-                attributes: [],
               },
               {
                 model: Region,
-                attributes: [],
                 include: [
                   {
                     model: Continent,
@@ -248,6 +233,7 @@ const fetchExperts = async(queryParams) => {
         ]
       }
     ],
+    where: query,
     limit: 10
   });
 
@@ -255,23 +241,133 @@ const fetchExperts = async(queryParams) => {
 };
 
 const testSearch = async(queryParams) => {
+  // Get the query parameters
+  // These are id
+  const {
+    domain,
+    field,
+    subfield,
+    topic,
+    continent,
+    region,
+    subregion,
+    country,
+    institution
+  } = queryParams;
+
+  let query = {};
+
+  // Create the queries for the different joins
+  // Narrows down the table at each join
+  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
+  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
+  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
+  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
+  if (continent) query['$Author.Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
+  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
+  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
+  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
+
+
+  if (institution) {
+    // Split the institution input
+    const institutionArr = raw_institution.split(',');
+    // Push the OR conditions in here one institution at a time
+    let finalLikeChain = [];
+
+    for (const record of institutionArr) {
+      finalLikeChain.push({
+        [Op.or]: [
+          { '$Institution.name$': { [Op.like]: `%${record}%` } },
+          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
+          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
+          { '$Institution.label$': { [Op.like]: `%${record}%` } }
+        ]
+      });
+    }
+
+    query[Op.or] = finalLikeChain;
+  }
+
+  console.log(query);
+
   const results = await AuthorTopic.findAll({
-    
+    distinct: true,
+    attributes: ['author_id'],
+    include: [
+      {
+        model: Author,
+        include: [
+          {
+            model: Institution,
+            include: [
+              {
+                model: Country,
+                include: [
+                  {
+                    model: Subregion,
+                  },
+                  {
+                    model: Region,
+                    include: [
+                      {
+                        model: Continent,
+                        attributes: [],
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        model: Topic,
+        attributes: [], 
+        include: [
+          {
+            model: Subfield,
+            attributes: [],
+            include: [
+              {
+                model: Field,
+                attributes: [],
+                include: [
+                  {
+                    model: Domain,
+                    attributes: []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    where: query,
+    limit: 15
   });
+
+  return results;
+};
+
+const rawSearch = async(queryParams) => {
+
 };
 
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  console.log("Author associations", Author.associations);
-  console.log("AuthorTopic associations", AuthorTopic.associations);
-  console.log("Topic associations", Topic.associations);
-  console.log("Subfield associations", Subfield.associations);
-  console.log("Field associations", Field.associations);
-  console.log("Domain associations", Domain.associations);
-  console.log("Institution associations", Institution.associations);
-  console.log("Country associations", Country.associations);
-  console.log("Region associations", Region.associations);
-  console.log("Continent associations", Continent.associations);
+  // console.log("Author associations", Author.associations);
+  // console.log("AuthorTopic associations", AuthorTopic.associations);
+  // console.log("Topic associations", Topic.associations);
+  // console.log("Subfield associations", Subfield.associations);
+  // console.log("Field associations", Field.associations);
+  // console.log("Domain associations", Domain.associations);
+  // console.log("Institution associations", Institution.associations);
+  // console.log("Country associations", Country.associations);
+  // console.log("Region associations", Region.associations);
+  // console.log("Continent associations", Continent.associations);
 
 
   try {
