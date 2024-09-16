@@ -395,25 +395,25 @@ const rawSearch = async(queryParams) => {
 
   where_clause = await arrToWhere(where_arr);
 
-  if (institution) {
-    // Split the institution input
-    const institutionArr = raw_institution.split(',');
-    // Push the OR conditions in here one institution at a time
-    let finalLikeChain = [];
+  // if (institution) {
+  //   // Split the institution input
+  //   const institutionArr = raw_institution.split(',');
+  //   // Push the OR conditions in here one institution at a time
+  //   let finalLikeChain = [];
 
-    for (const record of institutionArr) {
-      finalLikeChain.push({
-        [Op.or]: [
-          { '$Institution.name$': { [Op.like]: `%${record}%` } },
-          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
-          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
-          { '$Institution.label$': { [Op.like]: `%${record}%` } }
-        ]
-      });
-    }
+  //   for (const record of institutionArr) {
+  //     finalLikeChain.push({
+  //       [Op.or]: [
+  //         { '$Institution.name$': { [Op.like]: `%${record}%` } },
+  //         { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
+  //         { '$Institution.alias$': { [Op.like]: `%${record}%` } },
+  //         { '$Institution.label$': { [Op.like]: `%${record}%` } }
+  //       ]
+  //     });
+  //   }
 
-    query[Op.or] = finalLikeChain;
-  }
+  //   query[Op.or] = finalLikeChain;
+  // }
 
   console.log(where_clause);
 

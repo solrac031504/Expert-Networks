@@ -252,21 +252,22 @@ const Home = () => {
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
 
-    const queryString = new URLSearchParams({
-      // field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
-      // raw_institution: selectedOptions.institution,
-      // region: selectedOptions.region.join(','), // Join selected regions with commas
-      // sorting_sequence: selectedOptions.sorting_sequence,
-      domain: selectedOptions.domain.id,
-      field: selectedOptions.field.id,
-      subfield: selectedOptions.subfield.id,
-      topic: selectedOptions.topic.id,
-      continent: selectedOptions.continent.id,
-      region: selectedOptions.region.id,
-      subregion: selectedOptions.subregion.id,
-      country: selectedOptions.country.id,
-      institution: selectedOptions.institution.id
-    }).toString();
+    // Create an object with only valid key-value pairs
+    const validParams = Object.fromEntries(
+      Object.entries({
+        domain: selectedOptions.domain.id,
+        field: selectedOptions.field.id,
+        subfield: selectedOptions.subfield.id,
+        topic: selectedOptions.topic.id,
+        continent: selectedOptions.continent.id,
+        region: selectedOptions.region.id,
+        subregion: selectedOptions.subregion.id,
+        country: selectedOptions.country.id,
+        institution: selectedOptions.institution.id
+      }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const queryString = new URLSearchParams(validParams).toString();
 
     fetch(`${apiUrl}/api/search?${queryString}`)
       .then(response => response.json())
@@ -282,13 +283,13 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
@@ -546,10 +547,9 @@ const Home = () => {
               <tbody>
                 {searchResults.map((result, index) => (
                   <tr key={index}>
-                    <td>{result.display_name}</td>
-                    <td>{result.works_count}</td>
-                    <td>{result.Institution.name}</td>
-                    <td>{result.Country?.name || 'N/A'}</td>
+                    <td>{result.author_name}</td>
+                    <td>{result.institution_name}</td>
+                    <td>{result.country_name || 'N/A'}</td>
                     <td>{result.works_count}</td>
                     <td>{result.cited_by_count}</td>
                     <td>{result.hindex}</td>
