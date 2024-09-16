@@ -353,7 +353,92 @@ const testSearch = async(queryParams) => {
 };
 
 const rawSearch = async(queryParams) => {
+  // Get the query parameters
+  // These are id
+  const {
+    domain,
+    field,
+    subfield,
+    topic,
+    continent,
+    region,
+    subregion,
+    country,
+    institution
+  } = queryParams;
 
+  let query = {};
+
+  // Create the queries for the different joins
+  // Narrows down the table at each join
+  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
+  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
+  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
+  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
+  if (continent) query['$Author.Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
+  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
+  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
+  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
+
+
+  if (institution) {
+    // Split the institution input
+    const institutionArr = raw_institution.split(',');
+    // Push the OR conditions in here one institution at a time
+    let finalLikeChain = [];
+
+    for (const record of institutionArr) {
+      finalLikeChain.push({
+        [Op.or]: [
+          { '$Institution.name$': { [Op.like]: `%${record}%` } },
+          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
+          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
+          { '$Institution.label$': { [Op.like]: `%${record}%` } }
+        ]
+      });
+    }
+
+    query[Op.or] = finalLikeChain;
+  }
+
+  console.log(query);
+
+  const results = await sequelize.query(`
+    SELECT DISTINCT Authors.display_name AS 'author_name',
+                Institutions.name    AS 'institution_name',
+                Countries.name       AS 'country_name',
+                Authors.works_count,
+                Authors.cited_by_count,
+                Authors.hindex,
+                Authors.i_ten_index,
+                Authors.impact_factor
+    FROM   Authors
+          INNER JOIN Institutions
+                  ON Authors.last_known_institution_id =
+                      Institutions.institution_id
+          INNER JOIN Countries
+                  ON Institutions.country_code = Countries.alpha2
+          LEFT JOIN Subregions
+                  ON Countries.subregion_id = Subregions.id
+          INNER JOIN Regions
+                  ON Countries.region_id = Regions.id
+          INNER JOIN Continents
+                  ON Regions.continent_id = Continents.id
+          INNER JOIN AuthorTopics
+                  ON Authors.id = AuthorTopics.author_id
+          INNER JOIN Topics
+                  ON AuthorTopics.topic_id = Topics.id
+          INNER JOIN Subfields
+                  ON Topics.subfield_id = Subfields.id
+          INNER JOIN Fields
+                  ON Subfields.field_id = Fields.id
+          INNER JOIN Domains
+                  ON Fields.domain_id = Domains.id
+    LIMIT 15`,
+    { type: QueryTypes.SELECT }
+  );
+
+  return results;
 };
 
 // search experts with query parameters
@@ -371,8 +456,9 @@ const searchExperts = async (req, res) => {
 
 
   try {
-    const results = await testSearch(req.query);
+    // const results = await testSearch(req.query);
     // const results = await fetchExperts(req.query);
+    const results = await rawSearch(req.query);
     res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
