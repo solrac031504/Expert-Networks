@@ -218,6 +218,16 @@ const Home = () => {
       selectedOptions.years_in_field
   ]); // Trigger search whenever selectedOptions of sorting changes
 
+  // Handle the change in the text box
+  const handleInputChangeText = (e) => {
+    const { name, value } = e.target;
+
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   // Dropdown menus
   const handleInputChange = (e) => {
     const { name, value, selectedOptions, options } = e.target;
@@ -263,7 +273,7 @@ const Home = () => {
         region: selectedOptions.region.id,
         subregion: selectedOptions.subregion.id,
         country: selectedOptions.country.id,
-        institution: selectedOptions.institution.id
+        institution: selectedOptions.institution
       }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
     );
 
@@ -290,6 +300,20 @@ const Home = () => {
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
     window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+  };
+
+  const handleClearFilterSelection = () => {
+    setSelectedOptions(prevState => ({
+      domains: [],
+      fields: [],
+      subfields: [],
+      topics: [],
+      continents: [],
+      regions: [],
+      subregions: [],
+      countries: [],
+      institution: '',
+    }));
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
@@ -514,12 +538,14 @@ const Home = () => {
             className="form-control mr-2"
             name="institution"
             value={selectedOptions.institution}
-            onChange={handleInputChange}
+            onChange={handleInputChangeText}
             placeholder="Enter Institution(s)"
           />
         </div>
 
         <div className="dropdown-container d-flex align-items-center mt-4">
+          {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
+
           <button className="btn btn-primary" onClick={handleSearch}>Search</button>
         </div>
 

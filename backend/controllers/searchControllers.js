@@ -23,15 +23,33 @@ const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-const arrToWhere = async(where_arr) => {
-  if (where_arr.length === 0) return ''
+const arrToWhere = async(where_arr, institution_arr) => {
+  if (where_arr.length === 0 && institution_arr.length === 0) return ''
 
   let result = 'WHERE';
 
   for (let i = 0; i < where_arr.length; i++) {
     result = result.concat(' ', where_arr[i]);
 
-    if (i + 1 < where_arr.length) result = result.concat(' ', 'AND');
+    // Append an AND if there are remaining values in the first array OR if there are values in the institution_arr
+    if (i + 1 < where_arr.length || institution_arr.length !== 0) result = result.concat(' ', 'AND');
+  }
+
+  if (institution_arr.length !== 0) {
+    result = result.concat(' ', '(');
+
+    for (let i = 0; i < institution_arr.length; i++) {
+      conditions = `LOWER(Institutions.name) LIKE '%${institution_arr[i]}%' OR
+                    LOWER(Institutions.acronym) LIKE '%${institution_arr[i]}%' OR
+                    LOWER(Institutions.alias) LIKE '%${institution_arr[i]}%' OR
+                    LOWER(Institutions.label) LIKE '%${institution_arr[i]}%'`;
+
+      result = result.concat(conditions);
+
+      if (i + 1 < institution_arr.length) result = result.concat(' ', 'OR', ' ')
+    }
+
+    result = result.concat(')');
   }
 
   return result;
@@ -157,232 +175,9 @@ const fetchExperts = async(queryParams) => {
     institution
   } = queryParams;
 
-  let query = {};
-
-  // Create the queries for the different joins
-  // Narrows down the table at each join
-  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
-  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
-  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
-  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
-  if (continent) query['$Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
-  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
-  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
-  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
-
-
-  if (institution) {
-    // Split the institution input
-    const institutionArr = raw_institution.split(',');
-    // Push the OR conditions in here one institution at a time
-    let finalLikeChain = [];
-
-    for (const record of institutionArr) {
-      finalLikeChain.push({
-        [Op.or]: [
-          { '$Institution.name$': { [Op.like]: `%${record}%` } },
-          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
-          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
-          { '$Institution.label$': { [Op.like]: `%${record}%` } }
-        ]
-      });
-    }
-
-    query[Op.or] = finalLikeChain;
-  }
-
-  console.log(query);
-
-  const results = await Author.findAll({
-    attributes: [
-      'display_name',
-      'works_count',
-      'works_count_2yr',
-      'cited_by_count',
-      'cited_by_count_2yr',
-      'hindex',
-      'hindex_2yr',
-      'i_ten_index',
-      'i_ten_index_2yr',
-      'impact_factor',
-    ],
-    include: [
-      {
-        model: Topic,
-        include: [
-          {
-            model: Subfield,
-            include: [
-              {
-                model: Field,
-                include: [
-                  {
-                    model: Domain,
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        model: Institution,
-        include: [
-          {
-            model: Country,
-            include: [
-              {
-                model: Subregion,
-              },
-              {
-                model: Region,
-                include: [
-                  {
-                    model: Continent,
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    where: query,
-    limit: 10
-  });
-
-  return results;
-};
-
-const testSearch = async(queryParams) => {
-  // Get the query parameters
-  // These are id
-  const {
-    domain,
-    field,
-    subfield,
-    topic,
-    continent,
-    region,
-    subregion,
-    country,
-    institution
-  } = queryParams;
-
-  let query = {};
-
-  // Create the queries for the different joins
-  // Narrows down the table at each join
-  if (domain) query['Domain.id'] = { [Op.eq]: parseInt(domain) };
-  if (field) query['Field.id'] = { [Op.eq]: parseInt(field) };
-  if (subfield) query['Subfield.id'] = { [Op.eq]: parseInt(subfield) };
-  if (topic) query['Topic.id'] = { [Op.eq]: parseInt(topic) };
-  if (continent) query['$Author.Institution.Country.Region.Continent.id$'] = { [Op.eq]: parseInt(continent) };
-  if (region) query['Institution.Country.Region.id'] = { [Op.eq]: parseInt(region) };
-  if (subregion) query['Institution.Country.Subregion.id'] = { [Op.eq]: parseInt(subregion) };
-  if (country) query['Institution.Country.id'] = { [Op.eq]: parseInt(country) };
-
-
-  if (institution) {
-    // Split the institution input
-    const institutionArr = raw_institution.split(',');
-    // Push the OR conditions in here one institution at a time
-    let finalLikeChain = [];
-
-    for (const record of institutionArr) {
-      finalLikeChain.push({
-        [Op.or]: [
-          { '$Institution.name$': { [Op.like]: `%${record}%` } },
-          { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
-          { '$Institution.alias$': { [Op.like]: `%${record}%` } },
-          { '$Institution.label$': { [Op.like]: `%${record}%` } }
-        ]
-      });
-    }
-
-    query[Op.or] = finalLikeChain;
-  }
-
-  console.log(query);
-
-  const results = await AuthorTopic.findAll({
-    distinct: true,
-    attributes: ['author_id'],
-    include: [
-      {
-        model: Author,
-        include: [
-          {
-            model: Institution,
-            include: [
-              {
-                model: Country,
-                include: [
-                  {
-                    model: Subregion,
-                  },
-                  {
-                    model: Region,
-                    include: [
-                      {
-                        model: Continent,
-                        attributes: [],
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        model: Topic,
-        attributes: [], 
-        include: [
-          {
-            model: Subfield,
-            attributes: [],
-            include: [
-              {
-                model: Field,
-                attributes: [],
-                include: [
-                  {
-                    model: Domain,
-                    attributes: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    where: query,
-    limit: 15
-  });
-
-  return results;
-};
-
-const rawSearch = async(queryParams) => {
-  // Get the query parameters
-  // These are id
-  const {
-    domain,
-    field,
-    subfield,
-    topic,
-    continent,
-    region,
-    subregion,
-    country,
-    institution
-  } = queryParams;
-
   let where_clause;
   let where_arr = [];
+  let institutionArr = [];
 
   if (domain) where_arr.push(`Domains.id=${domain}`);
   if (field) where_arr.push(`Fields.id=${field}`);
@@ -393,29 +188,11 @@ const rawSearch = async(queryParams) => {
   if (subregion) where_arr.push(`Subregions.id=${subregion}`);
   if (country) where_arr.push(`Countries.id=${country}`);
 
-  where_clause = await arrToWhere(where_arr);
+  if (institution) institutionArr = institution.split(',').map(item => item.trim());
 
-  // if (institution) {
-  //   // Split the institution input
-  //   const institutionArr = raw_institution.split(',');
-  //   // Push the OR conditions in here one institution at a time
-  //   let finalLikeChain = [];
+  where_clause = await arrToWhere(where_arr, institutionArr);
 
-  //   for (const record of institutionArr) {
-  //     finalLikeChain.push({
-  //       [Op.or]: [
-  //         { '$Institution.name$': { [Op.like]: `%${record}%` } },
-  //         { '$Institution.acronym$': { [Op.like]: `%${record}%` } },
-  //         { '$Institution.alias$': { [Op.like]: `%${record}%` } },
-  //         { '$Institution.label$': { [Op.like]: `%${record}%` } }
-  //       ]
-  //     });
-  //   }
-
-  //   query[Op.or] = finalLikeChain;
-  // }
-
-  console.log(where_clause);
+  console.log("WHERE CLAUSE:\n", where_clause);
 
   const results = await sequelize.query(`
     SELECT DISTINCT Authors.display_name AS 'author_name',
@@ -458,22 +235,8 @@ const rawSearch = async(queryParams) => {
 
 // search experts with query parameters
 const searchExperts = async (req, res) => {
-  // console.log("Author associations", Author.associations);
-  // console.log("AuthorTopic associations", AuthorTopic.associations);
-  // console.log("Topic associations", Topic.associations);
-  // console.log("Subfield associations", Subfield.associations);
-  // console.log("Field associations", Field.associations);
-  // console.log("Domain associations", Domain.associations);
-  // console.log("Institution associations", Institution.associations);
-  // console.log("Country associations", Country.associations);
-  // console.log("Region associations", Region.associations);
-  // console.log("Continent associations", Continent.associations);
-
-
   try {
-    // const results = await testSearch(req.query);
-    // const results = await fetchExperts(req.query);
-    const results = await rawSearch(req.query);
+    const results = await fetchExperts(req.query);
     res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
