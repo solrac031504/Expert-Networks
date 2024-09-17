@@ -16,27 +16,24 @@ require('dotenv').config();
 const exportExpertsToCSV = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
-    const results = experts.map(expert => expert.get({ plain: true }));
+    // const results = experts.map(expert => expert.get({ plain: true }));
 
     const csvWriter = createCsvWriter({
       path: path.join(__dirname, '../exports/experts.csv'),
       header: [
-        { id: 'name', title: 'Name' },
-        { id: 'field_of_study', title: 'Field of Study' },
-        { id: 'institution', title: 'Institution' },
-        { id: 'country', title: 'Country' },
-        { id: 'citations', title: 'Times Cited' },
+        { id: 'author_name', title: 'Name' },
+        { id: 'institution_name', title: 'Institution' },
+        { id: 'country_name', title: 'Country' },
+        { id: 'works_count', title: 'Number of Works' },
+        { id: 'cited_by_count', title: 'Times Cited' },
         { id: 'hindex', title: 'H-index' },
         { id: 'i_ten_index', title: 'I10-index' },
         { id: 'impact_factor', title: 'Impact Factor'},
-        { id: 'age', title: 'Age' },
-        { id: 'years_in_field', title: 'Years in Field' },
-        { id: 'email', title: 'Email' }
       ]
     });
 
     // await csvWriter.writeRecords(records);
-    await csvWriter.writeRecords(results);
+    await csvWriter.writeRecords(experts);
 
     const filePath = path.join(__dirname, '../exports/experts.csv');
     res.setHeader('Content-Type', 'text/csv');
@@ -52,7 +49,7 @@ const exportExpertsToCSV = async (req, res) => {
 const exportExpertsToPDF = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
-    const results = experts.map(expert => expert.get({ plain: true }));
+    // const results = experts.map(expert => expert.get({ plain: true }));
 
     const doc = new PDFDocument();
     const filePath = path.join(__dirname, '../exports/experts.pdf');
@@ -66,18 +63,15 @@ const exportExpertsToPDF = async (req, res) => {
     doc.fontSize(20).text('Experts', { align: 'center' });
     doc.moveDown();
 
-    results.forEach(expert => {
-      doc.fontSize(12).text(`Name: ${expert.name}`);
-      doc.text(`Field of Study: ${expert.field_of_study}`);
-      doc.text(`Institution: ${expert.institution}`);
-      doc.text(`Country: ${expert.region}`);
-      doc.text(`Citations: ${expert.citations}`);
+    experts.forEach(expert => {
+      doc.fontSize(12).text(`Name: ${expert.author_name}`);
+      doc.text(`Institution: ${expert.institution_name}`);
+      doc.text(`Country: ${expert.country_name}`);
+      doc.text(`Number of Works: ${expert.works_count}`)
+      doc.text(`Times Cited: ${expert.cited_by_count}`);
       doc.text(`H-index: ${expert.hindex}`);
       doc.text(`I10-index: ${expert.i_ten_index}`);
       doc.text(`Impact Factor: ${expert.impact_factor}`);
-      doc.text(`Age: ${expert.age}`);
-      doc.text(`Years in Field: ${expert.years_in_field}`);
-      doc.text(`Email: ${expert.email}`);
       doc.moveDown();
     });
 

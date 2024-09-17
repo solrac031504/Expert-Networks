@@ -258,10 +258,7 @@ const Home = () => {
     }
   };
 
-  // Search table based on values selected in the dropdown and sorting buttons
-  const handleSearch = () => {
-    console.log('Selected options:', selectedOptions);
-
+  const createURL = () => {
     // Create an object with only valid key-value pairs
     const validParams = Object.fromEntries(
       Object.entries({
@@ -279,6 +276,15 @@ const Home = () => {
 
     const queryString = new URLSearchParams(validParams).toString();
 
+    return queryString;
+  };
+
+  // Search table based on values selected in the dropdown and sorting buttons
+  const handleSearch = () => {
+    console.log('Selected options:', selectedOptions);
+
+    const queryString = createURL();
+
     fetch(`${apiUrl}/api/search?${queryString}`)
       .then(response => response.json())
       .then(data => {
@@ -293,13 +299,15 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/pdf?${queryString}`, '_blank');
   };
 
   const handleClearFilterSelection = () => {
