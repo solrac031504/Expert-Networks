@@ -47,6 +47,50 @@ const Home = () => {
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
+  //Clear filters function
+  const clearFilters = () => {
+    setSelectedOptions({
+        domain: [],
+        field: [],
+        subfield: [],
+        topic: [],
+        institution: '',
+        continent: [],
+        region: [],
+        subregion: [],
+        country: [],
+        citations: '',
+        hindex: '',
+        i_ten_index: '',
+        impact_factor: '',
+        age: '',
+        years_in_field: '',
+        sorting_sequence: ''
+    });
+
+    setDropdownOptions({
+        domains: [],
+        fields: [],
+        subfields: [],
+        topics: [],
+        continents: [],
+        regions: [],
+        subregions: [],
+        countries: []
+    });
+
+    setSearchResults([]);
+
+    setActiveSorting({
+        citations: '-',
+        hindex: '-',
+        i_ten_index: '-',
+        impact_factor: '-',
+        age: '-',
+        years_in_field: '-',
+    });
+  };
+
   useEffect(() => {
     // Fetch unique domains
     console.log('Fetching unique domains...');
@@ -511,6 +555,7 @@ const Home = () => {
 
         <div className="dropdown-container d-flex align-items-center mt-4">
           <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+          <button className="btn btn-secondary ml-2" onClick={clearFilters}>Clear Filters</button>
         </div>
 
         {searchResults.length > 0 && (
