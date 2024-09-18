@@ -30,10 +30,12 @@ const importInstitutionsCSV = async (req, res) => {
       institutions.push({
         institution_id: row.id, // institution_id
         name: row.ror_display, // name
-        acronym: row.acronym, // name acrony
+        acronym: row.acronym, // name acronym
         alias: row.alias, // name alias
         label: row.label, // name label
-        country: row.country_name,  // country
+        country_code: row.country_code, // alpha2 code
+        status: row.status, // status
+        types: row.types, // type of institution
         createdAt: row.created, // date created
         updatedAt: row.last_modified // data modified
       });
@@ -41,50 +43,25 @@ const importInstitutionsCSV = async (req, res) => {
   })
   .on('end', async () => {
     try {
-      // await Institution.bulkCreate(institutions);
-      // debugging
-      // let i = 1;
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < institutions.length; i += 1000) {
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = (i+1000 > institutions.length) ? institutions.length : i + 1000
 
-      for (const record of institutions) {
-        // find an existing institution with this ID
-        // existingInstitution is NULL if no record is found
-        let existingInstitution = await Institution.findByPk(record.institution_id);
+        let records = institutions.slice(lowerBound, upperBound);
+        await Institution.bulkCreate(records, {
+          updateOnDuplicate: ['name', 'acronym', 'alias', 'label', 'country_code', 'status', 'types', 'createdAt', 'updatedAt']
+        });
+      }
 
-        // create if institution does not exist
-        if (!existingInstitution) {
-          await Institution.create({
-            institution_id: record.institution_id,
-            name: record.name,
-            acronym: record.acronym,
-            alias: record.alias,
-            label: record.label,
-            country: record.country,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt
-          });
-        } else {
-          // If it does exist, update the information
-          await existingInstitution.update({
-            institution_id: record.institution_id,
-            name: record.name,
-            acronym: record.acronym,
-            alias: record.alias,
-            label: record.label,
-            country: record.country,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt
-          });
-        }
-
-        // console.log(i);
-        // i++;
-      };
-
-      console.log('Institutions successfully imported and inserted');
+      console.log('Institutions successfully imported');
       res.status(200).json(institutions[0]);
 
     } catch(error) {
-      console.error('Error inserting institutions:', error);
+      console.error('Error importing institutions:', error);
       res.status(500).json({ error: error.message});
     }
   });

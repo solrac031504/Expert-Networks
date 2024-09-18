@@ -28,7 +28,21 @@ body {
 .dropdown-container {
   margin-top: 20px;
   display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.textbox-container {
+  margin-top: 20px;
+  display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.filterbutton-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -79,14 +93,14 @@ button:hover {
   background-color: #bebebe; 
 }
 
-.clear-sorting-button {
+.filter-button {
   float: left;
   margin-bottom: 10px;
-  margin-left: 10px;
+  margin-right: 10px;
   background-color: #4848f5; 
   color: white;
 }
 
-.clear-sorting-button:hover {
+.filter-button:hover {
   background-color: #3838d8;
 }

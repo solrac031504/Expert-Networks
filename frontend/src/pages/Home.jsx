@@ -4,14 +4,26 @@ import './home.css'; // Adjust the path if necessary
 
 const Home = () => {
   const [dropdownOptions, setDropdownOptions] = useState({
+    domains: [],
     fields: [],
+    subfields: [],
+    topics: [],
+    continents: [],
     regions: [],
+    subregions: [],
+    countries: []
   });
 
   const [selectedOptions, setSelectedOptions] = useState({
+    domain: [],
     field: [],
+    subfield: [],
+    topic: [],
     institution: '',
+    continent: [],
     region: [],
+    subregion: [],
+    country: [],
     citations: '',
     hindex: '',
     i_ten_index: '',
@@ -36,9 +48,45 @@ const Home = () => {
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
   useEffect(() => {
-    // Fetch unique fields
+    // Fetch unique domains
+    console.log('Fetching unique domains...');
+    fetch(`${apiUrl}/api/dropdown/study/domains`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique domains:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          domains: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching domains:', error);
+      });
+
+    // Fetch unique continents
+    console.log('Fetching unique continents...');
+    fetch(`${apiUrl}/api/dropdown/geo/continents`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique continents:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          continents: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching continents:', error);
+      });
+  }, [apiUrl]);
+
+  // Fetch unique fields when domain changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      domain_id: selectedOptions.domain.id,
+    }).toString();
+
     console.log('Fetching unique fields...');
-    fetch(`${apiUrl}/api/dropdown/fields`)
+    fetch(`${apiUrl}/api/dropdown/study/fields?${queryParams}`)
       .then(response => response.json())
       .then(data => {
         console.log('Received unique fields:', data);
@@ -50,10 +98,58 @@ const Home = () => {
       .catch(error => {
         console.error('Error fetching fields:', error);
       });
+  }, [selectedOptions.domain])
 
-    // Fetch unique regions
+  // Fetch unique subfields when field changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      field_id: selectedOptions.field.id,
+    }).toString();
+
+    console.log('Fetching unique subfields...');
+    fetch(`${apiUrl}/api/dropdown/study/subfields?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique subfields:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          subfields: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching subfields:', error);
+      });
+  }, [selectedOptions.field])
+
+  // Fetch unique topics when subfield changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      subfield_id: selectedOptions.subfield.id,
+    }).toString();
+
+    console.log('Fetching unique topics...');
+    fetch(`${apiUrl}/api/dropdown/study/topics?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique topics:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          topics: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching topics:', error);
+      });
+  }, [selectedOptions.subfield])
+
+  // Fetch unique regions when continent changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      continent_id: selectedOptions.continent.id,
+    }).toString();
+
     console.log('Fetching unique regions...');
-    fetch(`${apiUrl}/api/dropdown/regions`)
+    fetch(`${apiUrl}/api/dropdown/geo/regions?${queryParams}`)
       .then(response => response.json())
       .then(data => {
         console.log('Received unique regions:', data);
@@ -65,7 +161,51 @@ const Home = () => {
       .catch(error => {
         console.error('Error fetching regions:', error);
       });
-  }, [apiUrl]);
+  }, [selectedOptions.continent])
+
+  // Fetch unique subregions when region changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      region_id: selectedOptions.region.id,
+    }).toString();
+
+    console.log('Fetching unique subregions...');
+    fetch(`${apiUrl}/api/dropdown/geo/subregions?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique subregions:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          subregions: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching subregions:', error);
+      });
+  }, [selectedOptions.region])
+
+  // Fetch unique countries when regions OR subregions changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams({
+      region_id: selectedOptions.region.id,
+      subregion_id: selectedOptions.subregion.id
+    }).toString();
+
+    console.log('Fetching unique countries...');
+    fetch(`${apiUrl}/api/dropdown/geo/countries?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Received unique countries:', data);
+        setDropdownOptions(prevState => ({
+          ...prevState,
+          countries: data,
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+      });
+  }, [selectedOptions.region, selectedOptions.subregion])
+
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -78,32 +218,72 @@ const Home = () => {
       selectedOptions.years_in_field
   ]); // Trigger search whenever selectedOptions of sorting changes
 
-  // For dropdown menus
+  // Handle the change in the text box
+  const handleInputChangeText = (e) => {
+    const { name, value } = e.target;
+
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // Dropdown menus
   const handleInputChange = (e) => {
-    const { name, value, selectedOptions } = e.target;
+    const { name, value, selectedOptions, options } = e.target;
+  
+    // Supposedly for multiple, will handle later
     if (e.target.multiple) {
-      const values = Array.from(selectedOptions, option => option.value);
+      const selectedValues = Array.from(selectedOptions, option => {
+        return {
+          id: option.value,
+          name: option.textContent // Assuming the textContent is the name
+        };
+      });
+      
       setSelectedOptions(prevState => ({
         ...prevState,
-        [name]: values,
+        [name]: selectedValues,
       }));
     } else {
+      const selectedData = {
+        id: value,
+        name: options ? options.textContent : ''
+      };
+      
       setSelectedOptions(prevState => ({
         ...prevState,
-        [name]: value,
+        [name]: selectedData,
       }));
     }
+  };
+
+  const createURL = () => {
+    // Create an object with only valid key-value pairs
+    const validParams = Object.fromEntries(
+      Object.entries({
+        domain: selectedOptions.domain.id,
+        field: selectedOptions.field.id,
+        subfield: selectedOptions.subfield.id,
+        topic: selectedOptions.topic.id,
+        continent: selectedOptions.continent.id,
+        region: selectedOptions.region.id,
+        subregion: selectedOptions.subregion.id,
+        country: selectedOptions.country.id,
+        institution: selectedOptions.institution
+      }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const queryString = new URLSearchParams(validParams).toString();
+
+    return queryString;
   };
 
   // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = () => {
     console.log('Selected options:', selectedOptions);
-    const queryString = new URLSearchParams({
-      field_of_study: selectedOptions.field.join(','), // Join selected fields with commas
-      raw_institution: selectedOptions.institution,
-      region: selectedOptions.region.join(','), // Join selected regions with commas
-      sorting_sequence: selectedOptions.sorting_sequence,
-    }).toString();
+
+    const queryString = createURL();
 
     fetch(`${apiUrl}/api/search?${queryString}`)
       .then(response => response.json())
@@ -119,13 +299,80 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    window.open(`${apiUrl}/api/download/export/csv?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
+  };
+
+  // Download XLS
+  const handleDownloadXLS = () => {
+    console.log("Downloading XLS");
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/xls?${queryString}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    window.open(`${apiUrl}/api/download/export/pdf?field_of_study=${selectedOptions.field}&raw_institution=${selectedOptions.institution}&region=${selectedOptions.region}&sorting_sequence=${selectedOptions.sorting_sequence}`, '_blank');
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/pdf?${queryString}`, '_blank');
+  };
+
+  const handleClearFilterSelection = () => {
+    setSelectedOptions(prevState => ({
+      domains: [],
+      fields: [],
+      subfields: [],
+      topics: [],
+      continents: [],
+      regions: [],
+      subregions: [],
+      countries: [],
+      institution: '',
+    }));
+  };
+
+  //Clear filters function
+  const clearFilters = () => {
+    setSelectedOptions({
+        domain: [],
+        field: [],
+        subfield: [],
+        topic: [],
+        institution: '',
+        continent: [],
+        region: [],
+        subregion: [],
+        country: [],
+        citations: '',
+        hindex: '',
+        i_ten_index: '',
+        impact_factor: '',
+        age: '',
+        years_in_field: '',
+        sorting_sequence: ''
+    });
+
+    // setDropdownOptions({
+    //     domains: [],
+    //     fields: [],
+    //     subfields: [],
+    //     topics: [],
+    //     continents: [],
+    //     regions: [],
+    //     subregions: [],
+    //     countries: []
+    // });
+
+    setSearchResults([]);
+
+    setActiveSorting({
+        citations: '-',
+        hindex: '-',
+        i_ten_index: '-',
+        impact_factor: '-',
+        age: '-',
+        years_in_field: '-',
+    });
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
@@ -271,89 +518,183 @@ const Home = () => {
       <nav className="navbar custom-navbar">
         <div className="navbar-title">For the People, Find the People</div>
       </nav>
-      <div className="input-info">
-        <p>For the institutions, please enter institutions separated by a comma with no space, as such: Institution 1,Institution 2,Institution 3</p>
-      </div>
       <div className="container">
+        {/* Dropdowns for the fields of study */}
         <div className="dropdown-container d-flex align-items-center mt-4">
-          {/* Field dropdown menu */}
-          <select className="form-control mr-2" name="field" value={selectedOptions.field} onChange={handleInputChange} multiple>
-            <option value="">Field</option>
-            {dropdownOptions.fields.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
+          {/* Domain dropdown menu */}
+          <select
+            className="form-control mr-2"
+            name="domain"
+            value={selectedOptions.domain.id || ''}
+            onChange={handleInputChange}
+          >
+            <option value="">Domain</option>
+            {dropdownOptions.domains.map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-          
-          {/* Institution text input */}
+
+          {/* Field dropdown menu - only show if domain is selected */}
+          {selectedOptions.domain.id && (
+            <select
+              className="form-control mr-2"
+              name="field"
+              value={selectedOptions.field.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Field</option>
+              {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Subfield dropdown menu - only show if field is selected */}
+          {selectedOptions.field.id && (
+            <select
+              className="form-control mr-2"
+              name="subfield"
+              value={selectedOptions.subfield.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Subfield</option>
+              {(Array.isArray(dropdownOptions.subfields) ? dropdownOptions.subfields : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Topic dropdown menu - only show if subfield is selected */}
+          {selectedOptions.subfield.id && (
+            <select
+              className="form-control mr-2"
+              name="topic"
+              value={selectedOptions.topic.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Topic</option>
+              {(Array.isArray(dropdownOptions.topics) ? dropdownOptions.topics : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {/* Dropdowns for the geographic regions */}
+        <div className="dropdown-container d-flex align-items-center mt-4">
+          {/* Continent dropdown menu */}
+          <select 
+            className="form-control mr-2" 
+            name="continent" 
+            value={selectedOptions.continent.id || ''} 
+            onChange={handleInputChange}
+          >
+            <option value="">Continent</option>
+            {dropdownOptions.continents.map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
+
+          {/* Region dropdown menu */}
+          {selectedOptions.continent.id && (
+            <select 
+              className="form-control mr-2" 
+              name="region" 
+              value={selectedOptions.region.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Region</option>
+              {(Array.isArray(dropdownOptions.regions) ? dropdownOptions.regions : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Subregion dropdown menu */}
+          {selectedOptions.region.id && (
+            <select 
+              className="form-control mr-2" 
+              name="subregion" 
+              value={selectedOptions.subregion.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Subregion</option>
+              {(Array.isArray(dropdownOptions.subregions) ? dropdownOptions.subregions : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Country dropdown menu */}
+          {selectedOptions.region.id && (
+            <select 
+              className="form-control mr-2" 
+              name="country" 
+              value={selectedOptions.country.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Country</option>
+              {(Array.isArray(dropdownOptions.countries) ? dropdownOptions.countries : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+        </div>
+
+        {/* Institution text input */}
+        <div className="textbox-container d-flex align-items-center mt-4">
           <input
             type="text"
             className="form-control mr-2"
             name="institution"
             value={selectedOptions.institution}
-            onChange={handleInputChange}
+            onChange={handleInputChangeText}
             placeholder="Enter Institution(s)"
           />
+        </div>
+        
+        {/* Buttons for searching and clearing filters */}
+        <div className="filterbutton-container d-flex align-items-center mt-4">
+          {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
 
-          {/* Region dropdown menu */}
-          <select className="form-control mr-2" name="region" value={selectedOptions.region} onChange={handleInputChange} multiple>
-            <option value="">Region</option>
-            {dropdownOptions.regions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
-          <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+          <button className="btn filter-button" onClick={handleSearch}>Search</button>
+          <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
         {searchResults.length > 0 && (
           <div className="mt-4">
-            <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
+            {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
+            <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
-            <div className="sorting-order"> 
+            {/* <div className="sorting-order"> 
               <p>Sorting order: {selectedOptions.sorting_sequence}</p>
-            </div>
+            </div> */}
             <table className="table table-bordered">
               <thead>
                 <tr>
                   <th title="Full name of the expert">Name</th>
-                  <th title="The current field of the expert">Field of Study</th>
                   <th title="Current institutional affiliation of the expert">Institution</th>
-                  <th title="The region in which the expert's institutional affiliation is located">Region</th>
-                  <th title="How many times the expert has been cited">Times Cited
-                    <button className="btn sorting-button" name="citations" onClick={handleSorting}>{activeSorting.citations}</button>
-                  </th>
-                  <th title="The number of papers (h) that have received (h) or more citations">H-index
-                    <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
-                  </th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-Index
-                    <button className="btn sorting-button" name="i_ten_index" onClick={handleSorting}>{activeSorting.i_ten_index}</button>
-                  </th>
-                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor
-                    <button className="btn sorting-button" name="impact_factor" onClick={handleSorting}>{activeSorting.impact_factor}</button>
-                  </th>
-                  {/* <th title="The age of the expert">Age
-                    <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
-                  </th>
-                  <th title="How many years the expert has been in their field">Years In Field
-                    <button className="btn sorting-button" name="years_in_field" onClick={handleSorting}>{activeSorting.years_in_field}</button>
-                  </th> */}
-                  <th title="The email of the expert or where their email can be found">Email</th>
+                  <th title="The country in which the expert's institutional affiliation is located">Country</th>
+                  <th title="Total number of works published by this expert">Works Count</th>
+                  <th title="How many times the expert has been cited">Times Cited</th>
+                  <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
+                  <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
+                  <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
                 </tr>
               </thead>
               <tbody>
                 {searchResults.map((result, index) => (
                   <tr key={index}>
-                    <td>{result.name}</td>
-                    <td>{result.field_of_study}</td>
-                    <td>{result.institution}</td>
-                    <td>{result.region}</td>
-                    <td>{result.citations}</td>
+                    <td>{result.author_name}</td>
+                    <td>{result.institution_name}</td>
+                    <td>{result.country_name || 'N/A'}</td>
+                    <td>{result.works_count}</td>
+                    <td>{result.cited_by_count}</td>
                     <td>{result.hindex}</td>
                     <td>{result.i_ten_index}</td>
                     <td>{result.impact_factor}</td>
-                    {/* <td>{result.age}</td>
-                    <td>{result.years_in_field}</td> */}
-                    <td>{result.email}</td>
                   </tr>
                 ))}
               </tbody>

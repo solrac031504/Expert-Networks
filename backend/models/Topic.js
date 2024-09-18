@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require ('../database');
+const Subfield = require('./Subfield');
 
 const Topic = sequelize.define('Topic', {
   id: {
@@ -15,27 +16,17 @@ const Topic = sequelize.define('Topic', {
   wikipedia_id: {
     type: DataTypes.STRING
   },
-  domain_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  domain_display_name: {
-    type: DataTypes.STRING
-  },
-  field_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  field_display_name: {
-    type: DataTypes.STRING
-  },
   subfield_id: {
     type: DataTypes.INTEGER,
+    references: {
+      model: Subfield,
+      key: 'id'
+    },
     allowNull: false
-  },
-  subfield_display_name: {
-    type: DataTypes.STRING
   }
 }, { timestamps: false });
+
+Topic.belongsTo(Subfield, { foreignKey: 'subfield_id' });
+Subfield.hasMany(Topic, { foreignKey: 'subfield_id' });
 
 module.exports = Topic;
