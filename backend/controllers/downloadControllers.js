@@ -14,6 +14,23 @@ const { fetchExperts } = require('./searchControllers');
 
 require('dotenv').config(); 
 
+const getNarrowestSelectedField = async (queryParams) => {
+  // These are IDs
+  const { domain, field, subfield, topic } = queryParams;
+  let field_of_study;
+
+  // Start narrow, get more broad until one of them is true
+  // This way, the most specific selection is used
+  // If no selection, return ''
+  if (topic) field_of_study = await sequelize.query(`SELECT display_name FROM Topics WHERE Topics.id=${topic}`, { type: QueryTypes.SELECT });
+  else if (subfield) field_of_study = await sequelize.query(`SELECT display_name FROM Subfields WHERE Subfields.id=${subfield}`, { type: QueryTypes.SELECT });
+  else if (field) field_of_study = await sequelize.query(`SELECT display_name FROM Fields WHERE Fields.id=${field}`, { type: QueryTypes.SELECT });
+  else if (domain) field_of_study = await sequelize.query(`SELECT display_name FROM Domains WHERE Domains.id=${domain}`, { type: QueryTypes.SELECT });
+  else return '';
+
+  return field_of_study[0].display_name;
+};
+
 const exportExpertsToXLS = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
@@ -55,12 +72,25 @@ const exportExpertsToXLS = async (req, res) => {
 const exportExpertsToCSV = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
+    const field_of_study = await getNarrowestSelectedField(req.query);
+
+    console.log(field_of_study);
+
     // const results = experts.map(expert => expert.get({ plain: true }));
+
+    // Map field_of_study to each expert record
+    const expertsWithField = experts.map(expert => ({
+      ...expert,
+      field_of_study: field_of_study
+    }));
+
+    console.log(expertsWithField[0]);
 
     const csvWriter = createCsvWriter({
       path: path.join(__dirname, '../exports/experts.csv'),
       header: [
         { id: 'author_name', title: 'Name' },
+        { id: 'field_of_study', title: 'Selected Field of Study' },
         { id: 'institution_name', title: 'Institution' },
         { id: 'country_name', title: 'Country' },
         { id: 'works_count', title: 'Number of Works' },
@@ -72,7 +102,7 @@ const exportExpertsToCSV = async (req, res) => {
     });
 
     // await csvWriter.writeRecords(records);
-    await csvWriter.writeRecords(experts);
+    await csvWriter.writeRecords(expertsWithField);
 
     const filePath = path.join(__dirname, '../exports/experts.csv');
     res.setHeader('Content-Type', 'text/csv');
