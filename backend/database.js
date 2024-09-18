@@ -7,6 +7,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: process.env.DB_DIALECT,
   port: process.env.DB_PORT,
   ssl: process.env.DB_SSL,
+  logging: false
 });
 
 // Test if the connection is OK

@@ -519,43 +519,76 @@ const Home = () => {
         <div className="navbar-title">For the People, Find the People</div>
       </nav>
       <div className="container">
+        {/* Dropdowns for the fields of study */}
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Domain dropdown menu */}
-          <select className="form-control mr-2" name="domain" value={selectedOptions.domain.id || ''} onChange={handleInputChange}>
+          <select
+            className="form-control mr-2"
+            name="domain"
+            value={selectedOptions.domain.id || ''}
+            onChange={handleInputChange}
+          >
             <option value="">Domain</option>
             {dropdownOptions.domains.map((option) => (
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-          
-          {/* Field dropdown menu */}
-          <select className="form-control mr-2" name="field" value={selectedOptions.field.id || ''} onChange={handleInputChange}>
-            <option value="">Field</option>
-            {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
 
-          {/* Subfield dropdown menu */}
-          <select className="form-control mr-2" name="subfield" value={selectedOptions.subfield.id || ''} onChange={handleInputChange}>
-            <option value="">Subfield</option>
-            {(Array.isArray(dropdownOptions.subfields) ? dropdownOptions.subfields : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
+          {/* Field dropdown menu - only show if domain is selected */}
+          {selectedOptions.domain.id && (
+            <select
+              className="form-control mr-2"
+              name="field"
+              value={selectedOptions.field.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Field</option>
+              {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
 
-          {/* Topic dropdown menu */}
-          <select className="form-control mr-2" name="topic" value={selectedOptions.topic.id || ''} onChange={handleInputChange}>
-            <option value="">Topic</option>
-            {(Array.isArray(dropdownOptions.topics) ? dropdownOptions.topics : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
+          {/* Subfield dropdown menu - only show if field is selected */}
+          {selectedOptions.field.id && (
+            <select
+              className="form-control mr-2"
+              name="subfield"
+              value={selectedOptions.subfield.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Subfield</option>
+              {(Array.isArray(dropdownOptions.subfields) ? dropdownOptions.subfields : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Topic dropdown menu - only show if subfield is selected */}
+          {selectedOptions.subfield.id && (
+            <select
+              className="form-control mr-2"
+              name="topic"
+              value={selectedOptions.topic.id || ''}
+              onChange={handleInputChange}
+            >
+              <option value="">Topic</option>
+              {(Array.isArray(dropdownOptions.topics) ? dropdownOptions.topics : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
         </div>
 
+        {/* Dropdowns for the geographic regions */}
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Continent dropdown menu */}
-          <select className="form-control mr-2" name="continent" value={selectedOptions.continent.id || ''} onChange={handleInputChange}>
+          <select 
+            className="form-control mr-2" 
+            name="continent" 
+            value={selectedOptions.continent.id || ''} 
+            onChange={handleInputChange}
+          >
             <option value="">Continent</option>
             {dropdownOptions.continents.map((option) => (
               <option key={option.id} value={option.id}>{option.name}</option>
@@ -563,32 +596,54 @@ const Home = () => {
           </select>
 
           {/* Region dropdown menu */}
-          <select className="form-control mr-2" name="region" value={selectedOptions.region.id || ''} onChange={handleInputChange}>
-            <option value="">Region</option>
-            {(Array.isArray(dropdownOptions.regions) ? dropdownOptions.regions : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
+          {selectedOptions.continent.id && (
+            <select 
+              className="form-control mr-2" 
+              name="region" 
+              value={selectedOptions.region.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Region</option>
+              {(Array.isArray(dropdownOptions.regions) ? dropdownOptions.regions : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
 
           {/* Subregion dropdown menu */}
-          <select className="form-control mr-2" name="subregion" value={selectedOptions.subregion.id || ''} onChange={handleInputChange}>
-            <option value="">Subregion</option>
-            {(Array.isArray(dropdownOptions.subregions) ? dropdownOptions.subregions : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
+          {selectedOptions.region.id && (
+            <select 
+              className="form-control mr-2" 
+              name="subregion" 
+              value={selectedOptions.subregion.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Subregion</option>
+              {(Array.isArray(dropdownOptions.subregions) ? dropdownOptions.subregions : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
 
           {/* Country dropdown menu */}
-          <select className="form-control mr-2" name="country" value={selectedOptions.country.id || ''} onChange={handleInputChange}>
-            <option value="">Country</option>
-            {(Array.isArray(dropdownOptions.countries) ? dropdownOptions.countries : []).map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
+          {selectedOptions.region.id && (
+            <select 
+              className="form-control mr-2" 
+              name="country" 
+              value={selectedOptions.country.id || ''} 
+              onChange={handleInputChange}
+            >
+              <option value="">Country</option>
+              {(Array.isArray(dropdownOptions.countries) ? dropdownOptions.countries : []).map((option) => (
+                <option key={option.id} value={option.id}>{option.name}</option>
+              ))}
+            </select>
+          )}
+
         </div>
 
-        <div className="dropdown-container d-flex align-items-center mt-4">
-          {/* Institution text input */}
+        {/* Institution text input */}
+        <div className="textbox-container d-flex align-items-center mt-4">
           <input
             type="text"
             className="form-control mr-2"
@@ -598,12 +653,13 @@ const Home = () => {
             placeholder="Enter Institution(s)"
           />
         </div>
-
-        <div className="dropdown-container d-flex align-items-center mt-4">
+        
+        {/* Buttons for searching and clearing filters */}
+        <div className="filterbutton-container d-flex align-items-center mt-4">
           {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
 
-          <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-          <button className="btn btn-secondary ml-2" onClick={clearFilters}>Clear Filters</button>
+          <button className="btn filter-button" onClick={handleSearch}>Search</button>
+          <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
         {searchResults.length > 0 && (
