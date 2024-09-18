@@ -47,50 +47,6 @@ const Home = () => {
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
-  //Clear filters function
-  const clearFilters = () => {
-    setSelectedOptions({
-        domain: [],
-        field: [],
-        subfield: [],
-        topic: [],
-        institution: '',
-        continent: [],
-        region: [],
-        subregion: [],
-        country: [],
-        citations: '',
-        hindex: '',
-        i_ten_index: '',
-        impact_factor: '',
-        age: '',
-        years_in_field: '',
-        sorting_sequence: ''
-    });
-
-    setDropdownOptions({
-        domains: [],
-        fields: [],
-        subfields: [],
-        topics: [],
-        continents: [],
-        regions: [],
-        subregions: [],
-        countries: []
-    });
-
-    setSearchResults([]);
-
-    setActiveSorting({
-        citations: '-',
-        hindex: '-',
-        i_ten_index: '-',
-        impact_factor: '-',
-        age: '-',
-        years_in_field: '-',
-    });
-  };
-
   useEffect(() => {
     // Fetch unique domains
     console.log('Fetching unique domains...');
@@ -366,6 +322,50 @@ const Home = () => {
       countries: [],
       institution: '',
     }));
+  };
+
+  //Clear filters function
+  const clearFilters = () => {
+    setSelectedOptions({
+        domain: [],
+        field: [],
+        subfield: [],
+        topic: [],
+        institution: '',
+        continent: [],
+        region: [],
+        subregion: [],
+        country: [],
+        citations: '',
+        hindex: '',
+        i_ten_index: '',
+        impact_factor: '',
+        age: '',
+        years_in_field: '',
+        sorting_sequence: ''
+    });
+
+    // setDropdownOptions({
+    //     domains: [],
+    //     fields: [],
+    //     subfields: [],
+    //     topics: [],
+    //     continents: [],
+    //     regions: [],
+    //     subregions: [],
+    //     countries: []
+    // });
+
+    setSearchResults([]);
+
+    setActiveSorting({
+        citations: '-',
+        hindex: '-',
+        i_ten_index: '-',
+        impact_factor: '-',
+        age: '-',
+        years_in_field: '-',
+    });
   };
 
   // Clear selections in sorting and revert butons to un-sorting state
