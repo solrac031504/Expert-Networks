@@ -90,3 +90,29 @@ button:hover {
 .clear-sorting-button:hover {
   background-color: #3838d8;
 }
+
+.horizontal-card {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.card-content, .card-stats {
+  flex: 1;
+  padding: 15px;
+}
+
+.card-content {
+  border-right: 1px solid #ddd;
+}
+
+.card-stats {
+  border-left: 1px solid #ddd;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}

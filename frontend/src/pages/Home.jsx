@@ -521,52 +521,31 @@ const Home = () => {
             <div className="sorting-order"> 
               <p>Sorting order: {selectedOptions.sorting_sequence}</p>
             </div>
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th title="Full name of the expert">Name</th>
-                  <th title="The current field of the expert">Field of Study</th>
-                  <th title="Current institutional affiliation of the expert">Institution</th>
-                  <th title="The region in which the expert's institutional affiliation is located">Region</th>
-                  <th title="How many times the expert has been cited">Times Cited
-                    <button className="btn sorting-button" name="citations" onClick={handleSorting}>{activeSorting.citations}</button>
-                  </th>
-                  <th title="The number of papers (h) that have received (h) or more citations">H-index
-                    <button className="btn sorting-button" name="hindex" onClick={handleSorting}>{activeSorting.hindex}</button>
-                  </th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-Index
-                    <button className="btn sorting-button" name="i_ten_index" onClick={handleSorting}>{activeSorting.i_ten_index}</button>
-                  </th>
-                  <th title="The average number of citations of an expert within the last 2 years">Impact Factor
-                    <button className="btn sorting-button" name="impact_factor" onClick={handleSorting}>{activeSorting.impact_factor}</button>
-                  </th>
-                  {/* <th title="The age of the expert">Age
-                    <button className="btn sorting-button" name="age" onClick={handleSorting}>{activeSorting.age}</button>
-                  </th>
-                  <th title="How many years the expert has been in their field">Years In Field
-                    <button className="btn sorting-button" name="years_in_field" onClick={handleSorting}>{activeSorting.years_in_field}</button>
-                  </th> */}
-                  <th title="The email of the expert or where their email can be found">Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map((result, index) => (
-                  <tr key={index}>
-                    <td>{result.name}</td>
-                    <td>{result.field_of_study}</td>
-                    <td>{result.institution}</td>
-                    <td>{result.region}</td>
-                    <td>{result.citations}</td>
-                    <td>{result.hindex}</td>
-                    <td>{result.i_ten_index}</td>
-                    <td>{result.impact_factor}</td>
-                    {/* <td>{result.age}</td>
-                    <td>{result.years_in_field}</td> */}
-                    <td>{result.email}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="search-results mt-4">
+          {searchResults.length > 0 && (
+            <div className="row">
+              {searchResults.map(result => (
+                <div className="col-md-4 mb-4" key={result.id}>
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">{result.name}</h5>
+                      <p className="card-text"><strong>Field of Study:</strong> {result.field_of_study}</p>
+                      <p className="card-text"><strong>Institution:</strong> {result.institution}</p>
+                      <p className="card-text"><strong>Region:</strong> {result.region}</p>
+                      <p className="card-text"><strong>Citations:</strong> {result.citations}</p>
+                      <p className="card-text"><strong>H-Index:</strong> {result.hindex}</p>
+                      <p className="card-text"><strong>i10-Index:</strong> {result.i_ten_index}</p>
+                      <p className="card-text"><strong>Impact Factor:</strong> {result.impact_factor}</p>
+                      <p className="card-text"><strong>Age:</strong> {result.age}</p>
+                      <p className="card-text"><strong>Years in Field:</strong> {result.years_in_field}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+  
           </div>
         )}
       </div>
