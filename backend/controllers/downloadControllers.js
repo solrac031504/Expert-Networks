@@ -34,6 +34,7 @@ const getNarrowestSelectedField = async (queryParams) => {
 const exportExpertsToXLS = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
+    const field_of_study = await getNarrowestSelectedField(req.query);
     // const experts = await Expert.findAll({limit : 100});
     // const results = experts.map(expert => expert.get({ plain: true }));
 
@@ -42,6 +43,7 @@ const exportExpertsToXLS = async (req, res) => {
 
     worksheet.columns = [
       { header: 'Name', key: 'author_name', width: 20 },
+      { header: 'Selected Field of Study', key: 'field_of_study', width: 30},
       { header: 'Institution', key: 'institution_name', width: 30 },
       { header: 'Country', key: 'country_name', width: 15 },
       { header: 'Number of Works', key: 'works_count', width: 15},
@@ -51,7 +53,13 @@ const exportExpertsToXLS = async (req, res) => {
       { header: 'Impact Factor', key: 'impact_factor', width: 15 },
     ];
 
-    experts.forEach(expert => {
+    // Map field_of_study to each expert record
+    const expertsWithField = experts.map(expert => ({
+      ...expert,
+      field_of_study: field_of_study
+    }));
+
+    expertsWithField.forEach(expert => {
       worksheet.addRow(expert);
     });
 
@@ -74,8 +82,6 @@ const exportExpertsToCSV = async (req, res) => {
     const experts = await fetchExperts(req.query);
     const field_of_study = await getNarrowestSelectedField(req.query);
 
-    console.log(field_of_study);
-
     // const results = experts.map(expert => expert.get({ plain: true }));
 
     // Map field_of_study to each expert record
@@ -83,8 +89,6 @@ const exportExpertsToCSV = async (req, res) => {
       ...expert,
       field_of_study: field_of_study
     }));
-
-    console.log(expertsWithField[0]);
 
     const csvWriter = createCsvWriter({
       path: path.join(__dirname, '../exports/experts.csv'),
@@ -118,6 +122,8 @@ const exportExpertsToCSV = async (req, res) => {
 const exportExpertsToPDF = async (req, res) => {
   try {
     const experts = await fetchExperts(req.query);
+    const field_of_study = await getNarrowestSelectedField(req.query);
+
     // const results = experts.map(expert => expert.get({ plain: true }));
 
     const doc = new PDFDocument();
@@ -133,8 +139,15 @@ const exportExpertsToPDF = async (req, res) => {
     doc.fontSize(20).text('Experts List', { align: 'center' });
     doc.moveDown();
 
-    experts.forEach(expert => {
+    // Map field_of_study to each expert record
+    const expertsWithField = experts.map(expert => ({
+      ...expert,
+      field_of_study: field_of_study
+    }));
+
+    expertsWithField.forEach(expert => {
       doc.fontSize(12).text(`Name: ${expert.author_name}`);
+      doc.text(`Selected Field of Study: ${expert.field_of_study}`);
       doc.text(`Institution: ${expert.institution_name}`);
       doc.text(`Country: ${expert.country_name}`);
       doc.text(`Number of Works: ${expert.works_count}`)
