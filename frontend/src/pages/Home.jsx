@@ -303,6 +303,13 @@ const Home = () => {
     window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
   };
 
+  // Download XLS
+  const handleDownloadXLS = () => {
+    console.log("Downloading XLS");
+    const queryString = createURL();
+    window.open(`${apiUrl}/api/download/export/xls?${queryString}`, '_blank');
+  };
+
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
@@ -511,9 +518,6 @@ const Home = () => {
       <nav className="navbar custom-navbar">
         <div className="navbar-title">For the People, Find the People</div>
       </nav>
-      <div className="input-info">
-        <p>For the institutions, please enter institutions separated by a comma with no space, as such: Institution 1,Institution 2,Institution 3</p>
-      </div>
       <div className="container">
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Domain dropdown menu */}
@@ -604,12 +608,13 @@ const Home = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-4">
-            <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
+            {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
+            <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
-            <div className="sorting-order"> 
+            {/* <div className="sorting-order"> 
               <p>Sorting order: {selectedOptions.sorting_sequence}</p>
-            </div>
+            </div> */}
             <table className="table table-bordered">
               <thead>
                 <tr>
