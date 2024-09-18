@@ -14,6 +14,7 @@ const { fetchExperts } = require('./searchControllers');
 
 require('dotenv').config(); 
 
+// Returns the display_name of the narrowest selected field of study
 const getNarrowestSelectedField = async (queryParams) => {
   // These are IDs
   const { domain, field, subfield, topic } = queryParams;
