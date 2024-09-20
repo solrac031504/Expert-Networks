@@ -35,6 +35,9 @@ const Home = () => {
 
   const [searchResults, setSearchResults] = useState([]);
 
+  // For the loading circle
+  const [loading, setLoading] = useState(true);
+
   // State to keep track of the active sorting button
   const [activeSorting, setActiveSorting] = useState({
     citations: '-',
@@ -280,12 +283,13 @@ const Home = () => {
   };
 
   // Search table based on values selected in the dropdown and sorting buttons
-  const handleSearch = () => {
+  const handleSearch = async() => {
     console.log('Selected options:', selectedOptions);
 
     const queryString = createURL();
 
-    fetch(`${apiUrl}/api/search?${queryString}`)
+    setLoading(true);
+    await fetch(`${apiUrl}/api/search?${queryString}`)
       .then(response => response.json())
       .then(data => {
         console.log('Search results:', data);
@@ -294,6 +298,7 @@ const Home = () => {
       .catch(error => {
         console.error('Error during search:', error);
       });
+    setLoading(false);
   };
 
   // Download CSV
@@ -662,43 +667,58 @@ const Home = () => {
           <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
-        {searchResults.length > 0 && (
-          <div className="mt-4">
-            {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
-            <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
-            <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
-            <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
-            {/* <div className="sorting-order"> 
-              <p>Sorting order: {selectedOptions.sorting_sequence}</p>
-            </div> */}
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th title="Full name of the expert">Name</th>
-                  <th title="Current institutional affiliation of the expert">Institution</th>
-                  <th title="The country in which the expert's institutional affiliation is located">Country</th>
-                  <th title="Total number of works published by this expert">Works Count</th>
-                  <th title="How many times the expert has been cited">Times Cited</th>
-                  <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
-                  <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
-                  <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map((result, index) => (
-                  <tr key={index}>
-                    <td>{result.author_name}</td>
-                    <td>{result.institution_name}</td>
-                    <td>{result.country_name || 'N/A'}</td>
-                    <td>{result.works_count}</td>
-                    <td>{result.cited_by_count}</td>
-                    <td>{result.hindex}</td>
-                    <td>{result.i_ten_index}</td>
-                    <td>{result.impact_factor}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* If the data is loading, show the spinner
+            Once it is done loading, display the resulting table */}
+        {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div>
+          </div>
+        ) : (
+          <div>
+            {/* Render the content once the data has been fetched */}
+            {searchResults.length > 0 ? (
+              <div className="mt-4">
+                {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
+                <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
+                <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
+                <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
+                {/* <div className="sorting-order"> 
+                  <p>Sorting order: {selectedOptions.sorting_sequence}</p>
+                </div> */}
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th title="Full name of the expert">Name</th>
+                      <th title="Current institutional affiliation of the expert">Institution</th>
+                      <th title="The country in which the expert's institutional affiliation is located">Country</th>
+                      <th title="Total number of works published by this expert">Works Count</th>
+                      <th title="How many times the expert has been cited">Times Cited</th>
+                      <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
+                      <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
+                      <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searchResults.map((result, index) => (
+                      <tr key={index}>
+                        <td>{result.author_name}</td>
+                        <td>{result.institution_name}</td>
+                        <td>{result.country_name || 'N/A'}</td>
+                        <td>{result.works_count}</td>
+                        <td>{result.cited_by_count}</td>
+                        <td>{result.hindex}</td>
+                        <td>{result.i_ten_index}</td>
+                        <td>{result.impact_factor}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="no-authors">
+                <h2>No Authors Found</h2>
+              </div>
+            )}
           </div>
         )}
       </div>

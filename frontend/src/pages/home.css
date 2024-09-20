@@ -28,7 +28,7 @@ body {
 .dropdown-container {
   margin-top: 20px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 }
 
@@ -103,4 +103,34 @@ button:hover {
 
 .filter-button:hover {
   background-color: #3838d8;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 25vh;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 6px solid rgba(0, 0, 0, 0.1); /* Increase the border size */
+  border-left-color: #4848f5;
+  border-radius: 50%;
+  width: 80px; /* Increase the size */
+  height: 80px; /* Increase the size */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-authors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
 }
