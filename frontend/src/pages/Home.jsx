@@ -30,6 +30,7 @@ const Home = () => {
     impact_factor: '',
     age: '',
     years_in_field: '',
+    sorting: '',
     sorting_sequence: ''
   });
 
@@ -310,7 +311,7 @@ const Home = () => {
 
   // Sort the column and change the state of the button
   // Creates the string used for sorting
-  const handleSorting = (e) => {
+  /*const handleSorting = (e) => {
     const { name } = e.target;
 
     // handleClearSortingSelection();
@@ -418,8 +419,130 @@ const Home = () => {
       ...prevState,
       [name]: buttonDirection,
     }));
+  };*/
+
+  const handleSortingChange = (event) => {
+    const sortingValue = event.target.value;
+  
+    // Update selectedOptions state with the new sorting value
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      sorting: sortingValue,
+      sorting_sequence: getSortingDescription(sortingValue) // This will display a readable sorting description
+    }));
+  
+    // Call the sorting function if necessary to apply the sorting logic immediately
+    sortSearchResults(sortingValue);
   };
 
+  const getSortingDescription = (sortingValue) => {
+    switch (sortingValue) {
+      case 'citations_asc':
+        return 'Citations (Ascending)';
+      case 'citations_desc':
+        return 'Citations (Descending)';
+      case 'hindex_asc':
+        return 'H-Index (Ascending)';
+      case 'hindex_desc':
+        return 'H-Index (Descending)';
+      case 'i10index_asc':
+        return 'i10-Index (Ascending)';
+      case 'i10index_desc':
+        return 'i10-Index (Descending)';
+      case 'impact_factor_asc':
+        return 'Impact Factor (Ascending)';
+      case 'impact_factor_desc':
+        return 'Impact Factor (Descending)';
+      case 'age_asc':
+        return 'Age (Ascending)';
+      case 'age_desc':
+        return 'Age (Descending)';
+      case 'years_in_field_asc':
+        return 'Years in Field (Ascending)';
+      case 'years_in_field_desc':
+        return 'Years in Field (Descending)';
+      default:
+        return '';
+    }
+  };
+
+  const sortSearchResults = (sortingValue) => {
+    const sortedResults = [...searchResults]; // Create a copy of the current results to sort
+  
+    switch (sortingValue) {
+      case 'citations_asc':
+        sortedResults.sort((a, b) => a.citations - b.citations);
+        break;
+      case 'citations_desc':
+        sortedResults.sort((a, b) => b.citations - a.citations);
+        break;
+      case 'hindex_asc':
+        sortedResults.sort((a, b) => a.hindex - b.hindex);
+        break;
+      case 'hindex_desc':
+        sortedResults.sort((a, b) => b.hindex - a.hindex);
+        break;
+      case 'i10index_asc':
+        sortedResults.sort((a, b) => a.i_ten_index - b.i_ten_index);
+        break;
+      case 'i10index_desc':
+        sortedResults.sort((a, b) => b.i_ten_index - a.i_ten_index);
+        break;
+      case 'impact_factor_asc':
+        sortedResults.sort((a, b) => a.impact_factor - b.impact_factor);
+        break;
+      case 'impact_factor_desc':
+        sortedResults.sort((a, b) => b.impact_factor - a.impact_factor);
+        break;
+      case 'age_asc':
+        sortedResults.sort((a, b) => a.age - b.age);
+        break;
+      case 'age_desc':
+        sortedResults.sort((a, b) => b.age - a.age);
+        break;
+      case 'years_in_field_asc':
+        sortedResults.sort((a, b) => a.years_in_field - b.years_in_field);
+        break;
+      case 'years_in_field_desc':
+        sortedResults.sort((a, b) => b.years_in_field - a.years_in_field);
+        break;
+      default:
+        break;
+    }
+  
+    // Update the search results with the sorted array
+    setSearchResults(sortedResults);
+  };
+  
+
+  const handleSorting = (e) => {
+    const { name } = e.target;
+    let sortOrder = '';
+
+    // Toggle between ascending, descending, and reset ('-', 'ASC', 'DESC')
+    const oldDirection = activeSorting[name];
+    if (oldDirection === '-') sortOrder = 'ASC';
+    else if (oldDirection === 'ASC') sortOrder = 'DESC';
+    else if (oldDirection === 'DESC') sortOrder = '-';
+
+    // Update the sorting state
+    setActiveSorting({
+      citations: '-',
+      hindex: '-',
+      i_ten_index: '-',
+      impact_factor: '-',
+      age: '-',
+      years_in_field: '-',
+      [name]: sortOrder,
+    });
+
+    // Create the sorting sequence string
+    let finalSequence = `${name}:${sortOrder}`;
+    setSelectedOptions(prevState => ({
+      ...prevState,
+      sorting_sequence: finalSequence,
+    }));
+  };
   return (
     <div>
       <nav className="navbar custom-navbar">
@@ -437,7 +560,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Field dropdown menu */}
           <select className="form-control mr-2" name="field" value={selectedOptions.field.id || ''} onChange={handleInputChange}>
             <option value="">Field</option>
@@ -445,7 +568,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Subfield dropdown menu */}
           <select className="form-control mr-2" name="subfield" value={selectedOptions.subfield.id || ''} onChange={handleInputChange}>
             <option value="">Subfield</option>
@@ -453,7 +576,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Topic dropdown menu */}
           <select className="form-control mr-2" name="topic" value={selectedOptions.topic.id || ''} onChange={handleInputChange}>
             <option value="">Topic</option>
@@ -462,7 +585,7 @@ const Home = () => {
             ))}
           </select>
         </div>
-
+  
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Continent dropdown menu */}
           <select className="form-control mr-2" name="continent" value={selectedOptions.continent.id || ''} onChange={handleInputChange}>
@@ -471,7 +594,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Region dropdown menu */}
           <select className="form-control mr-2" name="region" value={selectedOptions.region.id || ''} onChange={handleInputChange}>
             <option value="">Region</option>
@@ -479,7 +602,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Subregion dropdown menu */}
           <select className="form-control mr-2" name="subregion" value={selectedOptions.subregion.id || ''} onChange={handleInputChange}>
             <option value="">Subregion</option>
@@ -487,7 +610,7 @@ const Home = () => {
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </select>
-
+  
           {/* Country dropdown menu */}
           <select className="form-control mr-2" name="country" value={selectedOptions.country.id || ''} onChange={handleInputChange}>
             <option value="">Country</option>
@@ -496,7 +619,7 @@ const Home = () => {
             ))}
           </select>
         </div>
-
+  
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Institution text input */}
           <input
@@ -508,49 +631,66 @@ const Home = () => {
             placeholder="Enter Institution(s)"
           />
         </div>
-
+  
         <div className="dropdown-container d-flex align-items-center mt-4">
           <button className="btn btn-primary" onClick={handleSearch}>Search</button>
         </div>
-
+  
+        {/* Sorting dropdown */}
+        <div className="dropdown-container d-flex align-items-center mt-4">
+          <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
+            <option value="">Sort by</option>
+            <option value="citations_asc">Citations (Ascending)</option>
+            <option value="citations_desc">Citations (Descending)</option>
+            <option value="hindex_asc">H-Index (Ascending)</option>
+            <option value="hindex_desc">H-Index (Descending)</option>
+            <option value="i10index_asc">i10-Index (Ascending)</option>
+            <option value="i10index_desc">i10-Index (Descending)</option>
+            <option value="impact_factor_asc">Impact Factor (Ascending)</option>
+            <option value="impact_factor_desc">Impact Factor (Descending)</option>
+            <option value="age_asc">Age (Ascending)</option>
+            <option value="age_desc">Age (Descending)</option>
+            <option value="years_in_field_asc">Years in Field (Ascending)</option>
+            <option value="years_in_field_desc">Years in Field (Descending)</option>
+          </select>
+        </div>
+  
         {searchResults.length > 0 && (
           <div className="mt-4">
             <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button>
             <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
             <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
-            <div className="sorting-order"> 
+            <div className="sorting-order">
               <p>Sorting order: {selectedOptions.sorting_sequence}</p>
             </div>
-        <div className="search-results mt-4">
-          {searchResults.length > 0 && (
-            <div className="row">
-              {searchResults.map(result => (
-                <div className="col-md-4 mb-4" key={result.id}>
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title">{result.name}</h5>
-                      <p className="card-text"><strong>Field of Study:</strong> {result.field_of_study}</p>
-                      <p className="card-text"><strong>Institution:</strong> {result.institution}</p>
-                      <p className="card-text"><strong>Region:</strong> {result.region}</p>
-                      <p className="card-text"><strong>Citations:</strong> {result.citations}</p>
-                      <p className="card-text"><strong>H-Index:</strong> {result.hindex}</p>
-                      <p className="card-text"><strong>i10-Index:</strong> {result.i_ten_index}</p>
-                      <p className="card-text"><strong>Impact Factor:</strong> {result.impact_factor}</p>
-                      <p className="card-text"><strong>Age:</strong> {result.age}</p>
-                      <p className="card-text"><strong>Years in Field:</strong> {result.years_in_field}</p>
+            <div className="search-results mt-4">
+              <div className="row">
+                {searchResults.map(result => (
+                  <div className="col-md-4 mb-4" key={result.id}>
+                    <div className="card">
+                      <div className="card-body">
+                        <h5 className="card-title">{result.name}</h5>
+                        <p className="card-text"><strong>Field of Study:</strong> {result.field_of_study}</p>
+                        <p className="card-text"><strong>Institution:</strong> {result.institution}</p>
+                        <p className="card-text"><strong>Region:</strong> {result.region}</p>
+                        <p className="card-text"><strong>Citations:</strong> {result.citations}</p>
+                        <p className="card-text"><strong>H-Index:</strong> {result.hindex}</p>
+                        <p className="card-text"><strong>i10-Index:</strong> {result.i_ten_index}</p>
+                        <p className="card-text"><strong>Impact Factor:</strong> {result.impact_factor}</p>
+                        <p className="card-text"><strong>Age:</strong> {result.age}</p>
+                        <p className="card-text"><strong>Years in Field:</strong> {result.years_in_field}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          )}
-        </div>
-  
           </div>
         )}
       </div>
     </div>
   );
+  
 };
 
 export default Home;
