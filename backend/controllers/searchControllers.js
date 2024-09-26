@@ -48,7 +48,6 @@ async function getCachedResults(cacheKey) {
 }
 
 const fetchExperts = async(queryParams) => {
-  console.log('Fetching experts...');
   // Get the query parameters
   // These are id
   const {
@@ -63,28 +62,18 @@ const fetchExperts = async(queryParams) => {
     institution
   } = queryParams;
 
-  console.log('Got query params');
-
   // if nothing is selected, return an empty array
   if (!(domain || field || subfield || topic || continent || region || subregion || country || institution)) return [];
 
-  console.log('Field(s) is/are selected');
-
   const cacheKey = JSON.stringify(queryParams);
-  console.log('Generated cacheKey from queryParams:', cacheKey);
 
-  console.log('Getting cached results');
   // Check if results are cached in Redis
   const cachedResults = await getCachedResults(cacheKey);
-
-  console.log('Got cachedResults');
 
   if (cachedResults) {
     console.log('Returning cached result');
     return cachedResults;
   }
-
-  console.log('No cached results');
 
   let where_clause;
   let where_arr = [];
@@ -109,8 +98,7 @@ const fetchExperts = async(queryParams) => {
 
   // If the last geographic filter selected was a subregion and there is no country
   // Inner join the subregion
-  console.log('Searching database');
-  if (subregion && !country) {
+  if (continent && region && subregion && !country) {
     results = await sequelize.query(`
       SELECT DISTINCT Authors.display_name AS 'author_name',
                   Institutions.name    AS 'institution_name',
@@ -177,17 +165,15 @@ const fetchExperts = async(queryParams) => {
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
-      ${where_clause}`,
+      ${where_clause}
+      LIMIT 100`,
       { type: QueryTypes.SELECT }
     );
   }
 
-  console.log('Finished searching DB');
-  console.log('Caching results');
   // Cache the result in Redis
   // key, value, expiration in seconds, seconds
   redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
-  console.log('Cached results for 5 min');
 
   return results;
 };
@@ -196,7 +182,7 @@ const fetchExperts = async(queryParams) => {
 const searchExperts = async (req, res) => {
   try {
     const results = await fetchExperts(req.query);
-    res.status(200).json(results[0]);
+    res.status(200).json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -73,6 +73,7 @@ button:hover {
 /* Align the button to the right of the table */
 .download-button {
   float: right;
+  margin-top: 10px;
   margin-bottom: 10px;
   margin-left: 10px;
   background-color: #4848f5; 
@@ -102,6 +103,16 @@ button:hover {
 }
 
 .filter-button:hover {
+  background-color: #3838d8;
+}
+
+.btn-page {
+  margin: 10px;
+  background-color: #4848f5;
+  color: white;
+}
+
+.btn-page:hover {
   background-color: #3838d8;
 }
 

@@ -494,8 +494,15 @@ const Home = () => {
 
   const indexOfLastResult = currentPage * itemsPerPage;
   const indexOfFirstResult = indexOfLastResult - itemsPerPage;
-  const currentResults = searchResults.slice(indexOfFirstResult, indexOfLastResult);
-  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+
+  const currentResults = Array.isArray(searchResults)
+  ? searchResults.slice(indexOfFirstResult, indexOfLastResult)
+  : []; // Use an empty array if it's not an array
+
+  const totalPages = Array.isArray(searchResults)
+  ? Math.ceil(searchResults.length / itemsPerPage)
+  : 0; // Use 0 if it's not an array
+
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -658,23 +665,6 @@ const Home = () => {
           <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
-        {/* Sorting dropdown */}
-        <div className="dropdown-container d-flex align-items-center mt-4">
-          <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
-            <option value="">Sort by</option>
-            <option value="works_asc">Works (Ascending)</option>
-            <option value="works_desc">Works (Descending)</option>
-            <option value="citations_asc">Citations (Ascending)</option>
-            <option value="citations_desc">Citations (Descending)</option>
-            <option value="hindex_asc">H-Index (Ascending)</option>
-            <option value="hindex_desc">H-Index (Descending)</option>
-            <option value="i10index_asc">i10-Index (Ascending)</option>
-            <option value="i10index_desc">i10-Index (Descending)</option>
-            <option value="impact_factor_asc">Impact Factor (Ascending)</option>
-            <option value="impact_factor_desc">Impact Factor (Descending)</option>
-          </select>
-        </div>
-
         {/* If the data is loading, show the spinner
             Once it is done loading, display the resulting table */}
         {loading ? (
@@ -685,6 +675,23 @@ const Home = () => {
             <div>
               {searchResults.length > 0 ? (
                 <div className="mt-4">
+                  {/* Sorting dropdown */}
+                  <div className="dropdown-container d-flex align-items-center mt-4">
+                    <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
+                      <option value="">Sort by</option>
+                      <option value="works_asc">Works (Ascending)</option>
+                      <option value="works_desc">Works (Descending)</option>
+                      <option value="citations_asc">Citations (Ascending)</option>
+                      <option value="citations_desc">Citations (Descending)</option>
+                      <option value="hindex_asc">H-Index (Ascending)</option>
+                      <option value="hindex_desc">H-Index (Descending)</option>
+                      <option value="i10index_asc">i10-Index (Ascending)</option>
+                      <option value="i10index_desc">i10-Index (Descending)</option>
+                      <option value="impact_factor_asc">Impact Factor (Ascending)</option>
+                      <option value="impact_factor_desc">Impact Factor (Descending)</option>
+                    </select>
+                  </div>
+
                   <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
                   <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
                   <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
@@ -717,13 +724,13 @@ const Home = () => {
                     </tbody>
                   </table>
                   <div className="pagination-controls">
-                    <button className="btn" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                    <button className="btn-page" onClick={handlePreviousPage} disabled={currentPage === 1}>
                       Previous
                     </button>
                     <span>
                       Page {currentPage} of {totalPages}
                     </span>
-                    <button className="btn" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                    <button className="btn-page" onClick={handleNextPage} disabled={currentPage === totalPages}>
                       Next
                     </button>
                   </div>
