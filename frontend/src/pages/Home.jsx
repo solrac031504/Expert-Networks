@@ -406,116 +406,107 @@ const Home = () => {
     });
   };
 
-  // Sort the column and change the state of the button
-  // Creates the string used for sorting
-  const handleSorting = (e) => {
-    const { name } = e.target;
-
-    // handleClearSortingSelection();
-
-    //  let sortingSequence = selectedOptions.sorting_sequence
-    const oldDirection = activeSorting[name];
-    let buttonDirection = '';
-    let sortOrder = '';
-
-    // Change the direction of the button
-    if (oldDirection === '-') buttonDirection = 'v';
-    else if (oldDirection === 'v') buttonDirection = '^';
-    else if (oldDirection === '^') buttonDirection = '-';
-
-    // Decide sorting order based on the button
-    if (buttonDirection === '-') sortOrder = '';
-    else if (buttonDirection === 'v') sortOrder = 'DESC';
-    else if (buttonDirection === '^') sortOrder = 'ASC';
-
-    // console.log(`name: ${name}, value: ${sortOrder}`);
-
-    // Create the sorting sequence string and format correctly
-    //==================================================
-
-    const sortingSequence = selectedOptions.sorting_sequence;
-    // console.log(`sortingSequence = ${sortingSequence}`);
-
-    const sequenceSplitComma = sortingSequence ? sortingSequence.split(',') : [];
-    // console.log(`sequenceSplitComma = ${sequenceSplitComma}`);
-
-    let finalSequence = '';
-
-    // boolean used to add the new value at the end if it hasn't been added yet
-    let addFinal = true;
-
-    // case if nothing is in the sortingSequence
-    // Only execute if empty sequence AND sortOrder is not NULL
-    if (!sortingSequence && sortOrder) {
-      // console.log("sortingSequence is empty and sortOrder is not null");
-
-      // creates a single string "name:value"
-      let subSequence = '';
-      subSequence = subSequence.concat(name,':',sortOrder);
-      // console.log(`subSequence = ${subSequence}`);
-
-      // full string "name1:value1,name2:value2,"
-      finalSequence = finalSequence.concat(subSequence, ",");
-
-      addFinal = false;
-    } else {
-      // console.log("Reformatting sorting sequence");
-      for (let pair of sequenceSplitComma) {
-        // If the pair does not exist, don't proceed
-        if (!pair) continue;
-
-        let nameValPair = pair.split(':');
-        // console.log(`Old name value pair: ${nameValPair}`)
+  const handleSortingChange = (event) => {
+    const sortingValue = event.target.value;
   
-        // then name in name:value
-        let oldName = nameValPair[0]
-  
-        if (name === oldName) {
-          nameValPair[1] = sortOrder;
-
-          // value got updated, don't use again
-          addFinal = false;
-        };
-        
-        // console.log(`New name value pair: ${nameValPair}`);
-  
-        // value in name:value
-        // if the value exists, append. Else, don't append
-        if (nameValPair[1]) {
-          // creates a single string "name:value"
-          let subSequence = '';
-          subSequence = subSequence.concat(nameValPair[0], ':', nameValPair[1])
-          // console.log(`subSequence = ${subSequence}`);
-        
-          // full string "name1:value1,name2:value2,"
-          finalSequence = finalSequence.concat(subSequence, ",");
-        }
-      }
-    }
-
-    if (addFinal) {
-      // Add the new value if it wasn't already added
-    let nameValPair = name.concat(':',sortOrder);
-    // console.log(`nameValPair = ${nameValPair}`)
-    finalSequence = finalSequence.concat(nameValPair, ',');
-    }
-
-    //==================================================
-    
-    // Set the sorting sequence to the new adjusted sequence
-    console.log(`Final sorting sequence = ${finalSequence}`);
-    setSelectedOptions(prevState => ({
-      ...prevState,
-      [name]: sortOrder,
-      sorting_sequence: finalSequence,
+    // Update selectedOptions state with the new sorting value
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      sorting: sortingValue,
+      sorting_sequence: getSortingDescription(sortingValue) // This will display a readable sorting description
     }));
+  
+    // Call the sorting function if necessary to apply the sorting logic immediately
+    sortSearchResults(sortingValue);
+  };
 
-    console.log(`Setting the button of ${name} to ${buttonDirection}`);
-    // Update the button symbol
-    setActiveSorting(prevState => ({
-      ...prevState,
-      [name]: buttonDirection,
-    }));
+  const getSortingDescription = (sortingValue) => {
+    switch (sortingValue) {
+      case 'works_asc':
+        return 'Works (Ascending)';
+      case 'works_desc':
+        return 'Works (Descending)';
+      case 'citations_asc':
+        return 'Citations (Ascending)';
+      case 'citations_desc':
+        return 'Citations (Descending)';
+      case 'hindex_asc':
+        return 'H-Index (Ascending)';
+      case 'hindex_desc':
+        return 'H-Index (Descending)';
+      case 'i10index_asc':
+        return 'i10-Index (Ascending)';
+      case 'i10index_desc':
+        return 'i10-Index (Descending)';
+      case 'impact_factor_asc':
+        return 'Impact Factor (Ascending)';
+      case 'impact_factor_desc':
+        return 'Impact Factor (Descending)';
+      default:
+        return '';
+    }
+  };
+
+  const sortSearchResults = (sortingValue) => {
+    const sortedResults = [...searchResults]; // Create a copy of the current results to sort
+  
+    switch (sortingValue) {
+      case 'works_asc':
+        sortedResults.sort((a, b) => a.works_count - b.works_count);
+        break;
+      case 'works_desc':
+        sortedResults.sort((a, b) => b.works_count - a.works_count);
+        break;
+      case 'citations_asc':
+        sortedResults.sort((a, b) => a.cited_by_count - b.cited_by_count);
+        break;
+      case 'citations_desc':
+        sortedResults.sort((a, b) => b.cited_by_count - a.cited_by_count);
+        break;
+      case 'hindex_asc':
+        sortedResults.sort((a, b) => a.hindex - b.hindex);
+        break;
+      case 'hindex_desc':
+        sortedResults.sort((a, b) => b.hindex - a.hindex);
+        break;
+      case 'i10index_asc':
+        sortedResults.sort((a, b) => a.i_ten_index - b.i_ten_index);
+        break;
+      case 'i10index_desc':
+        sortedResults.sort((a, b) => b.i_ten_index - a.i_ten_index);
+        break;
+      case 'impact_factor_asc':
+        sortedResults.sort((a, b) => a.impact_factor - b.impact_factor);
+        break;
+      case 'impact_factor_desc':
+        sortedResults.sort((a, b) => b.impact_factor - a.impact_factor);
+        break;
+      default:
+        break;
+    }
+  
+    // Update the search results with the sorted array
+    setSearchResults(sortedResults);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25; // Show 25 results per page
+
+  const indexOfLastResult = currentPage * itemsPerPage;
+  const indexOfFirstResult = indexOfLastResult - itemsPerPage;
+  const currentResults = searchResults.slice(indexOfFirstResult, indexOfLastResult);
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -667,60 +658,83 @@ const Home = () => {
           <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
+        {/* Sorting dropdown */}
+        <div className="dropdown-container d-flex align-items-center mt-4">
+          <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
+            <option value="">Sort by</option>
+            <option value="works_asc">Works (Ascending)</option>
+            <option value="works_desc">Works (Descending)</option>
+            <option value="citations_asc">Citations (Ascending)</option>
+            <option value="citations_desc">Citations (Descending)</option>
+            <option value="hindex_asc">H-Index (Ascending)</option>
+            <option value="hindex_desc">H-Index (Descending)</option>
+            <option value="i10index_asc">i10-Index (Ascending)</option>
+            <option value="i10index_desc">i10-Index (Descending)</option>
+            <option value="impact_factor_asc">Impact Factor (Ascending)</option>
+            <option value="impact_factor_desc">Impact Factor (Descending)</option>
+          </select>
+        </div>
+
         {/* If the data is loading, show the spinner
             Once it is done loading, display the resulting table */}
         {loading ? (
-          <div className="spinner-container">
-            <div className="spinner"></div>
-          </div>
-        ) : (
-          <div>
-            {/* Render the content once the data has been fetched */}
-            {searchResults.length > 0 ? (
-              <div className="mt-4">
-                {/* <button className="btn clear-sorting-button" onClick={handleClearSortingSelection}>Clear Sorting Selections</button> */}
-                <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
-                <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
-                <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
-                {/* <div className="sorting-order"> 
-                  <p>Sorting order: {selectedOptions.sorting_sequence}</p>
-                </div> */}
-                <table className="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th title="Full name of the expert">Name</th>
-                      <th title="Current institutional affiliation of the expert">Institution</th>
-                      <th title="The country in which the expert's institutional affiliation is located">Country</th>
-                      <th title="Total number of works published by this expert">Works Count</th>
-                      <th title="How many times the expert has been cited">Times Cited</th>
-                      <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
-                      <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
-                      <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {searchResults.map((result, index) => (
-                      <tr key={index}>
-                        <td>{result.author_name}</td>
-                        <td>{result.institution_name}</td>
-                        <td>{result.country_name || 'N/A'}</td>
-                        <td>{result.works_count}</td>
-                        <td>{result.cited_by_count}</td>
-                        <td>{result.hindex}</td>
-                        <td>{result.i_ten_index}</td>
-                        <td>{result.impact_factor}</td>
+            <div className="spinner-container">
+              <div className="spinner"></div>
+            </div>
+          ) : (
+            <div>
+              {searchResults.length > 0 ? (
+                <div className="mt-4">
+                  <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
+                  <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
+                  <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th title="Full name of the expert">Name</th>
+                        <th title="Current institutional affiliation of the expert">Institution</th>
+                        <th title="The country in which the expert's institutional affiliation is located">Country</th>
+                        <th title="Total number of works published by this expert">Works Count</th>
+                        <th title="How many times the expert has been cited">Times Cited</th>
+                        <th title="The number of papers (h) that have received (h) or more citations">H-index</th>
+                        <th title="The number of publications an expert has with at least 10 citations">I10-Index</th>
+                        <th title="The average number of citations of an expert within the last 2 years starting at the last year">Impact Factor</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="no-authors">
-                <h2>No Authors Found</h2>
-              </div>
-            )}
-          </div>
-        )}
+                    </thead>
+                    <tbody>
+                      {currentResults.map((result, index) => (
+                        <tr key={index}>
+                          <td>{result.author_name}</td>
+                          <td>{result.institution_name}</td>
+                          <td>{result.country_name || 'N/A'}</td>
+                          <td>{result.works_count}</td>
+                          <td>{result.cited_by_count}</td>
+                          <td>{result.hindex}</td>
+                          <td>{result.i_ten_index}</td>
+                          <td>{result.impact_factor}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="pagination-controls">
+                    <button className="btn" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                      Previous
+                    </button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button className="btn" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                      Next
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="no-authors">
+                  <h2>No Authors Found</h2>
+                </div>
+              )}
+            </div>
+          )}
       </div>
     </div>
   );
