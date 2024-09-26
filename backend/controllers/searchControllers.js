@@ -1,24 +1,6 @@
-// import DB models
-const Expert = require('../models/Expert');
-
-const Author = require('../models/Author');
-const AuthorTopic = require('../models/AuthorTopic');
-const Continent = require('../models/Continent');
-const Country = require('../models/Country');
-const Domain = require('../models/Domain');
-const Field = require('../models/Field');
-const Institution = require('../models/Institution');
-const Region = require('../models/Region');
-const Subfield = require('../models/Subfield');
-const Subregion = require('../models/Subregion');
-const Topic = require('../models/Topic');
-
 const { Sequelize, Op, QueryTypes } = require('sequelize');
-const path = require('path');
-const fs = require('fs');
 
-const axios = require('axios'); //Import axios for http requests
-const { query } = require('express');
+const redisClient = require('../redisClient');
 const sequelize = require('../database');
 
 require('dotenv').config(); //Import dotenv for environment variables
@@ -55,7 +37,18 @@ const arrToWhere = async(where_arr, institution_arr) => {
   return result;
 };
 
+async function getCachedResults(cacheKey) {
+  try {
+    const cachedData = await redisClient.get(cacheKey);
+    return cachedData ? JSON.parse(cachedData) : null;
+  } catch (err) {
+    console.error('Error fetching from Redis:', err);
+    return null;
+  }
+}
+
 const fetchExperts = async(queryParams) => {
+  console.log('Fetching experts...');
   // Get the query parameters
   // These are id
   const {
@@ -70,8 +63,28 @@ const fetchExperts = async(queryParams) => {
     institution
   } = queryParams;
 
+  console.log('Got query params');
+
   // if nothing is selected, return an empty array
   if (!(domain || field || subfield || topic || continent || region || subregion || country || institution)) return [];
+
+  console.log('Field(s) is/are selected');
+
+  const cacheKey = JSON.stringify(queryParams);
+  console.log('Generated cacheKey from queryParams:', cacheKey);
+
+  console.log('Getting cached results');
+  // Check if results are cached in Redis
+  const cachedResults = await getCachedResults(cacheKey);
+
+  console.log('Got cachedResults');
+
+  if (cachedResults) {
+    console.log('Returning cached result');
+    return cachedResults;
+  }
+
+  console.log('No cached results');
 
   let where_clause;
   let where_arr = [];
@@ -92,10 +105,13 @@ const fetchExperts = async(queryParams) => {
 
   console.log("WHERE CLAUSE:\n", where_clause);
 
+  let results;
+
   // If the last geographic filter selected was a subregion and there is no country
   // Inner join the subregion
+  console.log('Searching database');
   if (subregion && !country) {
-    return await sequelize.query(`
+    results = await sequelize.query(`
       SELECT DISTINCT Authors.display_name AS 'author_name',
                   Institutions.name    AS 'institution_name',
                   Countries.name       AS 'country_name',
@@ -130,7 +146,7 @@ const fetchExperts = async(queryParams) => {
       { type: QueryTypes.SELECT }
     );
   } else {
-    return await sequelize.query(`
+    results = await sequelize.query(`
       SELECT DISTINCT Authors.display_name AS 'author_name',
                   Institutions.name    AS 'institution_name',
                   Countries.name       AS 'country_name',
@@ -165,6 +181,15 @@ const fetchExperts = async(queryParams) => {
       { type: QueryTypes.SELECT }
     );
   }
+
+  console.log('Finished searching DB');
+  console.log('Caching results');
+  // Cache the result in Redis
+  // key, value, expiration in seconds, seconds
+  redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
+  console.log('Cached results for 5 min');
+
+  return results;
 };
 
 // search experts with query parameters
