@@ -5,6 +5,7 @@ const path = require('path');
 
 const express = require('express');
 const cors = require('cors'); // Import cors package
+const redisClient = require('./redisClient');
 
 // Routes
 const expertRoutes = require('./routes/experts');
@@ -73,16 +74,6 @@ app.use('/api/csv-import', csvImportRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-// // Serve static files from the 'build' directory
-// app.use(express.static(path.join(__dirname, 'build')));
-
-// // Catch-all handler to serve the React app for any route not handled by the backend API
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
-
-console.log("NODE_ENV:", process.env.NODE_ENV);
-
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the 'build' directory
   app.use(express.static(path.join(__dirname, 'build')));
@@ -93,6 +84,8 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
     });
 }
+
+redisClient.connect();
 
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
@@ -113,8 +106,6 @@ const syncDatabase = async() => {
 }
 
 syncDatabase();
-
-console.log("URL in use from server.js:", process.env.REACT_APP_API_URL);
 
 // Create exports directory 
 const exportDir = path.join(__dirname, 'exports');

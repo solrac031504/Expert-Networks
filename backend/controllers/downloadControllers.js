@@ -12,7 +12,52 @@ const ExcelJS = require('exceljs');
 
 const { fetchExperts } = require('./searchControllers');
 
-require('dotenv').config(); 
+require('dotenv').config();
+
+const sortResults = (sorting, raw_experts) => {
+  // If no sorting is selected, just return the experts as is
+  if (!sorting || sorting === '') return raw_experts;
+
+  const sortedResults = [...raw_experts]; // Create a copy of the current results to sort
+  
+  // Sort based on the selected param
+  switch (sorting) {
+    case 'works_asc':
+      sortedResults.sort((a, b) => a.works_count - b.works_count);
+      break;
+    case 'works_desc':
+      sortedResults.sort((a, b) => b.works_count - a.works_count);
+      break;
+    case 'citations_asc':
+      sortedResults.sort((a, b) => a.cited_by_count - b.cited_by_count);
+      break;
+    case 'citations_desc':
+      sortedResults.sort((a, b) => b.cited_by_count - a.cited_by_count);
+      break;
+    case 'hindex_asc':
+      sortedResults.sort((a, b) => a.hindex - b.hindex);
+      break;
+    case 'hindex_desc':
+      sortedResults.sort((a, b) => b.hindex - a.hindex);
+      break;
+    case 'i10index_asc':
+      sortedResults.sort((a, b) => a.i_ten_index - b.i_ten_index);
+      break;
+    case 'i10index_desc':
+      sortedResults.sort((a, b) => b.i_ten_index - a.i_ten_index);
+      break;
+    case 'impact_factor_asc':
+      sortedResults.sort((a, b) => a.impact_factor - b.impact_factor);
+      break;
+    case 'impact_factor_desc':
+      sortedResults.sort((a, b) => b.impact_factor - a.impact_factor);
+      break;
+    default:
+      break;
+  }
+
+  return sortedResults;
+};
 
 // Returns the display_name of the narrowest selected field of study
 const getNarrowestSelectedField = async (queryParams) => {
@@ -34,10 +79,17 @@ const getNarrowestSelectedField = async (queryParams) => {
 
 const exportExpertsToXLS = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
-    // const experts = await Expert.findAll({limit : 100});
-    // const results = experts.map(expert => expert.get({ plain: true }));
+
+    const experts = sortResults(sorting, raw_experts);
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Experts');
@@ -80,8 +132,17 @@ const exportExpertsToXLS = async (req, res) => {
 
 const exportExpertsToCSV = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
+
+    const experts = sortResults(sorting, raw_experts);
 
     // const results = experts.map(expert => expert.get({ plain: true }));
 
@@ -122,10 +183,17 @@ const exportExpertsToCSV = async (req, res) => {
 
 const exportExpertsToPDF = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
 
-    // const results = experts.map(expert => expert.get({ plain: true }));
+    const experts = sortResults(sorting, raw_experts);
 
     const doc = new PDFDocument();
 
@@ -137,7 +205,7 @@ const exportExpertsToPDF = async (req, res) => {
     doc.pipe(res);
 
     // Add title
-    doc.fontSize(20).text('Experts List', { align: 'center' });
+    doc.fontSize(16).text('Experts List', { align: 'center' });
     doc.moveDown();
 
     // Map field_of_study to each expert record
@@ -146,17 +214,125 @@ const exportExpertsToPDF = async (req, res) => {
       field_of_study: field_of_study
     }));
 
+    // Define table headers and column positions
+    const tableTop = 100;
+    const columnPositions = {
+      name: 50,
+      field_of_study: 130,
+      institution: 230,
+      country: 330,
+      works_count: 390,
+      cited_by_count: 430,
+      hindex: 470,
+      i_ten_index: 500,
+      impact_factor: 530
+    };
+
+    // Column widths
+    const columnWidths = {
+      name: 80,
+      field_of_study: 90,
+      institution: 90,
+      country: 50,
+      works_count: 30,
+      cited_by_count: 30,
+      hindex: 30,
+      i_ten_index: 30,
+      impact_factor: 30
+    };
+
+    // Set font size for the table
+    const fontSize = 8;
+
+    // Function to calculate row height based on wrapped text
+    const calculateRowHeight = (text, width) => {
+      const lineHeight = 10; // Line height for the font
+      const lines = doc.heightOfString(text, { width: width });
+      return Math.ceil(lines / lineHeight) * lineHeight;
+    };
+
+    // Wrap headers by providing width constraint
+    const headers = [
+      { text: 'Name', width: columnWidths.name },
+      { text: 'Selected Field of Study', width: columnWidths.field_of_study },
+      { text: 'Institution', width: columnWidths.institution },
+      { text: 'Country', width: columnWidths.country },
+      { text: 'Number of Works', width: columnWidths.works_count },
+      { text: 'Times Cited', width: columnWidths.cited_by_count },
+      { text: 'H-index', width: columnWidths.hindex },
+      { text: 'I10-index', width: columnWidths.i_ten_index },
+      { text: 'Impact Factor', width: columnWidths.impact_factor }
+    ];
+
+    // Calculate the maximum height of the header row to avoid overlap
+    const headerHeight = Math.max(
+      ...headers.map(header => calculateRowHeight(header.text, header.width))
+    );
+
+    // Reduce space before drawing the line by adjusting header height
+    const adjustedHeaderHeight = headerHeight * 0.25; // Reduce height slightly for a tighter fit
+
+    // Draw table headers
+    headers.forEach((header, index) => {
+      doc.fontSize(fontSize).text(header.text, columnPositions[Object.keys(columnPositions)[index]], tableTop, {
+        width: header.width,
+        align: 'left'
+      });
+    });
+
+    // Draw a line under the table header, adjusting its position
+    doc.moveTo(50, tableTop + adjustedHeaderHeight).lineTo(560, tableTop + adjustedHeaderHeight).stroke();
+
+    // Set initial row position
+    let rowPosition = tableTop + adjustedHeaderHeight + 5; // Fine-tune spacing here
+
+    // Iterate through experts and add rows to the table
     expertsWithField.forEach(expert => {
-      doc.fontSize(12).text(`Name: ${expert.author_name}`);
-      doc.text(`Selected Field of Study: ${expert.field_of_study}`);
-      doc.text(`Institution: ${expert.institution_name}`);
-      doc.text(`Country: ${expert.country_name}`);
-      doc.text(`Number of Works: ${expert.works_count}`)
-      doc.text(`Times Cited: ${expert.cited_by_count}`);
-      doc.text(`H-index: ${expert.hindex}`);
-      doc.text(`I10-index: ${expert.i_ten_index}`);
-      doc.text(`Impact Factor: ${expert.impact_factor}`);
-      doc.moveDown();
+      // Calculate the maximum row height for the current row based on all columns
+      const rowHeight = Math.max(
+        calculateRowHeight(expert.author_name, columnWidths.name),
+        calculateRowHeight(expert.field_of_study, columnWidths.field_of_study),
+        calculateRowHeight(expert.institution_name || 'N/A', columnWidths.institution),
+        calculateRowHeight(expert.country_name || 'N/A', columnWidths.country)
+      );
+
+      // Add wrapped text for each column
+      doc.fontSize(fontSize).text(expert.author_name, columnPositions.name, rowPosition, {
+        width: columnWidths.name
+      });
+      doc.text(expert.field_of_study, columnPositions.field_of_study, rowPosition, {
+        width: columnWidths.field_of_study
+      });
+      doc.text(expert.institution_name || 'N/A', columnPositions.institution, rowPosition, {
+        width: columnWidths.institution
+      });
+      doc.text(expert.country_name || 'N/A', columnPositions.country, rowPosition, {
+        width: columnWidths.country
+      });
+      doc.text(expert.works_count.toString(), columnPositions.works_count, rowPosition, {
+        width: columnWidths.works_count
+      });
+      doc.text(expert.cited_by_count.toString(), columnPositions.cited_by_count, rowPosition, {
+        width: columnWidths.cited_by_count
+      });
+      doc.text(expert.hindex.toString(), columnPositions.hindex, rowPosition, {
+        width: columnWidths.hindex
+      });
+      doc.text(expert.i_ten_index.toString(), columnPositions.i_ten_index, rowPosition, {
+        width: columnWidths.i_ten_index
+      });
+      doc.text(expert.impact_factor.toString(), columnPositions.impact_factor, rowPosition, {
+        width: columnWidths.impact_factor
+      });
+
+      // Move down for the next row
+      rowPosition += rowHeight + 8;
+
+      // Add a page break if needed
+      if (rowPosition > 600) {
+        doc.addPage();
+        rowPosition = 50; // Reset row position for the new page
+      }
     });
 
     // Finalize the PDF
@@ -165,7 +341,6 @@ const exportExpertsToPDF = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   exportExpertsToCSV,
