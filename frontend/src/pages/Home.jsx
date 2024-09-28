@@ -24,12 +24,7 @@ const Home = () => {
     region: [],
     subregion: [],
     country: [],
-    citations: '',
-    hindex: '',
-    i_ten_index: '',
-    impact_factor: '',
-    age: '',
-    years_in_field: '',
+    sorting: '',
     sorting_sequence: ''
   });
 
@@ -282,6 +277,29 @@ const Home = () => {
     return queryString;
   };
 
+  // Same as createURL but adds in the sorting that is selected
+  const createDownloadURL = () => {
+    // Create an object with only valid key-value pairs
+    const validParams = Object.fromEntries(
+      Object.entries({
+        domain: selectedOptions.domain.id,
+        field: selectedOptions.field.id,
+        subfield: selectedOptions.subfield.id,
+        topic: selectedOptions.topic.id,
+        continent: selectedOptions.continent.id,
+        region: selectedOptions.region.id,
+        subregion: selectedOptions.subregion.id,
+        country: selectedOptions.country.id,
+        institution: selectedOptions.institution,
+        sorting: selectedOptions.sorting
+      }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const queryString = new URLSearchParams(validParams).toString();
+
+    return queryString;
+  };
+
   // Search table based on values selected in the dropdown and sorting buttons
   const handleSearch = async() => {
     console.log('Selected options:', selectedOptions);
@@ -304,21 +322,21 @@ const Home = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     console.log("Downloading CSV");
-    const queryString = createURL();
+    const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
   };
 
   // Download XLS
   const handleDownloadXLS = () => {
     console.log("Downloading XLS");
-    const queryString = createURL();
+    const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/xls?${queryString}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
     console.log("Downloading PDF");
-    const queryString = createURL();
+    const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/pdf?${queryString}`, '_blank');
   };
 

@@ -12,7 +12,52 @@ const ExcelJS = require('exceljs');
 
 const { fetchExperts } = require('./searchControllers');
 
-require('dotenv').config(); 
+require('dotenv').config();
+
+const sortResults = (sorting, raw_experts) => {
+  // If no sorting is selected, just return the experts as is
+  if (!sorting || sorting === '') return raw_experts;
+
+  const sortedResults = [...raw_experts]; // Create a copy of the current results to sort
+  
+  // Sort based on the selected param
+  switch (sorting) {
+    case 'works_asc':
+      sortedResults.sort((a, b) => a.works_count - b.works_count);
+      break;
+    case 'works_desc':
+      sortedResults.sort((a, b) => b.works_count - a.works_count);
+      break;
+    case 'citations_asc':
+      sortedResults.sort((a, b) => a.cited_by_count - b.cited_by_count);
+      break;
+    case 'citations_desc':
+      sortedResults.sort((a, b) => b.cited_by_count - a.cited_by_count);
+      break;
+    case 'hindex_asc':
+      sortedResults.sort((a, b) => a.hindex - b.hindex);
+      break;
+    case 'hindex_desc':
+      sortedResults.sort((a, b) => b.hindex - a.hindex);
+      break;
+    case 'i10index_asc':
+      sortedResults.sort((a, b) => a.i_ten_index - b.i_ten_index);
+      break;
+    case 'i10index_desc':
+      sortedResults.sort((a, b) => b.i_ten_index - a.i_ten_index);
+      break;
+    case 'impact_factor_asc':
+      sortedResults.sort((a, b) => a.impact_factor - b.impact_factor);
+      break;
+    case 'impact_factor_desc':
+      sortedResults.sort((a, b) => b.impact_factor - a.impact_factor);
+      break;
+    default:
+      break;
+  }
+
+  return sortedResults;
+};
 
 // Returns the display_name of the narrowest selected field of study
 const getNarrowestSelectedField = async (queryParams) => {
@@ -34,10 +79,17 @@ const getNarrowestSelectedField = async (queryParams) => {
 
 const exportExpertsToXLS = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
-    // const experts = await Expert.findAll({limit : 100});
-    // const results = experts.map(expert => expert.get({ plain: true }));
+
+    const experts = sortResults(sorting, raw_experts);
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Experts');
@@ -80,8 +132,17 @@ const exportExpertsToXLS = async (req, res) => {
 
 const exportExpertsToCSV = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
+
+    const experts = sortResults(sorting, raw_experts);
 
     // const results = experts.map(expert => expert.get({ plain: true }));
 
@@ -120,56 +181,19 @@ const exportExpertsToCSV = async (req, res) => {
   }
 };
 
-// const exportExpertsToPDF = async (req, res) => {
-//   try {
-//     const experts = await fetchExperts(req.query);
-//     const field_of_study = await getNarrowestSelectedField(req.query);
-
-//     // const results = experts.map(expert => expert.get({ plain: true }));
-
-//     const doc = new PDFDocument();
-
-//     // Set headers for the PDF response
-//     res.setHeader('Content-Type', 'application/pdf');
-//     res.setHeader('Content-Disposition', 'attachment; filename=experts.pdf');
-
-//     // Pipe PDF into response
-//     doc.pipe(res);
-
-//     // Add title
-//     doc.fontSize(20).text('Experts List', { align: 'center' });
-//     doc.moveDown();
-
-//     // Map field_of_study to each expert record
-//     const expertsWithField = experts.map(expert => ({
-//       ...expert,
-//       field_of_study: field_of_study
-//     }));
-
-//     expertsWithField.forEach(expert => {
-//       doc.fontSize(12).text(`Name: ${expert.author_name}`);
-//       doc.text(`Selected Field of Study: ${expert.field_of_study}`);
-//       doc.text(`Institution: ${expert.institution_name}`);
-//       doc.text(`Country: ${expert.country_name}`);
-//       doc.text(`Number of Works: ${expert.works_count}`)
-//       doc.text(`Times Cited: ${expert.cited_by_count}`);
-//       doc.text(`H-index: ${expert.hindex}`);
-//       doc.text(`I10-index: ${expert.i_ten_index}`);
-//       doc.text(`Impact Factor: ${expert.impact_factor}`);
-//       doc.moveDown();
-//     });
-
-//     // Finalize the PDF
-//     doc.end();
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 const exportExpertsToPDF = async (req, res) => {
   try {
-    const experts = await fetchExperts(req.query);
+    // Extract sorting into one variable,
+    // put everything else into another variable
+    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+    // the argument for fetchExperts cannot contain the field for sorting
+    const { sorting, ...query_no_sorting } = req.query;
+
+
+    const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
+
+    const experts = sortResults(sorting, raw_experts);
 
     const doc = new PDFDocument();
 
@@ -317,11 +341,6 @@ const exportExpertsToPDF = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
-
-
-
 
 module.exports = {
   exportExpertsToCSV,
