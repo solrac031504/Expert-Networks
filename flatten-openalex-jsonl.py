@@ -161,12 +161,12 @@ def flatten_authors(subfolder=''):
                             #         counts_by_year_writer.writerow(count_by_year)
 
                             # Write topic associations to author_topics.csv.gz
-                            if topics := author.get('topics'):
-                                for topic in topics:
-                                    topics_writer.writerow({
-                                        'author_id': author_id,
-                                        'topic_id': topic['id']
-                                    })
+                            # if topics := author.get('topics'):
+                            #     for topic in topics:
+                            #         topics_writer.writerow({
+                            #             'author_id': author_id,
+                            #             'topic_id': topic['id']
+                            #         })
                 except Exception as e:
                     print(f"Error processing file {jsonl_file_name}: {e}")
 
@@ -238,5 +238,5 @@ def check_files():
 
 if __name__ == '__main__':
     # flatten_topics()
-    flatten_authors('updated_date=2024-08-*')
+    flatten_authors('*')
     check_files()

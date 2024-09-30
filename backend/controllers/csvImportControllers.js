@@ -204,7 +204,8 @@ const importAuthorsCSV = async (req, res) => {
       // Exctract the id number
       let extracted_author_id = extractAuthorID(row.id);
       // only push if it exists, i.e., not NULL
-      if (extracted_author_id) {
+      // AND cited_by_count is not 0
+      if (extracted_author_id && !Number.isNaN(parseInt(row.cited_by_count)) && parseInt(row.cited_by_count) !== 0) {
         authors.push({
           id: extracted_author_id,
           display_name: row.display_name,
@@ -238,20 +239,27 @@ const importAuthorsCSV = async (req, res) => {
 
         let records = authors.slice(lowerBound, upperBound);
         // console.log(records);
+        // await Author.bulkCreate(records, {
+        //   updateOnDuplicate: [
+        //     'id',
+        //     'display_name',
+        //     'works_count',
+        //     'cited_by_count',
+        //     'hindex',
+        //     'i_ten_index',
+        //     'impact_factor',
+        //     'last_known_institution_id',
+        //     'works_count_2yr',
+        //     'cited_by_count_2yr',
+        //     'hindex_2yr',
+        //     'i_ten_index_2yr'
+        //   ]
+        // }, { logging: false });
+
+        // Trying to update impact_factor; only update this
         await Author.bulkCreate(records, {
           updateOnDuplicate: [
-            'id',
-            'display_name',
-            'works_count',
-            'cited_by_count',
-            'hindex',
-            'i_ten_index',
             'impact_factor',
-            'last_known_institution_id',
-            'works_count_2yr',
-            'cited_by_count_2yr',
-            'hindex_2yr',
-            'i_ten_index_2yr'
           ]
         }, { logging: false });
       }

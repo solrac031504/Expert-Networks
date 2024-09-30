@@ -7,6 +7,13 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: process.env.DB_DIALECT,
   port: process.env.DB_PORT,
   ssl: process.env.DB_SSL,
+  pooling: {
+    max: 10,
+    min: 0,
+    acquire: 60000, // 60 sec
+    evict: 60000,    // if a connection is idle, evicted after 1 second
+    idle: 60000     // a connection is idle if it hasn't been used in 10 seconds
+  },
   logging: false
 });
 

@@ -85,7 +85,8 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-redisClient.connect();
+// Don't connect for now, importing authors
+// redisClient.connect();
 
 // Synchronize the database with the scheme
 const syncDatabase = async() => {
