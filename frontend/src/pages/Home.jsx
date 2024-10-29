@@ -24,8 +24,14 @@ const Home = () => {
     region: [],
     subregion: [],
     country: [],
-    sorting: '',
-    sorting_sequence: ''
+    citations: '',
+    hindex: '',
+    i_ten_index: '',
+    impact_factor: '',
+    age: '',
+    years_in_field: '',
+    sorting_sequence: '', 
+    is_global_south: ''
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -213,7 +219,8 @@ const Home = () => {
       selectedOptions.i_ten_index,
       selectedOptions.impact_factor,
       selectedOptions.age,
-      selectedOptions.years_in_field
+      selectedOptions.years_in_field,
+      selectedOptions.is_global_south
   ]); // Trigger search whenever selectedOptions of sorting changes
 
   // Handle the change in the text box
@@ -228,9 +235,9 @@ const Home = () => {
 
   // Dropdown menus
   const handleInputChange = (e) => {
-    const { name, value, selectedOptions, options } = e.target;
+    const { name, value, selectedOptions, options, type } = e.target;
   
-    // Supposedly for multiple, will handle later
+    // Handle multiple selection for dropdowns
     if (e.target.multiple) {
       const selectedValues = Array.from(selectedOptions, option => {
         return {
@@ -243,10 +250,19 @@ const Home = () => {
         ...prevState,
         [name]: selectedValues,
       }));
-    } else {
+    } 
+    // Handle radio button inputs (and single dropdowns)
+    else if (type === 'radio') {
+      setSelectedOptions(prevState => ({
+        ...prevState,
+        [name]: value,  // For radio buttons, store just the value
+      }));
+    } 
+    // Handle normal dropdowns (single select)
+    else {
       const selectedData = {
         id: value,
-        name: options ? options.textContent : ''
+        name: options ? options[e.target.selectedIndex].textContent : '' // Get name for dropdowns
       };
       
       setSelectedOptions(prevState => ({
@@ -255,6 +271,7 @@ const Home = () => {
       }));
     }
   };
+  
 
   const createURL = () => {
     // Create an object with only valid key-value pairs
@@ -300,24 +317,41 @@ const Home = () => {
     return queryString;
   };
 
-  // Search table based on values selected in the dropdown and sorting buttons
-  const handleSearch = async() => {
-    console.log('Selected options:', selectedOptions);
+// Search table based on values selected in the dropdown and sorting buttons
+const handleSearch = async () => {
+  console.log('Selected options:', selectedOptions);
 
-    const queryString = createURL();
+  const queryString = createURL();
 
-    setLoading(true);
-    await fetch(`${apiUrl}/api/search?${queryString}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Search results:', data);
-        setSearchResults(data);
-      })
-      .catch(error => {
-        console.error('Error during search:', error);
-      });
-    setLoading(false);
-  };
+  setLoading(true);
+
+  try {
+    const response = await fetch(`${apiUrl}/api/search?${queryString}`);
+    const data = await response.json();
+
+    console.log('Search results:', data);
+
+    // Filter results based on the global south selection
+    const filteredResults = data.filter(result => {
+      if (selectedOptions.is_global_south === "0") {
+        return true; // Include all results
+      } else if (selectedOptions.is_global_south === "1") {
+        return result.is_global_south === 0; // Exclude Global South
+      } else if (selectedOptions.is_global_south === "2") {
+        return result.is_global_south === 1; // Only Global South
+      }
+      return true; // Default case (if no selection, include all)
+    });
+
+    setSearchResults(filteredResults); // Update the state with filtered results
+  } catch (error) {
+    console.error('Error during search:', error);
+  }
+
+  setLoading(false);
+  console.log('Search Results:', searchResults)
+};
+
 
   // Download CSV
   const handleDownloadCSV = () => {
@@ -410,7 +444,8 @@ const Home = () => {
       impact_factor: '',
       age: '',
       years_in_field: '',
-      sorting_sequence: ''
+      sorting_sequence: '',
+      is_global_south: ''
     }));
 
     console.log("Setting buttons to -");
@@ -674,14 +709,53 @@ const Home = () => {
             placeholder="Enter Institution(s)"
           />
         </div>
-        
-        {/* Buttons for searching and clearing filters */}
-        <div className="filterbutton-container d-flex align-items-center mt-4">
-          {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
-
-          <button className="btn filter-button" onClick={handleSearch}>Search</button>
-          <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
+        <div className="radio-container mt-4 d-flex">
+          <div className="form-check mr-3">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="is_global_south"
+              id="globalSouthInclude"
+              value={0}
+              checked={selectedOptions.is_global_south === 0}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label text-left" htmlFor="globalSouthInclude">
+              Include Global South
+            </label>
+          </div>
+          <div className="form-check mr-3">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="is_global_south"
+              id="globalSouthExclude"
+              value={1}
+              checked={selectedOptions.is_global_south === 1}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label text-left" htmlFor="globalSouthExclude">
+              Exclude Global South
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="is_global_south"
+              id="onlyGlobalSouth"
+              value={2}
+              checked={selectedOptions.is_global_south === 2}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
+              Only Global South
+            </label>
+          </div>
         </div>
+
+
+
 
         {/* If the data is loading, show the spinner
             Once it is done loading, display the resulting table */}

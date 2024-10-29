@@ -96,6 +96,9 @@ const fetchExperts = async(queryParams) => {
 
   let results;
 
+  // Start timing the execution time
+  let start = performance.now();
+
   // If the last geographic filter selected was a subregion and there is no country
   // Inner join the subregion
   if (continent && region && subregion && !country) {
@@ -130,8 +133,7 @@ const fetchExperts = async(queryParams) => {
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
-      ${where_clause}
-      LIMIT 100`,
+      ${where_clause}`,
       { type: QueryTypes.SELECT }
     );
   } else {
@@ -166,15 +168,25 @@ const fetchExperts = async(queryParams) => {
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
-      ${where_clause}
-      LIMIT 100`,
+      ${where_clause}`,
       { type: QueryTypes.SELECT }
     );
   }
 
-  // Cache the result in Redis
-  // key, value, expiration in seconds, seconds
-  redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
+  // Finish timing the execution time of the search
+  let end = performance.now();
+  console.log(`Search took ${end - start} ms`);
+
+  // If it took more than 1 min to search (60,000 ms), cache permanently
+  if (end - start > 60000) {
+    redisClient.set(cacheKey, JSON.stringify(results));
+    console.log(`Caching results with no expiration time`);
+  } else {
+    // Cache the result in Redis
+    // key, value, expiration in seconds
+    redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
+    console.log(`Caching results for 10 minutes (600 sec).`);
+  }
 
   return results;
 };
