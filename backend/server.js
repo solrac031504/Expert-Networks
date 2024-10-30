@@ -39,11 +39,7 @@ const AuthorTopic = require('./models/AuthorTopic');
 const app = express();
 
 // Enable CORS
-app.use((req, res, next) => {
-  console.log(`Received request on ${req.method} ${req.path}`);
-  next();
-});
-
+app.use(cors());
 
 app.use(express.json());
 
