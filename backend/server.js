@@ -15,6 +15,7 @@ const searchRoutes = require('./routes/searches');
 const downloadRoutes = require('./routes/downloads');
 const dataScrapingRoutes = require('./routes/datascrapes.js');
 const csvImportRoutes = require('./routes/csvImport');
+const naturalLanguageRoutes = require('./routes/naturalLanguage');
 
 // for DB
 const sequelize = require('./database');
@@ -38,7 +39,11 @@ const AuthorTopic = require('./models/AuthorTopic');
 const app = express();
 
 // Enable CORS
-app.use(cors());
+app.use((req, res, next) => {
+  console.log(`Received request on ${req.method} ${req.path}`);
+  next();
+});
+
 
 app.use(express.json());
 
@@ -70,6 +75,9 @@ app.use('/api/data', dataScrapingRoutes);
 
 // Routes for importing OpenAlex data from CSV
 app.use('/api/csv-import', csvImportRoutes);
+
+// Routes for natural language processing
+app.use('/api/nlp', naturalLanguageRoutes);
 
 const PORT = process.env.PORT || 5000;
 
