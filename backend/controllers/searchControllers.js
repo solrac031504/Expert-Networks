@@ -202,7 +202,8 @@ const fetchExperts = async(queryParams) => {
   } else {
     // Cache the result in Redis
     // key, value, expiration in seconds
-    redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
+    // redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
+    redisClient.set(cacheKey, JSON.stringify(results), { EX: 600 });
     console.log(`Caching results for 10 minutes (600 sec).`);
   }
 

@@ -394,46 +394,20 @@ const handleSearch = async () => {
 
   //Clear filters function
   const clearFilters = () => {
-    setSelectedOptions({
-        domain: [],
-        field: [],
-        subfield: [],
-        topic: [],
-        institution: '',
-        continent: [],
-        region: [],
-        subregion: [],
-        country: [],
-        citations: '',
-        hindex: '',
-        i_ten_index: '',
-        impact_factor: '',
-        age: '',
-        years_in_field: '',
-        sorting_sequence: ''
-    });
-
-    // setDropdownOptions({
-    //     domains: [],
-    //     fields: [],
-    //     subfields: [],
-    //     topics: [],
-    //     continents: [],
-    //     regions: [],
-    //     subregions: [],
-    //     countries: []
-    // });
+    setSelectedOptions(prevState => ({
+      domains: [],
+      fields: [],
+      subfields: [],
+      topics: [],
+      continents: [],
+      regions: [],
+      subregions: [],
+      countries: [],
+      institution: '',
+      is_global_south: ''
+    }));
 
     setSearchResults([]);
-
-    setActiveSorting({
-        citations: '-',
-        hindex: '-',
-        i_ten_index: '-',
-        impact_factor: '-',
-        age: '-',
-        years_in_field: '-',
-    });
   };
 
   const handleSortingChange = (event) => {

@@ -145,3 +145,8 @@ button:hover {
   height: 100vh;
   text-align: center;
 }
+
+.radio-container .selected-icon {
+  color: #4848f5; /* Icon color for selected */
+  margin-left: 0.5rem; /* Adjust spacing if needed */
+}

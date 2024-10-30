@@ -14,7 +14,7 @@ const { fetchExperts } = require('./searchControllers');
 
 require('dotenv').config();
 
-const sortResults = (sorting, raw_experts) => {
+const sortAndFilterResults = (sorting, is_global_south, raw_experts) => {
   // If no sorting is selected, just return the experts as is
   if (!sorting || sorting === '') return raw_experts;
 
@@ -56,7 +56,19 @@ const sortResults = (sorting, raw_experts) => {
       break;
   }
 
-  return sortedResults;
+  // Filter results based on the global south selection
+  const filteredResults = sortedResults.filter(result => {
+    if (is_global_south === "0") {
+      return true; // Include all results
+    } else if (is_global_south === "1") {
+      return result.is_global_south === 0; // Exclude Global South
+    } else if (is_global_south === "2") {
+      return result.is_global_south === 1; // Only Global South
+    }
+    return true; // Default case (if no selection, include all)
+  });
+
+  return filteredResults;
 };
 
 // Returns the display_name of the narrowest selected field of study
@@ -83,13 +95,13 @@ const exportExpertsToXLS = async (req, res) => {
     // put everything else into another variable
     // Redis cached value key does not include the sorted sequence for finding the experts, therefore
     // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, ...query_no_sorting } = req.query;
+    const { sorting, is_global_south, ...query_no_sorting } = req.query;
 
 
     const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
 
-    const experts = sortResults(sorting, raw_experts);
+    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Experts');
@@ -136,13 +148,13 @@ const exportExpertsToCSV = async (req, res) => {
     // put everything else into another variable
     // Redis cached value key does not include the sorted sequence for finding the experts, therefore
     // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, ...query_no_sorting } = req.query;
+    const { sorting, is_global_south, ...query_no_sorting } = req.query;
 
 
     const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
 
-    const experts = sortResults(sorting, raw_experts);
+    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     // const results = experts.map(expert => expert.get({ plain: true }));
 
@@ -187,13 +199,13 @@ const exportExpertsToPDF = async (req, res) => {
     // put everything else into another variable
     // Redis cached value key does not include the sorted sequence for finding the experts, therefore
     // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, ...query_no_sorting } = req.query;
+    const { sorting, is_global_south, ...query_no_sorting } = req.query;
 
 
     const raw_experts = await fetchExperts(query_no_sorting);
     const field_of_study = await getNarrowestSelectedField(req.query);
 
-    const experts = sortResults(sorting, raw_experts);
+    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     const doc = new PDFDocument();
 
