@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './home.css'; // Adjust the path if necessary
 
+import { FaCheck } from 'react-icons/fa';
+
 const Home = () => {
   const [dropdownOptions, setDropdownOptions] = useState({
     domains: [],
@@ -308,7 +310,8 @@ const Home = () => {
         subregion: selectedOptions.subregion.id,
         country: selectedOptions.country.id,
         institution: selectedOptions.institution,
-        sorting: selectedOptions.sorting
+        sorting: selectedOptions.sorting,
+        is_global_south: selectedOptions.is_global_south
       }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
     );
 
@@ -385,6 +388,7 @@ const handleSearch = async () => {
       subregions: [],
       countries: [],
       institution: '',
+      is_global_south: ''
     }));
   };
 
@@ -429,33 +433,6 @@ const handleSearch = async () => {
         impact_factor: '-',
         age: '-',
         years_in_field: '-',
-    });
-  };
-
-  // Clear selections in sorting and revert butons to un-sorting state
-  const handleClearSortingSelection = () => {
-    console.log("Clearing sorting states");
-
-    setSelectedOptions(prevState => ({
-      ...prevState,
-      citations: '',
-      hindex: '',
-      i_ten_index: '',
-      impact_factor: '',
-      age: '',
-      years_in_field: '',
-      sorting_sequence: '',
-      is_global_south: ''
-    }));
-
-    console.log("Setting buttons to -");
-    setActiveSorting({
-      citations: '-',
-      hindex: '-',
-      i_ten_index: '-',
-      impact_factor: '-',
-      age: '-',
-      years_in_field: '-'
     });
   };
 
@@ -709,52 +686,68 @@ const handleSearch = async () => {
             placeholder="Enter Institution(s)"
           />
         </div>
-        <div className="radio-container mt-4 d-flex">
-          <div className="form-check mr-3">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="is_global_south"
-              id="globalSouthInclude"
-              value={0}
-              checked={selectedOptions.is_global_south === 0}
-              onChange={handleInputChange}
-            />
-            <label className="form-check-label text-left" htmlFor="globalSouthInclude">
-              Include Global South
-            </label>
-          </div>
-          <div className="form-check mr-3">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="is_global_south"
-              id="globalSouthExclude"
-              value={1}
-              checked={selectedOptions.is_global_south === 1}
-              onChange={handleInputChange}
-            />
-            <label className="form-check-label text-left" htmlFor="globalSouthExclude">
-              Exclude Global South
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="is_global_south"
-              id="onlyGlobalSouth"
-              value={2}
-              checked={selectedOptions.is_global_south === 2}
-              onChange={handleInputChange}
-            />
-            <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
-              Only Global South
-            </label>
-          </div>
+        <div className="radio-container mt-4 d-flex gap-4">
+        <div className="form-check position-relative mr-3">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="is_global_south"
+            id="globalSouthInclude"
+            value={0}
+            checked={selectedOptions.is_global_south === 0}
+            onChange={handleInputChange}
+          />
+          <label className="form-check-label text-left" htmlFor="globalSouthInclude">
+            Include Global South
+            {selectedOptions.is_global_south === 0 && (
+              <FaCheck className="selected-icon ml-2" />
+            )}
+          </label>
         </div>
 
+        <div className="form-check position-relative mr-3">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="is_global_south"
+            id="globalSouthExclude"
+            value={1}
+            checked={selectedOptions.is_global_south === 1}
+            onChange={handleInputChange}
+          />
+          <label className="form-check-label text-left" htmlFor="globalSouthExclude">
+            Exclude Global South
+            {selectedOptions.is_global_south === 1 && (
+              <FaCheck className="selected-icon ml-2" />
+            )}
+          </label>
+        </div>
 
+        <div className="form-check position-relative">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="is_global_south"
+            id="onlyGlobalSouth"
+            value={2}
+            checked={selectedOptions.is_global_south === 2}
+            onChange={handleInputChange}
+          />
+          <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
+            Only Global South
+            {selectedOptions.is_global_south === 2 && (
+              <FaCheck className="selected-icon ml-2" />
+            )}
+          </label>
+        </div>
+      </div>
+
+        {/* Buttons for searching and clearing filters */}
+        <div className="filterbutton-container d-flex align-items-center mt-4">
+          {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
+
+          <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
+        </div>
 
 
         {/* If the data is loading, show the spinner

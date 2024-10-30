@@ -2,6 +2,7 @@ const { Sequelize, Op, QueryTypes } = require('sequelize');
 
 const redisClient = require('../redisClient');
 const sequelize = require('../database');
+const { is } = require('express/lib/request');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
@@ -59,6 +60,7 @@ const fetchExperts = async(queryParams) => {
     region,
     subregion,
     country,
+    is_global_south,
     institution
   } = queryParams;
 
@@ -88,6 +90,18 @@ const fetchExperts = async(queryParams) => {
   if (subregion) where_arr.push(`Subregions.id=${subregion}`);
   if (country) where_arr.push(`Countries.id=${country}`);
 
+  // if (is_global_south) {
+  //   if (parseInt(is_global_south) === 0) { /* Do nothing, include all results */ }
+  //   else if (parseInt(is_global_south) === 1) {
+  //     // Exclude global south
+  //     where_arr.push(`Countries.is_global_south=0`);
+  //   }
+  //   else if (parseInt(is_global_south) === 2) {
+  //     // Only global south
+  //     where_arr.push(`Countries.is_global_south=1`);
+  //   }
+  // }
+
   if (institution) institutionArr = institution.split(',').map(item => item.trim());
 
   where_clause = await arrToWhere(where_arr, institutionArr);
@@ -110,7 +124,8 @@ const fetchExperts = async(queryParams) => {
                   Authors.cited_by_count,
                   Authors.hindex,
                   Authors.i_ten_index,
-                  Authors.impact_factor
+                  Authors.impact_factor,
+                  Countries.is_global_south
       FROM   Authors
             INNER JOIN Institutions
                     ON Authors.last_known_institution_id =
@@ -133,7 +148,8 @@ const fetchExperts = async(queryParams) => {
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
-      ${where_clause}`,
+      ${where_clause}
+      LIMIT 100`,
       { type: QueryTypes.SELECT }
     );
   } else {
@@ -145,7 +161,8 @@ const fetchExperts = async(queryParams) => {
                   Authors.cited_by_count,
                   Authors.hindex,
                   Authors.i_ten_index,
-                  Authors.impact_factor
+                  Authors.impact_factor,
+                  Countries.is_global_south
       FROM   Authors
             INNER JOIN Institutions
                     ON Authors.last_known_institution_id =
@@ -168,7 +185,8 @@ const fetchExperts = async(queryParams) => {
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
-      ${where_clause}`,
+      ${where_clause}
+      LIMIT 100`,
       { type: QueryTypes.SELECT }
     );
   }
