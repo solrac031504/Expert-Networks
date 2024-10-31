@@ -9,6 +9,7 @@ const axios = require('axios');
 const { query } = require('express');
 const sequelize = require('../database');
 const ExcelJS = require('exceljs');
+const { Document, Packer, Table, TableRow, TableCell, Paragraph, TextRun } = require("docx");
 
 const { fetchExperts } = require('./searchControllers');
 
@@ -354,8 +355,124 @@ const exportExpertsToPDF = async (req, res) => {
   }
 };
 
+const exportExpertsToWord = async (req, res) => {
+  try {
+    const { sorting, is_global_south, ...query_no_sorting } = req.query;
+
+    const raw_experts = await fetchExperts(query_no_sorting);
+    const field_of_study = await getNarrowestSelectedField(req.query);
+
+    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
+
+    // Map field_of_study to each expert record
+    const expertsWithField = experts.map(expert => ({
+      ...expert,
+      field_of_study: field_of_study,
+    }));
+
+    // Create table headers
+    const tableHeaders = [
+      new TableCell({
+        children: [new Paragraph({ text: 'Name', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Selected Field of Study', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Institution', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Country', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Number of Works', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Times Cited', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'H-index', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'I10-index', bold: true })],
+      }),
+      new TableCell({
+        children: [new Paragraph({ text: 'Impact Factor', bold: true })],
+      }),
+    ];
+
+    // Create rows for the table
+    const tableRows = [
+      new TableRow({
+        children: tableHeaders,
+      }),
+      ...expertsWithField.map(expert => new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph(expert.author_name)],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.field_of_study)],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.institution_name || 'N/A')],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.country_name || 'N/A')],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.works_count.toString())],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.cited_by_count.toString())],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.hindex.toString())],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.i_ten_index.toString())],
+          }),
+          new TableCell({
+            children: [new Paragraph(expert.impact_factor.toString())],
+          }),
+        ],
+      })),
+    ];
+
+    // Create the table
+    const table = new Table({
+      rows: tableRows,
+      width: {
+        size: 100,
+        type: 'pct',
+      },
+    });
+
+    //  create new Word document with sections
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [table],
+        },
+      ],
+    });
+
+    const buffer = await Packer.toBuffer(doc);
+
+    // Headers for the Word document 
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', 'attachment; filename=experts.docx');
+
+    res.status(200).send(buffer);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   exportExpertsToCSV,
   exportExpertsToPDF,
-  exportExpertsToXLS
+  exportExpertsToXLS,
+  exportExpertsToWord
 };
