@@ -186,7 +186,7 @@ const fetchExperts = async(queryParams) => {
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
       ${where_clause}
-      LIMIT 100`,
+      LIMIT 10000`,
       { type: QueryTypes.SELECT }
     );
   }
