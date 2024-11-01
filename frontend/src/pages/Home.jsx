@@ -377,8 +377,15 @@ const handleSearch = async () => {
     window.open(`${apiUrl}/api/download/export/pdf?${queryString}`, '_blank');
   };
 
+  // Download PDF
+  const handleDownloadDocx = () => {
+    console.log("Downloading Docx");
+    const queryString = createDownloadURL();
+    window.open(`${apiUrl}/api/download/export/word?${queryString}`, '_blank');
+  };
+
   const handleClearFilterSelection = () => {
-    setSelectedOptions(prevState => ({
+    setSelectedOptions({
       domains: [],
       fields: [],
       subfields: [],
@@ -389,7 +396,7 @@ const handleSearch = async () => {
       countries: [],
       institution: '',
       is_global_south: ''
-    }));
+    });
   };
 
   //Clear filters function
@@ -531,26 +538,26 @@ const handleSearch = async () => {
           {/* Domain dropdown menu */}
           <select
             className="form-control mr-2"
-            name="domain"
+            name="field"
             value={selectedOptions.domain.id || ''}
             onChange={handleInputChange}
           >
             <option value="">Domain</option>
-            {dropdownOptions.domains.map((option) => (
+            {(Array.isArray(dropdownOptions.domains) ? dropdownOptions.domains : []).map((option) => (
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
-          </select>
+            </select>
 
           {/* Field dropdown menu - only show if domain is selected */}
           {selectedOptions.domain.id && (
             <select
               className="form-control mr-2"
-              name="field"
-              value={selectedOptions.field.id || ''}
+              name="domain"
+              value={selectedOptions.domain.id || ''}
               onChange={handleInputChange}
             >
-              <option value="">Field</option>
-              {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
+              <option value="">Domain</option>
+              {dropdownOptions.domains.map((option) => (
                 <option key={option.id} value={option.id}>{option.name}</option>
               ))}
             </select>
@@ -754,6 +761,7 @@ const handleSearch = async () => {
                   <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
                   <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
                   <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
+                  <button className="btn download-button" onClick={handleDownloadDocx}>Download DOCX</button>
                   <table className="table table-bordered">
                     <thead>
                       <tr>
