@@ -60,12 +60,12 @@ const fetchExperts = async(queryParams) => {
     region,
     subregion,
     country,
-    is_global_south,
-    institution
+    institution,
+    limit
   } = queryParams;
 
   // if nothing is selected, return an empty array
-  if (!(domain || field || subfield || topic || continent || region || subregion || country || institution)) return [];
+  if (!(domain || field || subfield || topic || continent || region || subregion || country || institution || limit)) return [];
 
   const cacheKey = JSON.stringify(queryParams);
 
@@ -103,6 +103,15 @@ const fetchExperts = async(queryParams) => {
   // }
 
   if (institution) institutionArr = institution.split(',').map(item => item.trim());
+
+  // Only create the limit condition if a value has been passed in AND the value is a valid number
+  let limit_cond = '';
+  if (limit && !isNaN(limit)) {
+    const LIMIT = "LIMIT";
+    limit_cond = LIMIT.concat(' ', limit)
+  }
+
+  console.log("limit_cond: ", limit_cond);
 
   where_clause = await arrToWhere(where_arr, institutionArr);
 
@@ -149,7 +158,7 @@ const fetchExperts = async(queryParams) => {
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
       ${where_clause}
-      LIMIT 100`,
+      ${limit_cond}`,
       { type: QueryTypes.SELECT }
     );
   } else {
@@ -186,7 +195,7 @@ const fetchExperts = async(queryParams) => {
             INNER JOIN Domains
                     ON Fields.domain_id = Domains.id
       ${where_clause}
-      LIMIT 10000`,
+      ${limit_cond}`,
       { type: QueryTypes.SELECT }
     );
   }

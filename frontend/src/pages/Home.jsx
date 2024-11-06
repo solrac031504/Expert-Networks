@@ -26,6 +26,7 @@ const Home = () => {
     region: [],
     subregion: [],
     country: [],
+    limit: '',
     citations: '',
     hindex: '',
     i_ten_index: '',
@@ -39,7 +40,7 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   // For the loading circle
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // State to keep track of the active sorting button
   const [activeSorting, setActiveSorting] = useState({
@@ -212,19 +213,6 @@ const Home = () => {
       });
   }, [selectedOptions.region, selectedOptions.subregion])
 
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    handleSearch();
-  }, [selectedOptions.citations,
-      selectedOptions.hindex,
-      selectedOptions.i_ten_index,
-      selectedOptions.impact_factor,
-      selectedOptions.age,
-      selectedOptions.years_in_field,
-      selectedOptions.is_global_south
-  ]); // Trigger search whenever selectedOptions of sorting changes
-
   // Handle the change in the text box
   const handleInputChangeText = (e) => {
     const { name, value } = e.target;
@@ -287,7 +275,8 @@ const Home = () => {
         region: selectedOptions.region.id,
         subregion: selectedOptions.subregion.id,
         country: selectedOptions.country.id,
-        institution: selectedOptions.institution
+        institution: selectedOptions.institution,
+        limit: selectedOptions.limit
       }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
     );
 
@@ -310,6 +299,7 @@ const Home = () => {
         subregion: selectedOptions.subregion.id,
         country: selectedOptions.country.id,
         institution: selectedOptions.institution,
+        limit: selectedOptions.limit,
         sorting: selectedOptions.sorting,
         is_global_south: selectedOptions.is_global_south
       }).filter(([key, value]) => value !== undefined && value !== null && value !== '')
@@ -326,20 +316,18 @@ const handleSearch = async () => {
 
   const queryString = createURL();
 
-  setLoading(true);
-
   try {
+    setLoading(true);
+    console.log("Searching with ", queryString);
     const response = await fetch(`${apiUrl}/api/search?${queryString}`);
     const data = await response.json();
     setSearchResults(data);
+    setLoading(false);
 
     console.log('Search results:', data);
-
   } catch (error) {
     console.error('Error during search:', error);
   }
-
-  setLoading(false);
   console.log('Search Results:', searchResults)
 };
 
@@ -398,6 +386,7 @@ const handleSearch = async () => {
       region: [],
       subregion: [],
       country: [],
+      limit: '',
       citations: '',
       hindex: '',
       i_ten_index: '',
@@ -676,7 +665,7 @@ const handleSearch = async () => {
 
         </div>
 
-        {/* Institution text input */}
+        {/* Institution and limit text input */}
         <div className="textbox-container d-flex align-items-center mt-4">
           <input
             type="text"
@@ -685,6 +674,15 @@ const handleSearch = async () => {
             value={selectedOptions.institution}
             onChange={handleInputChangeText}
             placeholder="Enter Institution(s)"
+          />
+
+          <input
+            type="text"
+            className="form-control mr-2"
+            name="limit"
+            value={selectedOptions.limit}
+            onChange={handleInputChangeText}
+            placeholder="Enter Limit: Default No Limit"
           />
         </div>
 
