@@ -675,7 +675,10 @@ const handleSearch = async () => {
             onChange={handleInputChangeText}
             placeholder="Enter Institution(s)"
           />
+        </div>
 
+        {/* Limit text input */}
+        <div className="textbox-container d-flex align-items-center mt-4">
           <input
             type="text"
             className="form-control mr-2"
