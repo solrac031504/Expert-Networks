@@ -331,22 +331,10 @@ const handleSearch = async () => {
   try {
     const response = await fetch(`${apiUrl}/api/search?${queryString}`);
     const data = await response.json();
+    setSearchResults(data);
 
     console.log('Search results:', data);
 
-    // Filter results based on the global south selection
-    const filteredResults = data.filter(result => {
-      if (selectedOptions.is_global_south === "0") {
-        return true; // Include all results
-      } else if (selectedOptions.is_global_south === "1") {
-        return result.is_global_south === 0; // Exclude Global South
-      } else if (selectedOptions.is_global_south === "2") {
-        return result.is_global_south === 1; // Only Global South
-      }
-      return true; // Default case (if no selection, include all)
-    });
-
-    setSearchResults(filteredResults); // Update the state with filtered results
   } catch (error) {
     console.error('Error during search:', error);
   }
@@ -354,7 +342,6 @@ const handleSearch = async () => {
   setLoading(false);
   console.log('Search Results:', searchResults)
 };
-
 
   // Download CSV
   const handleDownloadCSV = () => {
@@ -416,6 +403,33 @@ const handleSearch = async () => {
 
     setSearchResults([]);
   };
+
+  const handleFilterGlobalSouth = (event) => {
+    const is_global_south_val = event.target.value;
+
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      is_global_south: is_global_south_val
+    }))
+
+    filterGlobalSouth(is_global_south_val);
+  }
+
+  const filterGlobalSouth = (is_global_south_val) => {
+    // Filter results based on the global south selection
+    const filteredResults = searchResults.filter(result => {
+      if (selectedOptions.is_global_south === "0") {
+        return true; // Include all results
+      } else if (selectedOptions.is_global_south === "1") {
+        return result.is_global_south === 0; // Exclude Global South
+      } else if (selectedOptions.is_global_south === "2") {
+        return result.is_global_south === 1; // Only Global South
+      }
+      return true; // Default case (if no selection, include all)
+    });
+
+    setSearchResults(filteredResults); // Update the state with filtered results
+  }
 
   const handleSortingChange = (event) => {
     const sortingValue = event.target.value;
@@ -536,31 +550,31 @@ const handleSearch = async () => {
         {/* Dropdowns for the fields of study */}
         <div className="dropdown-container d-flex align-items-center mt-4">
           {/* Domain dropdown menu */}
-          <select
-            className="form-control mr-2"
-            name="field"
-            value={selectedOptions.domain.id || ''}
+          <select 
+            className="form-control mr-2" 
+            name="domain" 
+            value={selectedOptions.domain.id || ''} 
             onChange={handleInputChange}
           >
             <option value="">Domain</option>
-            {(Array.isArray(dropdownOptions.domains) ? dropdownOptions.domains : []).map((option) => (
+            {dropdownOptions.domains.map((option) => (
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
-            </select>
+          </select>
 
           {/* Field dropdown menu - only show if domain is selected */}
           {selectedOptions.domain.id && (
             <select
-              className="form-control mr-2"
-              name="domain"
-              value={selectedOptions.domain.id || ''}
-              onChange={handleInputChange}
-            >
-              <option value="">Domain</option>
-              {dropdownOptions.domains.map((option) => (
-                <option key={option.id} value={option.id}>{option.name}</option>
-              ))}
-            </select>
+            className="form-control mr-2"
+            name="field"
+            value={selectedOptions.field.id || ''}
+            onChange={handleInputChange}
+          >
+            <option value="">Field</option>
+            {(Array.isArray(dropdownOptions.fields) ? dropdownOptions.fields : []).map((option) => (
+              <option key={option.id} value={option.id}>{option.name}</option>
+            ))}
+          </select>
           )}
 
           {/* Subfield dropdown menu - only show if field is selected */}
@@ -667,66 +681,12 @@ const handleSearch = async () => {
             placeholder="Enter Institution(s)"
           />
         </div>
-        <div className="radio-container mt-4 d-flex gap-4">
-        <div className="form-check position-relative mr-3">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="is_global_south"
-            id="globalSouthInclude"
-            value={0}
-            checked={selectedOptions.is_global_south === 0}
-            onChange={handleInputChange}
-          />
-          <label className="form-check-label text-left" htmlFor="globalSouthInclude">
-            Include Global South
-            {selectedOptions.is_global_south === 0 && (
-              <FaCheck className="selected-icon ml-2" />
-            )}
-          </label>
-        </div>
-
-        <div className="form-check position-relative mr-3">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="is_global_south"
-            id="globalSouthExclude"
-            value={1}
-            checked={selectedOptions.is_global_south === 1}
-            onChange={handleInputChange}
-          />
-          <label className="form-check-label text-left" htmlFor="globalSouthExclude">
-            Exclude Global South
-            {selectedOptions.is_global_south === 1 && (
-              <FaCheck className="selected-icon ml-2" />
-            )}
-          </label>
-        </div>
-
-        <div className="form-check position-relative">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="is_global_south"
-            id="onlyGlobalSouth"
-            value={2}
-            checked={selectedOptions.is_global_south === 2}
-            onChange={handleInputChange}
-          />
-          <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
-            Only Global South
-            {selectedOptions.is_global_south === 2 && (
-              <FaCheck className="selected-icon ml-2" />
-            )}
-          </label>
-        </div>
-      </div>
 
         {/* Buttons for searching and clearing filters */}
         <div className="filterbutton-container d-flex align-items-center mt-4">
           {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
 
+          <button className="btn filter-button" onClick={handleSearch}>Search</button>
           <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
         </div>
 
@@ -741,6 +701,63 @@ const handleSearch = async () => {
             <div>
               {searchResults.length > 0 ? (
                 <div className="mt-4">
+
+                  <div className="radio-container mt-4 d-flex gap-4">
+                    <div className="form-check position-relative mr-3">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_global_south"
+                        id="globalSouthInclude"
+                        value={0}
+                        checked={selectedOptions.is_global_south === 0}
+                        onChange={handleFilterGlobalSouth}
+                      />
+                      <label className="form-check-label text-left" htmlFor="globalSouthInclude">
+                        Include Global South
+                        {selectedOptions.is_global_south === 0 && (
+                          <FaCheck className="selected-icon ml-2" />
+                        )}
+                      </label>
+                    </div>
+
+                    <div className="form-check position-relative mr-3">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_global_south"
+                        id="globalSouthExclude"
+                        value={1}
+                        checked={selectedOptions.is_global_south === 1}
+                        onChange={handleFilterGlobalSouth}
+                      />
+                      <label className="form-check-label text-left" htmlFor="globalSouthExclude">
+                        Exclude Global South
+                        {selectedOptions.is_global_south === 1 && (
+                          <FaCheck className="selected-icon ml-2" />
+                        )}
+                      </label>
+                    </div>
+
+                    <div className="form-check position-relative">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_global_south"
+                        id="onlyGlobalSouth"
+                        value={2}
+                        checked={selectedOptions.is_global_south === 2}
+                        onChange={handleFilterGlobalSouth}
+                      />
+                      <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
+                        Only Global South
+                        {selectedOptions.is_global_south === 2 && (
+                          <FaCheck className="selected-icon ml-2" />
+                        )}
+                      </label>
+                    </div>
+                  </div>
+
                   {/* Sorting dropdown */}
                   <div className="dropdown-container d-flex align-items-center mt-4">
                     <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
