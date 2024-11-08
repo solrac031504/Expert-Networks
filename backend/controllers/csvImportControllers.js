@@ -204,7 +204,8 @@ const importAuthorsCSV = async (req, res) => {
       // Exctract the id number
       let extracted_author_id = extractAuthorID(row.id);
       // only push if it exists, i.e., not NULL
-      if (extracted_author_id) {
+      // AND citations > 0
+      if (extracted_author_id && parseInt(row.cited_by_count) > 0) {
         authors.push({
           id: extracted_author_id,
           display_name: row.display_name,
