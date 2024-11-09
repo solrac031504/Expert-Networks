@@ -39,6 +39,8 @@ const Home = () => {
 
   const [searchResults, setSearchResults] = useState([]);
 
+  const [searchController, setSearchController] = useState(null);
+
   // For the loading circle
   const [loading, setLoading] = useState(false);
 
@@ -312,23 +314,53 @@ const Home = () => {
 
 // Search table based on values selected in the dropdown and sorting buttons
 const handleSearch = async () => {
+  const keepAliveInterval = setInterval(async () => {
+    try {
+      await fetch(`${apiUrl}/api/search/keep-alive`);
+    } catch (error) {
+      console.error('Keep-alive request failed', error);
+    }
+  }, 60000); // Every 60 seconds
+
   console.log('Selected options:', selectedOptions);
 
   const queryString = createURL();
+  const controller = new AbortController();  // Create a new AbortController instance
+  const signal = controller.signal;         // Get the signal to pass to fetch
+
+  // Store the controller to be able to abort later
+  setSearchController(controller);
+
 
   try {
     setLoading(true);
-    console.log("Searching with ", queryString);
-    const response = await fetch(`${apiUrl}/api/search?${queryString}`);
+
+    const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
     const data = await response.json();
-    setSearchResults(data);
-    setLoading(false);
+
+    // Only update results if the fetch was not aborted
+    if (!signal.aborted) {
+      setSearchResults(data);
+    }
 
     console.log('Search results:', data);
   } catch (error) {
-    console.error('Error during search:', error);
+    if (error.name === 'AbortError') {
+      console.log("Search was aborted");
+    } else {
+      console.error('Error during search:', error);
+    }
+  } finally {
+    // Stop keep-alive requests
+    clearInterval(keepAliveInterval);
   }
-  console.log('Search Results:', searchResults)
+
+  console.log('Search Results:', searchResults);
+
+  setLoading(false);
+  
+  // Return controller to be used for cancellation
+  return controller;
 };
 
   // Download CSV
@@ -359,23 +391,15 @@ const handleSearch = async () => {
     window.open(`${apiUrl}/api/download/export/word?${queryString}`, '_blank');
   };
 
-  const handleClearFilterSelection = () => {
-    setSelectedOptions({
-      domains: [],
-      fields: [],
-      subfields: [],
-      topics: [],
-      continents: [],
-      regions: [],
-      subregions: [],
-      countries: [],
-      institution: '',
-      is_global_south: ''
-    });
-  };
-
   //Clear filters function
   const clearFilters = () => {
+    // If there is an ongoing search, cancel it
+    if (searchController) {
+      searchController.abort();
+      console.log('Search has been cancelled due to filter reset.');
+    }
+
+    // Reset selected options
     setSelectedOptions({
       domain: [],
       field: [],
@@ -685,7 +709,7 @@ const handleSearch = async () => {
             name="limit"
             value={selectedOptions.limit}
             onChange={handleInputChangeText}
-            placeholder="Enter Limit: Default No Limit"
+            placeholder="Enter Limit: Default 100"
           />
         </div>
 
