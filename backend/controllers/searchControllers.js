@@ -61,7 +61,7 @@ const fetchExperts = async(queryParams) => {
     subregion,
     country,
     institution,
-    limit
+    limit = 100
   } = queryParams;
 
   // if nothing is selected, return an empty array

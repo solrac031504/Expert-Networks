@@ -312,11 +312,20 @@ const Home = () => {
 
 // Search table based on values selected in the dropdown and sorting buttons
 const handleSearch = async () => {
-  console.log('Selected options:', selectedOptions);
+  const keepAliveInterval = setInterval(async () => {
+    try {
+      await fetch(`${apiUrl}/api/search/keep-alive`);
+    } catch (error) {
+      console.error('Keep-alive request failed', error);
+    }
+  }, 60000); // Every 60 seconds
 
-  const queryString = createURL();
 
   try {
+    console.log('Selected options:', selectedOptions);
+
+    const queryString = createURL();
+
     setLoading(true);
     console.log("Searching with ", queryString);
     const response = await fetch(`${apiUrl}/api/search?${queryString}`);
@@ -327,7 +336,11 @@ const handleSearch = async () => {
     console.log('Search results:', data);
   } catch (error) {
     console.error('Error during search:', error);
+  } finally {
+    // Stop keep-alive requests
+    clearInterval(keepAliveInterval);
   }
+
   console.log('Search Results:', searchResults)
 };
 
@@ -685,7 +698,7 @@ const handleSearch = async () => {
             name="limit"
             value={selectedOptions.limit}
             onChange={handleInputChangeText}
-            placeholder="Enter Limit: Default No Limit"
+            placeholder="Enter Limit: Default 100"
           />
         </div>
 
