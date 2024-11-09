@@ -336,6 +336,14 @@ const handleSearch = async () => {
     setLoading(true);
 
     const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
+
+    // Check if the response is okay before trying to parse JSON
+    if (!response.ok) {
+      const textResponse = await response.text(); // Get the raw text response for debugging
+      console.error('Error response:', textResponse);
+      throw new Error('Server error or timeout');
+    }
+
     const data = await response.json();
 
     // Only update results if the fetch was not aborted
