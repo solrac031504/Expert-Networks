@@ -36,8 +36,14 @@ const Home = () => {
   // fullSearchResults are the full search results that are returned, sometimes more than the limit
   const [fullSearchResults, setFullSearchResults] = useState([]);
 
-  // lastAuthorId saves the last author returned by the data set, processed 100 at a time
-  const [lastAuthorId, setLastAuthorId] = useState(0);
+  // Log updated results when searchResults or fullSearchResults change
+  useEffect(() => {
+    console.log('Full search results updated:', fullSearchResults);
+  }, [fullSearchResults]);
+
+  useEffect(() => {
+    console.log('Displayed search results updated:', searchResults);
+  }, [searchResults]);
 
   const [searchController, setSearchController] = useState(null);
 
@@ -304,14 +310,6 @@ const Home = () => {
 
 // Search table based on values selected in the dropdown and sorting buttons
 const handleSearch = async () => {
-  const keepAliveInterval = setInterval(async () => {
-    try {
-      await fetch(`${apiUrl}/api/search/keep-alive`);
-    } catch (error) {
-      console.error('Keep-alive request failed', error);
-    }
-  }, 60000); // Every 60 seconds
-
   console.log('Selected options:', selectedOptions);
 
   const queryString = createURL();
@@ -325,15 +323,18 @@ const handleSearch = async () => {
     setLoading(true);
     let full_search = [];
 
+    let data;
+
+    let prev_data_length = -1;
+
     // Continue to search through batches while
     // The length of the searches is less than the limit
     // AND
-    // The search returned some results (i.e., not 0)
+    // The full data set is growing in size
     // Loop will terminate when either
     // At least as many records as the LIMIT have been returned
     // OR 
-    // THe search is no longer returning results
-    let data;
+    // The data set is no longer growing (i.e., the batch is no longer increasing the size)
     do {
       const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
 
@@ -353,7 +354,19 @@ const handleSearch = async () => {
       // full search is preserved
       // if (data.length !== 0) full_search = data;
       full_search = data;
-    } while (full_search.length < selectedOptions.limit && data.length !== 0)
+
+      let curr_data_length = full_search.length;
+
+      // If the current full search length is NOT greater than the previous full length
+      // i.e., leq prev full length, end loop
+      // If not, then this will loop infinitely
+      if (curr_data_length <= prev_data_length) {
+        break;
+      } else {
+        prev_data_length = curr_data_length;
+      }
+
+    } while (full_search.length < selectedOptions.limit)
 
     // Only update results if the fetch was not aborted
     if (!signal.aborted) {
@@ -367,13 +380,7 @@ const handleSearch = async () => {
     } else {
       console.error('Error during search:', error);
     }
-  } finally {
-    // Stop keep-alive requests
-    clearInterval(keepAliveInterval);
   }
-
-  console.log('Full search results:', fullSearchResults);
-  console.log('Displayed search results: ', searchResults);
 
   setLoading(false);
   
@@ -571,7 +578,7 @@ const limitSearchResults = (raw_search, limit) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 100; // Show 100 results per page
+  const itemsPerPage = 100;
 
   const indexOfLastResult = currentPage * itemsPerPage;
   const indexOfFirstResult = indexOfLastResult - itemsPerPage;

@@ -197,10 +197,10 @@ const query_with_left_join_subregion = `
   // If the last geographic filter selected was a subregion and there is no country
   // Inner join the subregion
   if (continent && region && subregion && !country) {
-    console.log(`
-      ${query_with_inner_join_subregion}
-      ${where_clause}
-      LIMIT 100`);
+    // console.log(`
+    //   ${query_with_inner_join_subregion}
+    //   ${where_clause}
+    //   LIMIT 100`);
 
     results = await sequelize.query(`
       ${query_with_inner_join_subregion}
@@ -209,10 +209,10 @@ const query_with_left_join_subregion = `
       { type: QueryTypes.SELECT }
     );
   } else {
-    console.log(`
-      ${query_with_left_join_subregion}
-      ${where_clause}
-      LIMIT 100`);
+    // console.log(`
+    //   ${query_with_left_join_subregion}
+    //   ${where_clause}
+    //   LIMIT 100`);
 
     results = await sequelize.query(`
       ${query_with_left_join_subregion}
