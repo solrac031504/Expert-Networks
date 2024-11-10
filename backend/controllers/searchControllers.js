@@ -6,10 +6,10 @@ const { is } = require('express/lib/request');
 
 require('dotenv').config(); //Import dotenv for environment variables
 
-const arrToWhere = async(where_arr, institution_arr) => {
+const arrToWhere = async(where_arr, institution_arr, last_author_id) => {
   if (where_arr.length === 0 && institution_arr.length === 0) return ''
 
-  let result = 'WHERE';
+  let result = `WHERE author_id > ${last_author_id} AND `;
 
   for (let i = 0; i < where_arr.length; i++) {
     result = result.concat(' ', where_arr[i]);
@@ -49,6 +49,12 @@ async function getCachedResults(cacheKey) {
 }
 
 const fetchExperts = async(queryParams) => {
+  // process searches in increments of 100
+  // Use the id of the last author to start from there
+  // Find the next 100 authors
+  const batch_size = 100;
+  let last_author_id = 0;
+
   // Get the query parameters
   // These are id
   const {
@@ -60,73 +66,25 @@ const fetchExperts = async(queryParams) => {
     region,
     subregion,
     country,
-    institution,
-    limit = 100
+    institution
   } = queryParams;
 
-  // if nothing is selected, return an empty array
-  if (!(domain || field || subfield || topic || continent || region || subregion || country || institution || limit)) return [];
-
-  const cacheKey = JSON.stringify(queryParams);
-
-  // Check if results are cached in Redis
-  const cachedResults = await getCachedResults(cacheKey);
-
-  if (cachedResults) {
-    console.log('Returning cached result');
-    return cachedResults;
+  let {
+    limit = 100,
+    ...modifiedQueryParams
+  } = queryParams;
+  
+  // If limit is not a valid number, set it to 100
+  if (isNaN(limit)) {
+    limit = 100;
   }
 
-  let where_clause;
-  let where_arr = [];
-  let institutionArr = [];
-
-  if (domain) where_arr.push(`Domains.id=${domain}`);
-  if (field) where_arr.push(`Fields.id=${field}`);
-  if (subfield) where_arr.push(`Subfields.id=${subfield}`);
-  if (topic) where_arr.push(`Topics.id=${topic}`);
-  if (continent) where_arr.push(`Continents.id=${continent}`);
-  if (region) where_arr.push(`Regions.id=${region}`);
-  if (subregion) where_arr.push(`Subregions.id=${subregion}`);
-  if (country) where_arr.push(`Countries.id=${country}`);
-
-  // if (is_global_south) {
-  //   if (parseInt(is_global_south) === 0) { /* Do nothing, include all results */ }
-  //   else if (parseInt(is_global_south) === 1) {
-  //     // Exclude global south
-  //     where_arr.push(`Countries.is_global_south=0`);
-  //   }
-  //   else if (parseInt(is_global_south) === 2) {
-  //     // Only global south
-  //     where_arr.push(`Countries.is_global_south=1`);
-  //   }
-  // }
-
-  if (institution) institutionArr = institution.split(',').map(item => item.trim());
-
-  // Only create the limit condition if a value has been passed in AND the value is a valid number
-  let limit_cond = '';
-  if (limit && !isNaN(limit)) {
-    const LIMIT = "LIMIT";
-    limit_cond = LIMIT.concat(' ', limit)
-  }
-
-  console.log("limit_cond: ", limit_cond);
-
-  where_clause = await arrToWhere(where_arr, institutionArr);
-
-  console.log("WHERE CLAUSE:\n", where_clause);
-
-  let results;
-
-  // Start timing the execution time
-  let start = performance.now();
-
-  // If the last geographic filter selected was a subregion and there is no country
-  // Inner join the subregion
-  if (continent && region && subregion && !country) {
-    results = await sequelize.query(`
-      SELECT DISTINCT Authors.display_name AS 'author_name',
+  // Define the two main queries used
+  // Inner join is used when a subregion is selected to prevent countries with no subreion from being excluded
+  // When no subregion is selected
+  const query_with_inner_join_subregion = `
+      SELECT DISTINCT Authors.id AS 'author_id',
+                  Authors.display_name AS 'author_name',
                   Institutions.name    AS 'institution_name',
                   Countries.name       AS 'country_name',
                   Authors.works_count,
@@ -156,14 +114,11 @@ const fetchExperts = async(queryParams) => {
             INNER JOIN Fields
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
-                    ON Fields.domain_id = Domains.id
-      ${where_clause}
-      ${limit_cond}`,
-      { type: QueryTypes.SELECT }
-    );
-  } else {
-    results = await sequelize.query(`
-      SELECT DISTINCT Authors.display_name AS 'author_name',
+                    ON Fields.domain_id = Domains.id`;
+
+const query_with_left_join_subregion = `
+      SELECT DISTINCT Authors.id AS 'author_id',
+                  Authors.display_name AS 'author_name',
                   Institutions.name    AS 'institution_name',
                   Countries.name       AS 'country_name',
                   Authors.works_count,
@@ -193,23 +148,97 @@ const fetchExperts = async(queryParams) => {
             INNER JOIN Fields
                     ON Subfields.field_id = Fields.id
             INNER JOIN Domains
-                    ON Fields.domain_id = Domains.id
+                    ON Fields.domain_id = Domains.id`;
+
+  // if nothing is selected, return an empty array
+  if (!(domain || field || subfield || topic || continent || region || subregion || country || institution)) return [];
+
+  // Modified query params excludes the limit and last_author_id
+  const cacheKey = JSON.stringify(modifiedQueryParams);
+
+  // Check if results are cached in Redis
+  const cachedResults = await getCachedResults(cacheKey);
+
+  if (cachedResults) {
+    console.log(`Returning cached result with ${cachedResults.length} authors`);
+
+    // If the there are at least as many records in the cached results as the limit
+    // Return the cached results
+    // Let the frontend truncate the rest of the authors
+    if (cachedResults.length >= limit) {
+      return cachedResults;
+    } else {
+      // Otherwise, find the id of the last author and mark that as
+      // last_author_id
+      // Then, let the search find the next 100 authors and append that to the cachedResults
+      last_author_id = cachedResults.slice(-1)[0].author_id;
+    }
+  }
+
+  let where_clause;
+  let where_arr = [];
+  let institutionArr = [];
+
+  if (domain) where_arr.push(`Domains.id=${domain}`);
+  if (field) where_arr.push(`Fields.id=${field}`);
+  if (subfield) where_arr.push(`Subfields.id=${subfield}`);
+  if (topic) where_arr.push(`Topics.id=${topic}`);
+  if (continent) where_arr.push(`Continents.id=${continent}`);
+  if (region) where_arr.push(`Regions.id=${region}`);
+  if (subregion) where_arr.push(`Subregions.id=${subregion}`);
+  if (country) where_arr.push(`Countries.id=${country}`);
+
+  if (institution) institutionArr = institution.split(',').map(item => item.trim());
+
+  where_clause = await arrToWhere(where_arr, institutionArr, last_author_id);
+
+  let results;
+
+  // If the last geographic filter selected was a subregion and there is no country
+  // Inner join the subregion
+  if (continent && region && subregion && !country) {
+    console.log(`
+      ${query_with_inner_join_subregion}
       ${where_clause}
-      ${limit_cond}`,
+      LIMIT 100`);
+
+    results = await sequelize.query(`
+      ${query_with_inner_join_subregion}
+      ${where_clause}
+      LIMIT 100`,
+      { type: QueryTypes.SELECT }
+    );
+  } else {
+    console.log(`
+      ${query_with_left_join_subregion}
+      ${where_clause}
+      LIMIT 100`);
+
+    results = await sequelize.query(`
+      ${query_with_left_join_subregion}
+      ${where_clause}
+      LIMIT 100`,
       { type: QueryTypes.SELECT }
     );
   }
 
-  // Finish timing the execution time of the search
-  let end = performance.now();
-  console.log(`Search took ${end - start} ms`);
+  // If there were cached results,
+  // Append the current results to the cached results
+  // Then assign the value back to results
+  if (cachedResults) {
+    let finalResults = [];
+    finalResults = cachedResults.concat(results);
+    results = finalResults;
+  }
 
-  // If it took more than 1 min to search (60,000 ms), cache permanently
-  if (end - start > 60000) {
+  console.log(`Retrieved ${results.length} authors`);
+  
+  // If there are at least 5000 results, cache the data permanently
+  if (results.length >= 5000) {
     redisClient.set(cacheKey, JSON.stringify(results));
     console.log(`Caching results with no expiration time`);
   } else {
-    // Cache the result in Redis
+    // If there are less than 5000 results, cache the data for 10 minutes
     // key, value, expiration in seconds
     // redisClient.set(cacheKey, JSON.stringify(results), 'EX', 600); // Cache for 10 min
     redisClient.set(cacheKey, JSON.stringify(results), { EX: 600 });

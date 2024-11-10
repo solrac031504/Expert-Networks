@@ -27,32 +27,22 @@ const Home = () => {
     subregion: [],
     country: [],
     limit: '',
-    citations: '',
-    hindex: '',
-    i_ten_index: '',
-    impact_factor: '',
-    age: '',
-    years_in_field: '',
     sorting_sequence: '', 
     is_global_south: ''
   });
 
+  // searchResults are the results that are displayed
   const [searchResults, setSearchResults] = useState([]);
+  // fullSearchResults are the full search results that are returned, sometimes more than the limit
+  const [fullSearchResults, setFullSearchResults] = useState([]);
+
+  // lastAuthorId saves the last author returned by the data set, processed 100 at a time
+  const [lastAuthorId, setLastAuthorId] = useState(0);
 
   const [searchController, setSearchController] = useState(null);
 
   // For the loading circle
   const [loading, setLoading] = useState(false);
-
-  // State to keep track of the active sorting button
-  const [activeSorting, setActiveSorting] = useState({
-    citations: '-',
-    hindex: '-',
-    i_ten_index: '-',
-    impact_factor: '-',
-    age: '-',
-    years_in_field: '-',
-  });
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
@@ -331,27 +321,46 @@ const handleSearch = async () => {
   // Store the controller to be able to abort later
   setSearchController(controller);
 
-
   try {
     setLoading(true);
+    let full_search = [];
 
-    const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
+    // Continue to search through batches while
+    // The length of the searches is less than the limit
+    // AND
+    // The search returned some results (i.e., not 0)
+    // Loop will terminate when either
+    // At least as many records as the LIMIT have been returned
+    // OR 
+    // THe search is no longer returning results
+    let data;
+    do {
+      const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
 
-    // Check if the response is okay before trying to parse JSON
-    if (!response.ok) {
-      const textResponse = await response.text(); // Get the raw text response for debugging
-      console.error('Error response:', textResponse);
-      throw new Error('Server error or timeout');
-    }
+      // Check if the response is okay before trying to parse JSON
+      if (!response.ok) {
+        const textResponse = await response.text(); // Get the raw text response for debugging
+        console.error('Error response:', textResponse);
+        throw new Error('Server error or timeout');
+      }
 
-    const data = await response.json();
+      data = await response.json();
+
+      console.log("Current iteration of search: ", data);
+
+      // Only save the search if the there are records
+      // This way, if the loop terminates because the next search did not return anything,
+      // full search is preserved
+      // if (data.length !== 0) full_search = data;
+      full_search = data;
+    } while (full_search.length < selectedOptions.limit && data.length !== 0)
 
     // Only update results if the fetch was not aborted
     if (!signal.aborted) {
-      setSearchResults(data);
+      setFullSearchResults(full_search);
+      let limited_search = limitSearchResults(full_search, selectedOptions.limit);
+      setSearchResults(limited_search);
     }
-
-    console.log('Search results:', data);
   } catch (error) {
     if (error.name === 'AbortError') {
       console.log("Search was aborted");
@@ -363,12 +372,19 @@ const handleSearch = async () => {
     clearInterval(keepAliveInterval);
   }
 
-  console.log('Search Results:', searchResults);
+  console.log('Full search results:', fullSearchResults);
+  console.log('Displayed search results: ', searchResults);
 
   setLoading(false);
   
   // Return controller to be used for cancellation
   return controller;
+};
+
+// Limit the search results
+// Return the top 'limit' records
+const limitSearchResults = (raw_search, limit) => {
+  return raw_search.slice(0, limit);
 };
 
   // Download CSV
@@ -428,6 +444,7 @@ const handleSearch = async () => {
       sorting_sequence: ''
     });
 
+    setFullSearchResults([]);
     setSearchResults([]);
   };
 
@@ -443,8 +460,8 @@ const handleSearch = async () => {
   }
 
   const filterGlobalSouth = (is_global_south_val) => {
-    // Filter results based on the global south selection
-    const filteredResults = searchResults.filter(result => {
+    // Filter the full results based on the global south selection
+    const filteredResults = fullSearchResults.filter(result => {
       if (selectedOptions.is_global_south === "0") {
         return true; // Include all results
       } else if (selectedOptions.is_global_south === "1") {
@@ -455,7 +472,12 @@ const handleSearch = async () => {
       return true; // Default case (if no selection, include all)
     });
 
-    setSearchResults(filteredResults); // Update the state with filtered results
+    // Update the full search results
+    setFullSearchResults(filteredResults);
+
+    let limited_results = limitSearchResults(filteredResults, selectedOptions.limit);
+    // Set the displayed search results
+    setSearchResults(limited_results);
   }
 
   const handleSortingChange = (event) => {
@@ -500,8 +522,10 @@ const handleSearch = async () => {
   };
 
   const sortSearchResults = (sortingValue) => {
-    const sortedResults = [...searchResults]; // Create a copy of the current results to sort
+    // Create a copy of the full search results
+    const sortedResults = [...fullSearchResults]; 
   
+    // Sort the full search results
     switch (sortingValue) {
       case 'works_asc':
         sortedResults.sort((a, b) => a.works_count - b.works_count);
@@ -537,12 +561,17 @@ const handleSearch = async () => {
         break;
     }
   
-    // Update the search results with the sorted array
-    setSearchResults(sortedResults);
+    // Update the full search results with the sorted array
+    setFullSearchResults(sortedResults);
+
+    // limit the results
+    let limited_results = limitSearchResults(sortedResults, selectedOptions.limit);
+    // Set the search results displayed
+    setSearchResults(limited_results);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 25; // Show 25 results per page
+  const itemsPerPage = 100; // Show 100 results per page
 
   const indexOfLastResult = currentPage * itemsPerPage;
   const indexOfFirstResult = indexOfLastResult - itemsPerPage;
