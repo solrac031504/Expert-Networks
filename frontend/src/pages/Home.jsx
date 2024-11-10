@@ -27,32 +27,28 @@ const Home = () => {
     subregion: [],
     country: [],
     limit: '',
-    citations: '',
-    hindex: '',
-    i_ten_index: '',
-    impact_factor: '',
-    age: '',
-    years_in_field: '',
     sorting_sequence: '', 
     is_global_south: ''
   });
 
+  // searchResults are the results that are displayed
   const [searchResults, setSearchResults] = useState([]);
+  // fullSearchResults are the full search results that are returned, sometimes more than the limit
+  const [fullSearchResults, setFullSearchResults] = useState([]);
+
+  // Log updated results when searchResults or fullSearchResults change
+  useEffect(() => {
+    console.log('Full search results updated:', fullSearchResults);
+  }, [fullSearchResults]);
+
+  useEffect(() => {
+    console.log('Displayed search results updated:', searchResults);
+  }, [searchResults]);
 
   const [searchController, setSearchController] = useState(null);
 
   // For the loading circle
   const [loading, setLoading] = useState(false);
-
-  // State to keep track of the active sorting button
-  const [activeSorting, setActiveSorting] = useState({
-    citations: '-',
-    hindex: '-',
-    i_ten_index: '-',
-    impact_factor: '-',
-    age: '-',
-    years_in_field: '-',
-  });
 
   const apiUrl = process.env.REACT_APP_API_URL; // Access the environment variable
 
@@ -314,14 +310,6 @@ const Home = () => {
 
 // Search table based on values selected in the dropdown and sorting buttons
 const handleSearch = async () => {
-  const keepAliveInterval = setInterval(async () => {
-    try {
-      await fetch(`${apiUrl}/api/search/keep-alive`);
-    } catch (error) {
-      console.error('Keep-alive request failed', error);
-    }
-  }, 60000); // Every 60 seconds
-
   console.log('Selected options:', selectedOptions);
 
   const queryString = createURL();
@@ -331,44 +319,79 @@ const handleSearch = async () => {
   // Store the controller to be able to abort later
   setSearchController(controller);
 
-
   try {
     setLoading(true);
+    let full_search = [];
 
-    const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
+    let data;
 
-    // Check if the response is okay before trying to parse JSON
-    if (!response.ok) {
-      const textResponse = await response.text(); // Get the raw text response for debugging
-      console.error('Error response:', textResponse);
-      throw new Error('Server error or timeout');
-    }
+    let prev_data_length = -1;
 
-    const data = await response.json();
+    // Continue to search through batches while
+    // The length of the searches is less than the limit
+    // AND
+    // The full data set is growing in size
+    // Loop will terminate when either
+    // At least as many records as the LIMIT have been returned
+    // OR 
+    // The data set is no longer growing (i.e., the batch is no longer increasing the size)
+    do {
+      const response = await fetch(`${apiUrl}/api/search?${queryString}`, { signal });
+
+      // Check if the response is okay before trying to parse JSON
+      if (!response.ok) {
+        const textResponse = await response.text(); // Get the raw text response for debugging
+        console.error('Error response:', textResponse);
+        throw new Error('Server error or timeout');
+      }
+
+      data = await response.json();
+
+      console.log("Current iteration of search: ", data);
+
+      // Only save the search if the there are records
+      // This way, if the loop terminates because the next search did not return anything,
+      // full search is preserved
+      // if (data.length !== 0) full_search = data;
+      full_search = data;
+
+      let curr_data_length = full_search.length;
+
+      // If the current full search length is NOT greater than the previous full length
+      // i.e., leq prev full length, end loop
+      // If not, then this will loop infinitely
+      if (curr_data_length <= prev_data_length) {
+        break;
+      } else {
+        prev_data_length = curr_data_length;
+      }
+
+    } while (full_search.length < selectedOptions.limit)
 
     // Only update results if the fetch was not aborted
     if (!signal.aborted) {
-      setSearchResults(data);
+      setFullSearchResults(full_search);
+      let limited_search = limitSearchResults(full_search, selectedOptions.limit);
+      setSearchResults(limited_search);
     }
-
-    console.log('Search results:', data);
   } catch (error) {
     if (error.name === 'AbortError') {
       console.log("Search was aborted");
     } else {
       console.error('Error during search:', error);
     }
-  } finally {
-    // Stop keep-alive requests
-    clearInterval(keepAliveInterval);
   }
-
-  console.log('Search Results:', searchResults);
 
   setLoading(false);
   
   // Return controller to be used for cancellation
   return controller;
+};
+
+// Limit the search results
+// Return the top 'limit' records
+const limitSearchResults = (raw_search, limit) => {
+  return raw_search.slice(0, limit);
 };
 
   // Download CSV
@@ -428,6 +451,7 @@ const handleSearch = async () => {
       sorting_sequence: ''
     });
 
+    setFullSearchResults([]);
     setSearchResults([]);
   };
 
@@ -443,8 +467,8 @@ const handleSearch = async () => {
   }
 
   const filterGlobalSouth = (is_global_south_val) => {
-    // Filter results based on the global south selection
-    const filteredResults = searchResults.filter(result => {
+    // Filter the full results based on the global south selection
+    const filteredResults = fullSearchResults.filter(result => {
       if (selectedOptions.is_global_south === "0") {
         return true; // Include all results
       } else if (selectedOptions.is_global_south === "1") {
@@ -455,7 +479,12 @@ const handleSearch = async () => {
       return true; // Default case (if no selection, include all)
     });
 
-    setSearchResults(filteredResults); // Update the state with filtered results
+    // Update the full search results
+    setFullSearchResults(filteredResults);
+
+    let limited_results = limitSearchResults(filteredResults, selectedOptions.limit);
+    // Set the displayed search results
+    setSearchResults(limited_results);
   }
 
   const handleSortingChange = (event) => {
@@ -500,8 +529,10 @@ const handleSearch = async () => {
   };
 
   const sortSearchResults = (sortingValue) => {
-    const sortedResults = [...searchResults]; // Create a copy of the current results to sort
+    // Create a copy of the full search results
+    const sortedResults = [...fullSearchResults]; 
   
+    // Sort the full search results
     switch (sortingValue) {
       case 'works_asc':
         sortedResults.sort((a, b) => a.works_count - b.works_count);
@@ -537,12 +568,17 @@ const handleSearch = async () => {
         break;
     }
   
-    // Update the search results with the sorted array
-    setSearchResults(sortedResults);
+    // Update the full search results with the sorted array
+    setFullSearchResults(sortedResults);
+
+    // limit the results
+    let limited_results = limitSearchResults(sortedResults, selectedOptions.limit);
+    // Set the search results displayed
+    setSearchResults(limited_results);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 25; // Show 25 results per page
+  const itemsPerPage = 100;
 
   const indexOfLastResult = currentPage * itemsPerPage;
   const indexOfFirstResult = indexOfLastResult - itemsPerPage;
