@@ -400,7 +400,7 @@ const limitSearchResults = (raw_search, limit) => {
     const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
   };
-
+  
   // Download XLS
   const handleDownloadXLS = () => {
     console.log("Downloading XLS");
