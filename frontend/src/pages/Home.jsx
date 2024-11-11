@@ -391,7 +391,9 @@ const handleSearch = async () => {
 // Limit the search results
 // Return the top 'limit' records
 const limitSearchResults = (raw_search, limit) => {
-  return raw_search.slice(0, limit);
+  if (limit === '' || isNaN(Number(limit)) || limit === null) limit = 100;
+
+  return raw_search.slice(0, Number(limit));
 };
 
   // Download CSV
@@ -483,6 +485,7 @@ const limitSearchResults = (raw_search, limit) => {
     setFullSearchResults(filteredResults);
 
     let limited_results = limitSearchResults(filteredResults, selectedOptions.limit);
+
     // Set the displayed search results
     setSearchResults(limited_results);
   }
