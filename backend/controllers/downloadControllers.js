@@ -90,19 +90,38 @@ const getNarrowestSelectedField = async (queryParams) => {
   return field_of_study[0].display_name;
 };
 
+// Limit the search results
+// Return the top 'limit' records
+const limitSearchResults = (raw_search, limit) => {
+  return raw_search.slice(0, limit);
+};
+
+// All functions for downloads start the same, so compress them into a single function
+// Extract query params
+// Retrieve experts from cache
+// Sort and filter the results
+// Limit the results
+// Return the processed array
+const getExperts = async (queryParams) => {
+  // Extract sorting into one variable,
+  // put everything else into another variable
+  // Redis cached value key does not include the sorted sequence for finding the experts, therefore
+  // the argument for fetchExperts cannot contain the field for sorting
+  const { sorting, is_global_south, limit, ...query_no_sorting } = queryParams;
+
+  // Retrieve experts from cache
+  const raw_experts = await fetchExperts(query_no_sorting);
+
+  const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
+
+  // Limit the results and return the limited reuslts
+  return limitSearchResults(experts, limit);
+};
+
 const exportExpertsToXLS = async (req, res) => {
   try {
-    // Extract sorting into one variable,
-    // put everything else into another variable
-    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
-    // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, is_global_south, ...query_no_sorting } = req.query;
-
-
-    const raw_experts = await fetchExperts(query_no_sorting);
+    const experts = await getExperts(req.query);
     const field_of_study = await getNarrowestSelectedField(req.query);
-
-    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Experts');
@@ -145,19 +164,8 @@ const exportExpertsToXLS = async (req, res) => {
 
 const exportExpertsToCSV = async (req, res) => {
   try {
-    // Extract sorting into one variable,
-    // put everything else into another variable
-    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
-    // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, is_global_south, ...query_no_sorting } = req.query;
-
-
-    const raw_experts = await fetchExperts(query_no_sorting);
+    const experts = await getExperts(req.query);
     const field_of_study = await getNarrowestSelectedField(req.query);
-
-    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
-
-    // const results = experts.map(expert => expert.get({ plain: true }));
 
     // Map field_of_study to each expert record
     const expertsWithField = experts.map(expert => ({
@@ -196,17 +204,8 @@ const exportExpertsToCSV = async (req, res) => {
 
 const exportExpertsToPDF = async (req, res) => {
   try {
-    // Extract sorting into one variable,
-    // put everything else into another variable
-    // Redis cached value key does not include the sorted sequence for finding the experts, therefore
-    // the argument for fetchExperts cannot contain the field for sorting
-    const { sorting, is_global_south, ...query_no_sorting } = req.query;
-
-
-    const raw_experts = await fetchExperts(query_no_sorting);
+    const experts = await getExperts(req.query);
     const field_of_study = await getNarrowestSelectedField(req.query);
-
-    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     const doc = new PDFDocument();
 
@@ -357,12 +356,8 @@ const exportExpertsToPDF = async (req, res) => {
 
 const exportExpertsToWord = async (req, res) => {
   try {
-    const { sorting, is_global_south, ...query_no_sorting } = req.query;
-
-    const raw_experts = await fetchExperts(query_no_sorting);
+    const experts = await getExperts(req.query);
     const field_of_study = await getNarrowestSelectedField(req.query);
-
-    const experts = sortAndFilterResults(sorting, is_global_south, raw_experts);
 
     // Map field_of_study to each expert record
     const expertsWithField = experts.map(expert => ({
