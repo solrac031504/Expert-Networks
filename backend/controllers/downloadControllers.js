@@ -2,7 +2,8 @@ const PDFDocument = require('pdfkit');
 const Expert = require('../models/Expert');
 const Institution = require('../models/Institution');
 const { Sequelize, Op, QueryTypes } = require('sequelize');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+// const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const createCsvWriter = require('csv-writer').createObjectCsvStringifier;
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios'); 
@@ -10,6 +11,7 @@ const { query } = require('express');
 const sequelize = require('../database');
 const ExcelJS = require('exceljs');
 const { Document, Packer, Table, TableRow, TableCell, Paragraph, TextRun } = require("docx");
+const { StringDecoder } = require("string_decoder");
 
 const { fetchExperts } = require('./searchControllers');
 
@@ -162,6 +164,46 @@ const exportExpertsToXLS = async (req, res) => {
   }
 };
 
+// const exportExpertsToCSV = async (req, res) => {
+//   try {
+//     const experts = await getExperts(req.query);
+//     const field_of_study = await getNarrowestSelectedField(req.query);
+
+//     // Map field_of_study to each expert record
+//     const expertsWithField = experts.map(expert => ({
+//       ...expert,
+//       field_of_study: field_of_study
+//     }));
+
+//     const csvWriter = createCsvWriter({
+//       path: path.join(__dirname, '../exports/experts.csv'),
+//       header: [
+//         { id: 'author_name', title: 'Name' },
+//         { id: 'field_of_study', title: 'Selected Field of Study' },
+//         { id: 'institution_name', title: 'Institution' },
+//         { id: 'country_name', title: 'Country' },
+//         { id: 'works_count', title: 'Number of Works' },
+//         { id: 'cited_by_count', title: 'Times Cited' },
+//         { id: 'hindex', title: 'H-index' },
+//         { id: 'i_ten_index', title: 'I10-index' },
+//         { id: 'impact_factor', title: 'Impact Factor'},
+//       ]
+//     });
+
+//     // await csvWriter.writeRecords(records);
+//     await csvWriter.writeRecords(expertsWithField);
+
+//     const filePath = path.join(__dirname, '../exports/experts.csv');
+//     res.setHeader('Content-Type', 'text/csv');
+//     res.setHeader('Content-Disposition', 'attachment; filename=experts.csv');
+    
+//     res.status(200);
+//     res.download(filePath, 'experts.csv');
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 const exportExpertsToCSV = async (req, res) => {
   try {
     const experts = await getExperts(req.query);
@@ -173,8 +215,8 @@ const exportExpertsToCSV = async (req, res) => {
       field_of_study: field_of_study
     }));
 
-    const csvWriter = createCsvWriter({
-      path: path.join(__dirname, '../exports/experts.csv'),
+    // Create CSV stringifier
+    const csvStringifier = createCsvWriter({
       header: [
         { id: 'author_name', title: 'Name' },
         { id: 'field_of_study', title: 'Selected Field of Study' },
@@ -184,19 +226,22 @@ const exportExpertsToCSV = async (req, res) => {
         { id: 'cited_by_count', title: 'Times Cited' },
         { id: 'hindex', title: 'H-index' },
         { id: 'i_ten_index', title: 'I10-index' },
-        { id: 'impact_factor', title: 'Impact Factor'},
+        { id: 'impact_factor', title: 'Impact Factor' },
       ]
     });
 
-    // await csvWriter.writeRecords(records);
-    await csvWriter.writeRecords(expertsWithField);
-
-    const filePath = path.join(__dirname, '../exports/experts.csv');
-    res.setHeader('Content-Type', 'text/csv');
+    // Set headers for CSV response with UTF-8 BOM for encoding support
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename=experts.csv');
     
-    res.status(200);
-    res.download(filePath, 'experts.csv');
+    // Write BOM to ensure UTF-8 encoding is detected
+    res.write('\uFEFF');
+    
+    // Write CSV headers and rows
+    res.write(csvStringifier.getHeaderString());
+    res.write(csvStringifier.stringifyRecords(expertsWithField));
+
+    res.end();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -215,6 +260,11 @@ const exportExpertsToPDF = async (req, res) => {
 
     // Pipe PDF into response
     doc.pipe(res);
+
+    // Embed a font that supports Unicode (e.g., Noto Sans)
+    const notoSansPath = '../fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf'; // Update the path accordingly
+    doc.registerFont('NotoSans', notoSansPath);
+    doc.font('NotoSans'); // Use the new font
 
     // Add title
     doc.fontSize(16).text('Experts List', { align: 'center' });
