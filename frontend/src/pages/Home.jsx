@@ -39,11 +39,11 @@ const Home = () => {
 
   // Log updated results when searchResults or fullSearchResults change
   useEffect(() => {
-    console.log('Full search results updated:', fullSearchResults);
+    // console.log('Full search results updated:', fullSearchResults);
   }, [fullSearchResults]);
 
   useEffect(() => {
-    console.log('Displayed search results updated:', searchResults);
+    // console.log('Displayed search results updated:', searchResults);
   }, [searchResults]);
 
   const [searchController, setSearchController] = useState(null);
@@ -55,11 +55,11 @@ const Home = () => {
 
   useEffect(() => {
     // Fetch unique domains
-    console.log('Fetching unique domains...');
+    // console.log('Fetching unique domains...');
     fetch(`${apiUrl}/api/dropdown/study/domains`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique domains:', data);
+        // console.log('Received unique domains:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           domains: data,
@@ -70,11 +70,11 @@ const Home = () => {
       });
 
     // Fetch unique continents
-    console.log('Fetching unique continents...');
+    // console.log('Fetching unique continents...');
     fetch(`${apiUrl}/api/dropdown/geo/continents`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique continents:', data);
+        // console.log('Received unique continents:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           continents: data,
@@ -91,11 +91,11 @@ const Home = () => {
       domain_id: selectedOptions.domain.id,
     }).toString();
 
-    console.log('Fetching unique fields...');
+    // console.log('Fetching unique fields...');
     fetch(`${apiUrl}/api/dropdown/study/fields?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique fields:', data);
+        // console.log('Received unique fields:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           fields: data,
@@ -112,11 +112,11 @@ const Home = () => {
       field_id: selectedOptions.field.id,
     }).toString();
 
-    console.log('Fetching unique subfields...');
+    // console.log('Fetching unique subfields...');
     fetch(`${apiUrl}/api/dropdown/study/subfields?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique subfields:', data);
+        // console.log('Received unique subfields:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           subfields: data,
@@ -133,11 +133,11 @@ const Home = () => {
       subfield_id: selectedOptions.subfield.id,
     }).toString();
 
-    console.log('Fetching unique topics...');
+    // console.log('Fetching unique topics...');
     fetch(`${apiUrl}/api/dropdown/study/topics?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique topics:', data);
+        // console.log('Received unique topics:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           topics: data,
@@ -154,11 +154,11 @@ const Home = () => {
       continent_id: selectedOptions.continent.id,
     }).toString();
 
-    console.log('Fetching unique regions...');
+    // console.log('Fetching unique regions...');
     fetch(`${apiUrl}/api/dropdown/geo/regions?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique regions:', data);
+        // console.log('Received unique regions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           regions: data,
@@ -175,11 +175,11 @@ const Home = () => {
       region_id: selectedOptions.region.id,
     }).toString();
 
-    console.log('Fetching unique subregions...');
+    // console.log('Fetching unique subregions...');
     fetch(`${apiUrl}/api/dropdown/geo/subregions?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique subregions:', data);
+        // console.log('Received unique subregions:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           subregions: data,
@@ -197,11 +197,11 @@ const Home = () => {
       subregion_id: selectedOptions.subregion.id
     }).toString();
 
-    console.log('Fetching unique countries...');
+    // console.log('Fetching unique countries...');
     fetch(`${apiUrl}/api/dropdown/geo/countries?${queryParams}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Received unique countries:', data);
+        // console.log('Received unique countries:', data);
         setDropdownOptions(prevState => ({
           ...prevState,
           countries: data,
@@ -311,7 +311,7 @@ const Home = () => {
 
 // Search table based on values selected in the dropdown and sorting buttons
 const handleSearch = async () => {
-  console.log('Selected options:', selectedOptions);
+  // console.log('Selected options:', selectedOptions);
 
   const queryString = createURL();
   const controller = new AbortController();  // Create a new AbortController instance
@@ -348,7 +348,7 @@ const handleSearch = async () => {
 
       data = await response.json();
 
-      console.log("Current iteration of search: ", data);
+      // console.log("Current iteration of search: ", data);
 
       // Only save the search if the there are records
       // This way, if the loop terminates because the next search did not return anything,
@@ -377,7 +377,7 @@ const handleSearch = async () => {
     }
   } catch (error) {
     if (error.name === 'AbortError') {
-      console.log("Search was aborted");
+      // console.log("Search was aborted");
     } else {
       console.error('Error during search:', error);
     }
@@ -406,28 +406,28 @@ const limitSearchResults = (raw_search, limit) => {
 
   // Download CSV
   const handleDownloadCSV = () => {
-    console.log("Downloading CSV");
+    // console.log("Downloading CSV");
     const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/csv?${queryString}`, '_blank');
   };
   
   // Download XLS
   const handleDownloadXLS = () => {
-    console.log("Downloading XLS");
+    // console.log("Downloading XLS");
     const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/xls?${queryString}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadPDF = () => {
-    console.log("Downloading PDF");
+    // console.log("Downloading PDF");
     const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/pdf?${queryString}`, '_blank');
   };
 
   // Download PDF
   const handleDownloadDocx = () => {
-    console.log("Downloading Docx");
+    // console.log("Downloading Docx");
     const queryString = createDownloadURL();
     window.open(`${apiUrl}/api/download/export/word?${queryString}`, '_blank');
   };
@@ -437,7 +437,7 @@ const limitSearchResults = (raw_search, limit) => {
     // If there is an ongoing search, cancel it
     if (searchController) {
       searchController.abort();
-      console.log('Search has been cancelled due to filter reset.');
+      // console.log('Search has been cancelled due to filter reset.');
     }
 
     // Reset selected options
@@ -475,13 +475,10 @@ const limitSearchResults = (raw_search, limit) => {
     // Filter the full results based on the global south selection
     const filteredResults = fullSearchResults.filter(result => {
       if (is_global_south_val === "0") {
-        console.log("Including Global South");
         return true; // Include all results
       } else if (is_global_south_val === "1") {
-        console.log("Excluding Global South");
         return result.is_global_south === 0; // Exclude Global South
       } else if (is_global_south_val === "2") {
-        console.log("Isolating Global South");
         return result.is_global_south === 1; // Only Global South
       }
       return true; // Default case (if no selection, include all)
