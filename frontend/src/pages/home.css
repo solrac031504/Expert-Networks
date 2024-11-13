@@ -1,6 +1,5 @@
 body {
-  background-color: #000000; /* Black background */
-  color: #00FF00; /* Green text color */
+  background-color: #c6c6c6; /* Change this value to your desired background color for the page */
   margin: 0;
   font-family: Arial, sans-serif;
 }
@@ -13,95 +12,127 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #000000; /* Black background for navbar */
+  background-color: #062454; /* Original blue color #4848f5 */
   padding: 10px;
   height: 100px;
-  border-radius: 0;
-  width: 100vw;
-  margin: 0;
-  border-bottom: 2px solid #00FF00; /* Green border */
+  border-radius: 0; /* Remove border radius to make it span full width */
+  width: 100vw; /* Make sure it takes the full width of the viewport */
+  margin: 0; /* Remove any margin */
 }
 
 .navbar-title {
-  color: #00FF00; /* Green text */
+  color: white;
   font-size: 30px;
 }
 
-.dropdown-container,
-.textbox-container,
-.filterbutton-container {
+.center-horizontally {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.dropdown-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+}
+
+.textbox-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+.sortby-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto; 
+  margin-right: auto; 
+}
+
+.filterbutton-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
 }
 
 .input-info {
   text-align: center;
-  color: #00FF00; /* Green text */
 }
 
 select {
   margin: 0 10px;
   padding: 5px;
   font-size: 16px;
-  color: #00FF00; /* Green text */
-  background-color: #000000; /* Black background */
-  border: 1px solid #00FF00; /* Green border */
-}
-
-select:hover {
-  background-color: #08c808; /* Green hover color */
 }
 
 button {
   padding: 5px 10px;
   font-size: 16px;
-  background-color: #000000; /* Black background */
-  color: #00FF00; /* Green text */
-  border: 1px solid #00FF00; /* Green border */
+  background-color: #4848f5; /* Original blue color #4848f5 */
+  color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #08c808; /* Green hover color */
+  background-color: #3838d8; /* Original hover color */
 }
 
+/* Align the button to the right of the table */
 .download-button {
   float: right;
   margin-top: 10px;
   margin-bottom: 10px;
   margin-left: 10px;
-  background-color: #000000; 
-  color: #00FF00;
-  border: 1px solid #00FF00;
+  background-color: #4848f5; 
+  color: white;
 }
 
 .download-button:hover {
-  background-color: #08c808; /* Green hover color */
+  background-color: #3838d8; /* Darken the original blue color for hover effect */
 }
 
-.sorting-button,
-.btn-page {
-  background-color: #000000;
-  color: #00FF00;
-  border: 1px solid #00FF00;
+.sorting-button {
+  float:center;
+  background-color: #d8d8d8; 
+  color: black;
+}
+
+.sorting-button:hover {
+  background-color: #bebebe; 
 }
 
 .filter-button {
   float: left;
   margin-bottom: 10px;
   margin-right: 10px;
-  background-color: #000000;
-  color: #00FF00;
-  border: 1px solid #00FF00;
+  background-color: #4848f5; 
+  color: white;
 }
 
-.sorting-button:hover,
-.filter-button:hover,
+.filter-button:hover {
+  background-color: #3838d8;
+}
+
+.btn-page {
+  margin: 10px;
+  background-color: #4848f5;
+  color: white;
+}
+
 .btn-page:hover {
-  background-color: #08c808; /* Green hover color */
+  background-color: #3838d8;
 }
 
 .spinner-container {
@@ -113,11 +144,11 @@ button:hover {
 
 /* Loading spinner */
 .spinner {
-  border: 6px solid rgba(0, 255, 0, 0.1); /* Green tint */
-  border-left-color: #00FF00; /* Green spinner color */
+  border: 6px solid rgba(0, 0, 0, 0.1); /* Increase the border size */
+  border-left-color: #4848f5;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
+  width: 80px; /* Increase the size */
+  height: 80px; /* Increase the size */
   animation: spin 1s linear infinite;
 }
 
@@ -132,35 +163,55 @@ button:hover {
   align-items: center;
   height: 100vh;
   text-align: center;
-  color: #00FF00; /* Green text */
 }
 
 .radio-container .selected-icon {
-  color: #00FF00; /* Icon color for selected */
-  margin-left: 0.5rem;
+  color: #4848f5; /* Icon color for selected */
+  margin-left: 0.5rem; /* Adjust spacing if needed */
 }
 
-/* Table styling */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  color: #00FF00; /* Green text */
-  background-color: #000000; /* Black background */
-  border: 1px solid #00FF00; /* Green border around the table */
+.radio-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;  
+  justify-content: flex-start;  
 }
 
-table th, table td {
-  padding: 8px;
-  border: 1px solid #00FF00; /* Green border */
-  text-align: center; /* Center text */
-  background-color: #000000; /* Black background for cells */
-  color: #00FF00; /* Green text */
+.radio-group label {
+  display: flex;  
+  align-items: center;
+  font-size: 15px; 
+  line-height: 1.5;
+  gap: 5px;
 }
 
-table tr:nth-child(even) {
-  background-color: #001a00; /* Slightly darker black */
+.radio-group input {
+  height: 20px; 
+  vertical-align: middle; 
 }
 
-table tr:hover {
-  background-color: #08c808; /* Green hover color */
+.downloadbutton-container {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0px; 
+  justify-content: flex-end;  
+}
+
+.downloadbutton-container button {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.download-button:hover {
+  background-color: #3838d8;
+}
+
+.sort-dropdown {
+  width: 150px;
+  vertical-align: middle; 
 }

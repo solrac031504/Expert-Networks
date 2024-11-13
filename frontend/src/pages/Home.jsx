@@ -28,7 +28,8 @@ const Home = () => {
     country: [],
     limit: '',
     sorting_sequence: '', 
-    is_global_south: ''
+    sorting: '',
+    is_global_south: "0"
   });
 
   // searchResults are the results that are displayed
@@ -383,6 +384,13 @@ const handleSearch = async () => {
   }
 
   setLoading(false);
+
+  // Reset the value of is_global_south
+  setSelectedOptions((prevOptions) => ({
+    ...prevOptions,
+    is_global_south: "0",
+    sorting: []
+  }))
   
   // Return controller to be used for cancellation
   return controller;
@@ -444,13 +452,8 @@ const limitSearchResults = (raw_search, limit) => {
       subregion: [],
       country: [],
       limit: '',
-      citations: '',
-      hindex: '',
-      i_ten_index: '',
-      impact_factor: '',
-      age: '',
-      years_in_field: '',
-      sorting_sequence: ''
+      sorting_sequence: '',
+      is_global_south: "0"
     });
 
     setFullSearchResults([]);
@@ -471,18 +474,22 @@ const limitSearchResults = (raw_search, limit) => {
   const filterGlobalSouth = (is_global_south_val) => {
     // Filter the full results based on the global south selection
     const filteredResults = fullSearchResults.filter(result => {
-      if (selectedOptions.is_global_south === "0") {
+      if (is_global_south_val === "0") {
+        console.log("Including Global South");
         return true; // Include all results
-      } else if (selectedOptions.is_global_south === "1") {
+      } else if (is_global_south_val === "1") {
+        console.log("Excluding Global South");
         return result.is_global_south === 0; // Exclude Global South
-      } else if (selectedOptions.is_global_south === "2") {
+      } else if (is_global_south_val === "2") {
+        console.log("Isolating Global South");
         return result.is_global_south === 1; // Only Global South
       }
       return true; // Default case (if no selection, include all)
     });
 
-    // Update the full search results
-    setFullSearchResults(filteredResults);
+    // DON'T UPDATE FULL SEARCH RESULTS
+    // You won't be able to undo the filtering
+    // setFullSearchResults(filteredResults);
 
     let limited_results = limitSearchResults(filteredResults, selectedOptions.limit);
 
@@ -760,14 +767,12 @@ const limitSearchResults = (raw_search, limit) => {
           />
         </div>
 
-        {/* Buttons for searching and clearing filters */}
-        <div className="filterbutton-container d-flex align-items-center mt-4">
-          {/* <button className="btn btn-primary" onClick={handleClearFilterSelection}>Clear Filters</button> */}
-
-          <button className="btn filter-button" onClick={handleSearch}>Search</button>
-          <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
+        <div className="center-horizontally">
+          <div className="filterbutton-container">
+            <button className="btn filter-button" onClick={handleSearch}>Search</button>
+            <button className="btn filter-button" onClick={clearFilters}>Clear Filters</button>
+          </div>
         </div>
-
 
         {/* If the data is loading, show the spinner
             Once it is done loading, display the resulting table */}
@@ -775,88 +780,71 @@ const limitSearchResults = (raw_search, limit) => {
             <div className="spinner-container">
               <div className="spinner"></div>
             </div>
-          ) : (
-            <div>
+          ) : (       
+            <div>  
               {searchResults.length > 0 ? (
-                <div className="mt-4">
+              <div className="mt-4">
+                        {/* Sorting dropdown */}
+              <div className="dropdown-container d-flex align-items-center mt-4 sortby-container">
+                <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
+                  <option value="">Sort by</option>
+                  <option value="works_asc">Works (Ascending)</option>
+                  <option value="works_desc">Works (Descending)</option>
+                  <option value="citations_asc">Citations (Ascending)</option>
+                  <option value="citations_desc">Citations (Descending)</option>
+                  <option value="hindex_asc">H-Index (Ascending)</option>
+                  <option value="hindex_desc">H-Index (Descending)</option>
+                  <option value="i10index_asc">i10-Index (Ascending)</option>
+                  <option value="i10index_desc">i10-Index (Descending)</option>
+                  <option value="impact_factor_asc">Impact Factor (Ascending)</option>
+                  <option value="impact_factor_desc">Impact Factor (Descending)</option>
+                </select>
+              </div>
 
-                  <div className="radio-container mt-4 d-flex gap-4">
-                    <div className="form-check position-relative mr-3">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="is_global_south"
-                        id="globalSouthInclude"
-                        value={0}
-                        checked={selectedOptions.is_global_south === 0}
-                        onChange={handleFilterGlobalSouth}
-                      />
-                      <label className="form-check-label text-left" htmlFor="globalSouthInclude">
-                        Include Global South
-                        {selectedOptions.is_global_south === 0 && (
-                          <FaCheck className="selected-icon ml-2" />
-                        )}
-                      </label>
-                    </div>
+              <div className="dropdown-container mt-4 d-flex align-items-center">
+                {/* Radio buttons */}
+                <div className="radio-group d-flex align-items-center mr-4">
+                  <label className="mr-3">
+                    <input
+                      type="radio"
+                      name="is_global_south"
+                      value="0"
+                      checked={selectedOptions.is_global_south === '0'}
+                      onChange={handleFilterGlobalSouth}
+                    />
+                    Include Global South
+                  </label>
+                  <label className="mr-3">
+                    <input
+                      type="radio"
+                      name="is_global_south"
+                      value="1"
+                      checked={selectedOptions.is_global_south === '1'}
+                      onChange={handleFilterGlobalSouth}
+                    />
+                    Exclude Global South
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="is_global_south"
+                      value="2"
+                      checked={selectedOptions.is_global_south === '2'}
+                      onChange={handleFilterGlobalSouth}
+                    />
+                    Only Global South
+                  </label>
+                </div>
 
-                    <div className="form-check position-relative mr-3">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="is_global_south"
-                        id="globalSouthExclude"
-                        value={1}
-                        checked={selectedOptions.is_global_south === 1}
-                        onChange={handleFilterGlobalSouth}
-                      />
-                      <label className="form-check-label text-left" htmlFor="globalSouthExclude">
-                        Exclude Global South
-                        {selectedOptions.is_global_south === 1 && (
-                          <FaCheck className="selected-icon ml-2" />
-                        )}
-                      </label>
-                    </div>
-
-                    <div className="form-check position-relative">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="is_global_south"
-                        id="onlyGlobalSouth"
-                        value={2}
-                        checked={selectedOptions.is_global_south === 2}
-                        onChange={handleFilterGlobalSouth}
-                      />
-                      <label className="form-check-label text-left" htmlFor="onlyGlobalSouth">
-                        Only Global South
-                        {selectedOptions.is_global_south === 2 && (
-                          <FaCheck className="selected-icon ml-2" />
-                        )}
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Sorting dropdown */}
-                  <div className="dropdown-container d-flex align-items-center mt-4">
-                    <select className="form-control mr-2" name="sorting" value={selectedOptions.sorting || ''} onChange={handleSortingChange}>
-                      <option value="">Sort by</option>
-                      <option value="works_asc">Works (Ascending)</option>
-                      <option value="works_desc">Works (Descending)</option>
-                      <option value="citations_asc">Citations (Ascending)</option>
-                      <option value="citations_desc">Citations (Descending)</option>
-                      <option value="hindex_asc">H-Index (Ascending)</option>
-                      <option value="hindex_desc">H-Index (Descending)</option>
-                      <option value="i10index_asc">i10-Index (Ascending)</option>
-                      <option value="i10index_desc">i10-Index (Descending)</option>
-                      <option value="impact_factor_asc">Impact Factor (Ascending)</option>
-                      <option value="impact_factor_desc">Impact Factor (Descending)</option>
-                    </select>
-                  </div>
-
+                {/* Download buttons */}
+                <div className="downloadbutton-container d-flex gap-4">
                   <button className="btn download-button" onClick={handleDownloadCSV}>Download CSV</button>
                   <button className="btn download-button" onClick={handleDownloadXLS}>Download XLS</button>
                   <button className="btn download-button" onClick={handleDownloadPDF}>Download PDF</button>
                   <button className="btn download-button" onClick={handleDownloadDocx}>Download DOCX</button>
+                </div>
+              </div>
+
                   <table className="table table-bordered">
                     <thead>
                       <tr>
