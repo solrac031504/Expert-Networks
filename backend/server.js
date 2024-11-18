@@ -8,19 +8,14 @@ const cors = require('cors'); // Import cors package
 const redisClient = require('./redisClient');
 
 // Routes
-const expertRoutes = require('./routes/experts');
-const institutionRoutes = require('./routes/institutions');
-const institutionImportRoutes = require('./routes/institutionsImport');
 const dropdownMenuRoutes = require('./routes/dropdown_menus');
 const searchRoutes = require('./routes/searches');
 const downloadRoutes = require('./routes/downloads');
-const dataScrapingRoutes = require('./routes/datascrapes.js');
 const csvImportRoutes = require('./routes/csvImport');
 
 // for DB
 const sequelize = require('./database');
 
-const Expert = require('./models/Expert');
 const Institution = require('./models/Institution');
 
 const Continent = require('./models/Continent');
@@ -48,15 +43,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes for experts
-app.use('/api/experts', expertRoutes);
-
-// Routes for institutions
-app.use('/api/institutions', institutionRoutes);
-
-// Routes for importing institution information
-app.use('/api/import', institutionImportRoutes);
-
 // Routes for the dropdown menus
 app.use('/api/dropdown', dropdownMenuRoutes);
 
@@ -65,9 +51,6 @@ app.use('/api/search', searchRoutes);
 
 // Routes for download fucntions
 app.use('/api/download', downloadRoutes);
-
-// Routes for data scraping
-app.use('/api/data', dataScrapingRoutes);
 
 // Routes for importing OpenAlex data from CSV
 app.use('/api/csv-import', csvImportRoutes);
