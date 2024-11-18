@@ -2,8 +2,8 @@
 const Author = require('../models/Author');
 const Topic = require('../models/Topic');
 const AuthorTopic = require('../models/AuthorTopic');
-
 const Subfield = require('../models/Subfield');
+const Institution = require('../models/Institution');
 
 const path = require('path');
 const fs = require('fs');
@@ -369,10 +369,66 @@ const importAuthorTopicsCSV = async (req, res) => {
   });
 }
 
+// Updates all institution records in the database
+// NOTE: Requires minmal data cleaning. Please reference design document "Import ROR Data"
+const importInstitutionsCSV = async (req, res) => {
+  const ifp = path.resolve('allInstitutions.csv');
+  // const ifp = path.resolve('testImport.csv');
+
+  // Stores CSV data
+  const institutions = [];
+
+  // Read CSV
+  fs.createReadStream(ifp)
+  .pipe(csv())
+  .on('data', (row) => {
+    // Skip header row
+    if (row['institution_id'] !== 'id') {
+      institutions.push({
+        institution_id: row.id, // institution_id
+        name: row.ror_display, // name
+        acronym: row.acronym, // name acronym
+        alias: row.alias, // name alias
+        label: row.label, // name label
+        country_code: row.country_code, // alpha2 code
+        status: row.status, // status
+        types: row.types, // type of institution
+        createdAt: row.created, // date created
+        updatedAt: row.last_modified // data modified
+      });
+    }
+  })
+  .on('end', async () => {
+    try {
+      // Use bulkCreate and updateOnDuplicate to improve import times
+      // Increments of 1000
+      for (let i = 0; i < institutions.length; i += 1000) {
+        // Lower bound is the current i value, increments of 1000
+        let lowerBound = i;
+        // Upper bound is 
+        let upperBound = (i+1000 > institutions.length) ? institutions.length : i + 1000
+
+        let records = institutions.slice(lowerBound, upperBound);
+        await Institution.bulkCreate(records, {
+          updateOnDuplicate: ['name', 'acronym', 'alias', 'label', 'country_code', 'status', 'types', 'createdAt', 'updatedAt']
+        });
+      }
+
+      console.log('Institutions successfully imported');
+      res.status(200).json(institutions[0]);
+
+    } catch(error) {
+      console.error('Error importing institutions:', error);
+      res.status(500).json({ error: error.message});
+    }
+  });
+}
+
 module.exports = {
   importSubfieldsCSV,
   importTopicsCSV,
   importAuthorsCSV,
   extractTopicID,
-  importAuthorTopicsCSV
+  importAuthorTopicsCSV,
+  importInstitutionsCSV
 };

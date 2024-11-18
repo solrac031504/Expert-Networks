@@ -4,7 +4,7 @@ const {
   importTopicsCSV,
   importAuthorsCSV,
   importAuthorTopicsCSV,
-  // importInstitutionsCSV
+  importInstitutionsCSV
 } = require('../controllers/csvImportControllers');
 
 const router = express.Router();
@@ -22,6 +22,6 @@ router.post('/authors', importAuthorsCSV);
 router.post('/author-topics', importAuthorTopicsCSV);
 
 // Read ROR institutions from CSV and import them
-// router.post('/institutions', importInstitutionsCSV);
+router.post('/institutions', importInstitutionsCSV);
 
 module.exports = router
