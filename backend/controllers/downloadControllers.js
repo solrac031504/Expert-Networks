@@ -17,9 +17,6 @@ const { fetchExperts } = require('./searchControllers');
 require('dotenv').config();
 
 const sortAndFilterResults = (sorting, is_global_south, raw_experts) => {
-  // If no sorting is selected, just return the experts as is
-  if (!sorting || sorting === '') return raw_experts;
-
   const sortedResults = [...raw_experts]; // Create a copy of the current results to sort
   
   // Sort based on the selected param
