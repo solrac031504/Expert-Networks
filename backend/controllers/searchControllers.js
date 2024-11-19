@@ -49,7 +49,7 @@ async function getCachedResults(cacheKey) {
 }
 
 const fetchExperts = async(queryParams) => {
-  // process searches in increments of 100
+  // process searches in increments of 100  
   // Use the id of the last author to start from there
   // Find the next 100 authors
   const batch_size = 100;
@@ -205,7 +205,7 @@ const query_with_left_join_subregion = `
     results = await sequelize.query(`
       ${query_with_inner_join_subregion}
       ${where_clause}
-      LIMIT 100`,
+      LIMIT ${batch_size}`,
       { type: QueryTypes.SELECT }
     );
   } else {
@@ -217,7 +217,7 @@ const query_with_left_join_subregion = `
     results = await sequelize.query(`
       ${query_with_left_join_subregion}
       ${where_clause}
-      LIMIT 100`,
+      LIMIT ${batch_size}`,
       { type: QueryTypes.SELECT }
     );
   }
