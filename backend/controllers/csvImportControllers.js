@@ -9,7 +9,6 @@ const path = require('path');
 const fs = require('fs');
 const csv = require('csv-parser');
 
-
 const axios = require('axios'); //Import axios for http requests
 const { query } = require('express');
 const sequelize = require('../database');
@@ -48,7 +47,7 @@ const extractDomainID = (raw_id) => {
   return match ? parseInt(match[1], 10) : null;
 }
 
-// All author ID follow the pattern https://openalex.org/T##### https://openalex.org/authors/A##########
+// All author ID follow the pattern https://openalex.org/authors/A##########
 // Only want the ########## for faster indexing
 const extractAuthorID = (raw_id) => {
   if(!raw_id) return null;
@@ -73,8 +72,6 @@ const importTopicsCSV = async (req, res) => {
       // Exctract the id number for all of them
       // console.log("Raw row:", row);
 
-      let extracted_domain_id = extractDomainID(row.domain_id);
-      let extracted_field_id = extractFieldID(row.field_id);
       let extracted_subfield_id = extractSubfieldID(row.subfield_id);
       let extracted_topic_id = extractTopicID(row.id);
 
@@ -85,12 +82,7 @@ const importTopicsCSV = async (req, res) => {
           display_name: row.display_name,
           keywords: row.keywords,
           wikipedia_id: row.wikipedia_id,
-          domain_id: extracted_domain_id, 
-          domain_display_name: row.domain_display_name, 
-          field_id: extracted_field_id,  
-          field_display_name: row.field_display_name, 
-          subfield_id: extracted_subfield_id, 
-          subfield_display_name: row.subfield_display_name
+          subfield_id: extracted_subfield_id
         });
       }
     }
@@ -131,7 +123,6 @@ const importTopicsCSV = async (req, res) => {
 
 const importSubfieldsCSV = async (req, res) => {
   const ifp = path.resolve('subfields.csv');
-  // const ifp = path.resolve('testImport.csv');
 
   // Stores CSV data
   const subfields = [];
@@ -144,10 +135,13 @@ const importSubfieldsCSV = async (req, res) => {
     if (row['id'] !== 'subfield_id') {
       // console.log("Raw row:", row);
 
+      let extracted_subfield_id = extractSubfieldID(row.subfield_id);
+      let extracted_field_id = extractFieldID(row.field_id);
+
       subfields.push({
-        id: row.subfield_id, 
+        id: extracted_subfield_id, 
         display_name: row.subfield_display_name,
-        field_id: row.field_id
+        field_id: extracted_field_id
       });
     }
   })
@@ -160,8 +154,6 @@ const importSubfieldsCSV = async (req, res) => {
         let lowerBound = i;
         // Upper bound is 
         let upperBound = (i+1000 > subfields.length) ? subfields.length : i + 1000
-
-        console.log(`(${lowerBound},${upperBound})`);
 
         let records = subfields.slice(lowerBound, upperBound);
         await Subfield.bulkCreate(records, {
@@ -214,7 +206,7 @@ const importAuthorsCSV = async (req, res) => {
           hindex: Number.isNaN(parseInt(row.h_index)) ? 0 : parseInt(row.h_index),
           i_ten_index: Number.isNaN(parseInt(row.i10_index)) ? 0 : parseInt(row.i10_index),
           impact_factor: Number.isNaN(parseFloat(row['2yr_mean_citedness'])) ? 0 : parseFloat(row['2yr_mean_citedness']),
-          last_known_institution_id: (row.last_known_institution === '') ? '000000' : row.last_known_institution, // uses the OpenAlex Institution ID, not ROR
+          last_known_institution_id: (row.last_known_institution === '') ? '000000' : row.last_known_institution,
           works_count_2yr: Number.isNaN(parseInt(row['2yr_works_count'])) ? 0 : parseInt(row['2yr_works_count']),
           cited_by_count_2yr: Number.isNaN(parseInt(row['2yr_cited_by_count'])) ? 0 : parseInt(row['2yr_cited_by_count']),
           hindex_2yr: Number.isNaN(parseInt(row['2yr_h_index'])) ? 0 : parseInt(row['2yr_h_index']),
@@ -372,7 +364,7 @@ const importAuthorTopicsCSV = async (req, res) => {
 // Updates all institution records in the database
 // NOTE: Requires minmal data cleaning. Please reference design document "Import ROR Data"
 const importInstitutionsCSV = async (req, res) => {
-  const ifp = path.resolve('allInstitutions.csv');
+  const ifp = path.resolve('institutions.csv');
   // const ifp = path.resolve('testImport.csv');
 
   // Stores CSV data
